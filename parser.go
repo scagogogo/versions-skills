@@ -41,6 +41,9 @@ type VersionStringParser struct {
 
 	// v 解析结果
 	v *Version
+
+	// option 解析器选项
+	option ParserOption
 }
 
 // NewVersionStringParser 创建一个版本号Parser
@@ -327,7 +330,16 @@ func (x *VersionStringParser) readVersionNumbers(versionWithoutPrefix string) []
 // 返回:
 //   - bool: 如果是分隔符则返回 true，否则返回 false
 func (x *VersionStringParser) IsVersionNumberDelimiter(c rune) bool {
-	return c == '.'
+	delimiters := x.option.Delimiters
+	if delimiters == "" {
+		delimiters = DefaultParserOption().Delimiters
+	}
+	for _, d := range delimiters {
+		if c == d {
+			return true
+		}
+	}
+	return false
 }
 
 // parseDigitsToNumber 把数字字符数组解析为int
