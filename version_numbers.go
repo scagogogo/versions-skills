@@ -80,14 +80,22 @@ func NewVersionNumbers(versionNumbers []int) VersionNumbers {
 //	    fmt.Println("v1 和 v2 相等")
 //	}
 func (x VersionNumbers) CompareTo(target []int) int {
-	for i := 0; i < len(x) || i < len(target); i++ {
-		if i >= len(x) || i >= len(target) {
-			return len(x) - len(target)
-		} else if x[i] != target[i] {
-			return x[i] - target[i]
-		} else {
-			// 版本当前部分的数字数相等，继续比较下一位
+	minLen := len(x)
+	if len(target) < minLen {
+		minLen = len(target)
+	}
+	for i := 0; i < minLen; i++ {
+		if x[i] < target[i] {
+			return -1
+		} else if x[i] > target[i] {
+			return 1
 		}
+	}
+	// 共有部分相等，比较长度
+	if len(x) < len(target) {
+		return -1
+	} else if len(x) > len(target) {
+		return 1
 	}
 	return 0
 }

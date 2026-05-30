@@ -205,7 +205,25 @@ func (x *Version) CompareTo(target *Version) int {
 		}
 	}
 
-	// 2. 然后按照发布时间排序
+	// 2. 然后按照后缀排序，修复：空后缀(release)应大于有后缀(pre-release)
+	switch {
+	case x.Suffix.IsEmpty() && target.Suffix.IsEmpty():
+		// 两者都是正式版，后缀相等，继续比较
+	case x.Suffix.IsEmpty() && !target.Suffix.IsEmpty():
+		// 当前是正式版，目标是预发布版，当前更大
+		return 1
+	case !x.Suffix.IsEmpty() && target.Suffix.IsEmpty():
+		// 当前是预发布版，目标是正式版，当前更小
+		return -1
+	default:
+		// 两者都有后缀，比较后缀
+		r := x.Suffix.CompareTo(target.Suffix)
+		if r != 0 {
+			return r
+		}
+	}
+
+	// 3. 然后按照发布时间排序
 	if !target.PublicTime.IsZero() && !x.PublicTime.IsZero() {
 		r2 := x.PublicTime.UnixMilli() - target.PublicTime.UnixMilli()
 		if r2 != 0 {
@@ -215,14 +233,6 @@ func (x *Version) CompareTo(target *Version) int {
 			} else {
 				return -1
 			}
-		}
-	}
-
-	// 3. 然后按照后缀的字典序排序，加入有后缀的话
-	if x.Suffix != EmptyVersionSuffix && target.Suffix != EmptyVersionSuffix {
-		r := x.Suffix.CompareTo(target.Suffix)
-		if r != 0 {
-			return r
 		}
 	}
 
