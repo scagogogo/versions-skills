@@ -1,0 +1,20 @@
+{
+  "name": "versions",
+  "description": "Go语言版本号解析计算SDK的Claude Code Skills",
+  "owner": {
+    "name": "scagogogo",
+    "url": "https://github.com/scagogogo"
+  },
+  "plugins": [
+    {
+      "name": "versions",
+      "description": "版本号解析、比较、排序、分组、范围查询、可视化和文件操作的专业Skills",
+      "version": "0.1.0",
+      "source": "./",
+      "author": {
+        "name": "scagogogo",
+        "url": "https://github.com/scagogogo"
+      }
+    }
+  ]
+}
