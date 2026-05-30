@@ -1,0 +1,290 @@
+package versions
+
+import (
+	"fmt"
+	"strings"
+)
+
+// ConstraintOperator 约束操作符类型
+type ConstraintOperator string
+
+const (
+	// ConstraintEqual 等于 (=)
+	ConstraintEqual ConstraintOperator = "="
+
+	// ConstraintNotEqual 不等于 (!=)
+	ConstraintNotEqual ConstraintOperator = "!="
+
+	// ConstraintGreaterThan 大于 (>)
+	ConstraintGreaterThan ConstraintOperator = ">"
+
+	// ConstraintGreaterThanOrEqual 大于等于 (>=)
+	ConstraintGreaterThanOrEqual ConstraintOperator = ">="
+
+	// ConstraintLessThan 小于 (<)
+	ConstraintLessThan ConstraintOperator = "<"
+
+	// ConstraintLessThanOrEqual 小于等于 (<=)
+	ConstraintLessThanOrEqual ConstraintOperator = "<="
+
+	// ConstraintCaret 兼容版本 (^) — 兼容左起第一个非零版本号
+	ConstraintCaret ConstraintOperator = "^"
+
+	// ConstraintTilde 近似版本 (~) — 兼容到次版本号
+	ConstraintTilde ConstraintOperator = "~"
+
+	// ConstraintWildcard 通配符 (x/X/*) — 匹配任意子版本
+	ConstraintWildcard ConstraintOperator = "x"
+)
+
+// Constraint 表示一个版本约束条件
+//
+// Constraint 用于判断某个版本是否满足指定的约束条件，
+// 如 ">=1.0.0", "^1.2.3", "~1.2.3", "1.x" 等。
+//
+// 使用示例:
+//
+//	c, err := versions.ParseConstraint(">=1.0.0")
+//	if err != nil {
+//	    log.Fatal(err)
+//	}
+//	v := versions.NewVersion("1.5.0")
+//	if c.Match(v) {
+//	    fmt.Println("1.5.0 satisfies >=1.0.0")
+//	}
+type Constraint struct {
+	// Operator 约束操作符
+	Operator ConstraintOperator
+
+	// Version 约束目标版本
+	Version *Version
+}
+
+// ConstraintSet 表示一组 AND 组合的约束条件
+//
+// 多个约束条件之间是 AND 关系，所有条件都必须满足。
+// 例如 ">=1.0.0,<2.0.0" 表示版本必须同时满足 >=1.0.0 和 <2.0.0。
+type ConstraintSet struct {
+	Constraints []Constraint
+}
+
+// ParseConstraint 解析单个版本约束表达式
+//
+// 支持的操作符: =, !=, >, >=, <, <=, ^, ~
+// 支持的通配符: x, X, * (如 1.x, 1.2.*)
+//
+// 参数:
+//   - expr: 约束表达式，如 ">=1.0.0", "^1.2.3", "~1.2"
+//
+// 返回:
+//   - *Constraint: 解析后的约束对象
+//   - error: 如果表达式格式错误则返回错误
+func ParseConstraint(expr string) (*Constraint, error) {
+	expr = strings.TrimSpace(expr)
+	if expr == "" {
+		return nil, fmt.Errorf("empty constraint expression")
+	}
+
+	// 按操作符长度降序匹配，避免 >= 被 > 先匹配
+	operators := []struct {
+		op  ConstraintOperator
+		len int
+	}{
+		{ConstraintGreaterThanOrEqual, 2},
+		{ConstraintLessThanOrEqual, 2},
+		{ConstraintNotEqual, 2},
+		{ConstraintCaret, 1},
+		{ConstraintTilde, 1},
+		{ConstraintGreaterThan, 1},
+		{ConstraintLessThan, 1},
+		{ConstraintEqual, 1},
+	}
+
+	for _, o := range operators {
+		if strings.HasPrefix(expr, string(o.op)) {
+			versionStr := strings.TrimSpace(expr[o.len:])
+			if versionStr == "" {
+				return nil, fmt.Errorf("missing version after operator %s", o.op)
+			}
+			v := NewVersion(versionStr)
+			if !v.IsValid() {
+				return nil, fmt.Errorf("invalid version in constraint: %s", versionStr)
+			}
+			return &Constraint{Operator: o.op, Version: v}, nil
+		}
+	}
+
+	// 检查通配符
+	if isWildcardVersion(expr) {
+		return &Constraint{Operator: ConstraintWildcard, Version: NewVersion(replaceWildcardWithZero(expr))}, nil
+	}
+
+	// 无操作符前缀，视为等于
+	v := NewVersion(expr)
+	if !v.IsValid() {
+		return nil, fmt.Errorf("invalid version in constraint: %s", expr)
+	}
+	return &Constraint{Operator: ConstraintEqual, Version: v}, nil
+}
+
+// ParseConstraintSet 解析逗号分隔的 AND 组合约束
+//
+// 支持格式: ">=1.0.0,<2.0.0", "^1.2.3", "~1.2"
+//
+// 参数:
+//   - expr: 逗号分隔的约束表达式
+//
+// 返回:
+//   - *ConstraintSet: 解析后的约束集合
+//   - error: 如果任何子表达式格式错误则返回错误
+func ParseConstraintSet(expr string) (*ConstraintSet, error) {
+	parts := strings.Split(expr, ",")
+	cs := &ConstraintSet{Constraints: make([]Constraint, 0, len(parts))}
+	for _, part := range parts {
+		c, err := ParseConstraint(part)
+		if err != nil {
+			return nil, fmt.Errorf("parse constraint %q: %w", part, err)
+		}
+		cs.Constraints = append(cs.Constraints, *c)
+	}
+	return cs, nil
+}
+
+// Match 判断版本是否满足约束条件
+//
+// 参数:
+//   - v: 要检查的版本对象
+//
+// 返回:
+//   - bool: 如果版本满足约束则返回 true
+func (c *Constraint) Match(v *Version) bool {
+	switch c.Operator {
+	case ConstraintEqual:
+		return v.CompareTo(c.Version) == 0
+	case ConstraintNotEqual:
+		return v.CompareTo(c.Version) != 0
+	case ConstraintGreaterThan:
+		return v.CompareTo(c.Version) > 0
+	case ConstraintGreaterThanOrEqual:
+		return v.CompareTo(c.Version) >= 0
+	case ConstraintLessThan:
+		return v.CompareTo(c.Version) < 0
+	case ConstraintLessThanOrEqual:
+		return v.CompareTo(c.Version) <= 0
+	case ConstraintCaret:
+		return matchCaret(c.Version, v)
+	case ConstraintTilde:
+		return matchTilde(c.Version, v)
+	case ConstraintWildcard:
+		return matchWildcard(c.Version, v)
+	default:
+		return false
+	}
+}
+
+// Match 判断版本是否满足所有约束（AND 逻辑）
+//
+// 参数:
+//   - v: 要检查的版本对象
+//
+// 返回:
+//   - bool: 如果版本满足所有约束则返回 true
+func (cs *ConstraintSet) Match(v *Version) bool {
+	for _, c := range cs.Constraints {
+		if !c.Match(v) {
+			return false
+		}
+	}
+	return true
+}
+
+// matchCaret 实现 ^ 操作符：兼容左起第一个非零版本号
+//
+// ^1.2.3 := >=1.2.3, <2.0.0
+// ^0.2.3 := >=0.2.3, <0.3.0
+// ^0.0.3 := >=0.0.3, <0.0.4
+func matchCaret(base, v *Version) bool {
+	if v.CompareTo(base) < 0 {
+		return false
+	}
+	if len(base.VersionNumbers) == 0 {
+		return true
+	}
+	// 找到第一个非零位
+	firstNonZero := -1
+	for i, n := range base.VersionNumbers {
+		if n != 0 {
+			firstNonZero = i
+			break
+		}
+	}
+	if firstNonZero == -1 {
+		// 全零，如 ^0.0.0，匹配任何版本
+		return true
+	}
+	// 上界：第一个非零位+1，后面全0
+	upper := make([]int, len(base.VersionNumbers))
+	upper[firstNonZero] = base.VersionNumbers[firstNonZero] + 1
+	return v.VersionNumbers.CompareTo(upper) < 0
+}
+
+// matchTilde 实现 ~ 操作符：兼容到次版本号
+//
+// ~1.2.3 := >=1.2.3, <1.3.0
+// ~1.2   := >=1.2.0, <1.3.0
+func matchTilde(base, v *Version) bool {
+	if v.CompareTo(base) < 0 {
+		return false
+	}
+	if len(base.VersionNumbers) < 2 {
+		return true
+	}
+	upper := make([]int, len(base.VersionNumbers))
+	copy(upper, base.VersionNumbers)
+	upper[0] = base.VersionNumbers[0]
+	upper[1] = base.VersionNumbers[1] + 1
+	for i := 2; i < len(upper); i++ {
+		upper[i] = 0
+	}
+	return v.VersionNumbers.CompareTo(upper) < 0
+}
+
+// matchWildcard 实现 x/X/* 通配符
+//
+// 1.x := >=1.0.0, <2.0.0
+// 1.2.x := >=1.2.0, <1.3.0
+func matchWildcard(base, v *Version) bool {
+	if v.CompareTo(base) < 0 {
+		return false
+	}
+	// 最后一个有效数字位+1
+	lastNonZero := -1
+	for i, n := range base.VersionNumbers {
+		if n != 0 {
+			lastNonZero = i
+		}
+	}
+	if lastNonZero == -1 {
+		return true
+	}
+	upper := make([]int, len(base.VersionNumbers))
+	copy(upper, base.VersionNumbers)
+	upper[lastNonZero] = base.VersionNumbers[lastNonZero] + 1
+	for i := lastNonZero + 1; i < len(upper); i++ {
+		upper[i] = 0
+	}
+	return v.VersionNumbers.CompareTo(upper) < 0
+}
+
+// isWildcardVersion 检查版本字符串是否包含通配符
+func isWildcardVersion(s string) bool {
+	return strings.ContainsAny(s, "xX*")
+}
+
+// replaceWildcardWithZero 将通配符替换为0
+func replaceWildcardWithZero(s string) string {
+	s = strings.ReplaceAll(s, "x", "0")
+	s = strings.ReplaceAll(s, "X", "0")
+	s = strings.ReplaceAll(s, "*", "0")
+	return s
+}
