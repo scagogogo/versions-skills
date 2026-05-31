@@ -2,6 +2,7 @@ package versions
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 )
 
@@ -182,6 +183,39 @@ func (c *Constraint) Match(v *Version) bool {
 	}
 }
 
+// String 返回约束条件的字符串表示
+//
+// 将约束条件序列化为可解析的字符串格式，如 ">=1.0.0"、"^1.2.3"、"~1.2"。
+// 对于通配符约束（1.x），返回原始版本字符串形式。
+//
+// 返回:
+//   - string: 约束条件的字符串表示
+//
+// 使用示例:
+//
+//	c, _ := versions.ParseConstraint(">=1.0.0")
+//	fmt.Println(c.String()) // 输出: ">=1.0.0"
+func (c *Constraint) String() string {
+	switch c.Operator {
+	case ConstraintWildcard:
+		// 通配符需要特殊处理：将版本号数字中对应位置的 0 还原为 x
+		parts := make([]string, len(c.Version.VersionNumbers))
+		for i, n := range c.Version.VersionNumbers {
+			parts[i] = strconv.Itoa(n)
+		}
+		// 最后一个 0 替换为 x（通配符位置）
+		for i := len(parts) - 1; i >= 0; i-- {
+			if parts[i] == "0" {
+				parts[i] = "x"
+				break
+			}
+		}
+		return strings.Join(parts, ".")
+	default:
+		return string(c.Operator) + c.Version.Raw
+	}
+}
+
 // Match 判断版本是否满足所有约束（AND 逻辑）
 //
 // 参数:
@@ -196,6 +230,25 @@ func (cs *ConstraintSet) Match(v *Version) bool {
 		}
 	}
 	return true
+}
+
+// String 返回约束集合的字符串表示
+//
+// 将约束集合序列化为逗号分隔的字符串格式，如 ">=1.0.0,<2.0.0"。
+//
+// 返回:
+//   - string: 约束集合的字符串表示
+//
+// 使用示例:
+//
+//	cs, _ := versions.ParseConstraintSet(">=1.0.0,<2.0.0")
+//	fmt.Println(cs.String()) // 输出: ">=1.0.0,<2.0.0"
+func (cs *ConstraintSet) String() string {
+	parts := make([]string, len(cs.Constraints))
+	for i, c := range cs.Constraints {
+		parts[i] = c.String()
+	}
+	return strings.Join(parts, ",")
 }
 
 // matchCaret 实现 ^ 操作符：兼容左起第一个非零版本号

@@ -123,3 +123,39 @@ func TestConstraintSet_SingleConstraint(t *testing.T) {
 		t.Error("2.0.0 should not match ^1.2.3 via ConstraintSet")
 	}
 }
+
+func TestConstraint_String(t *testing.T) {
+	tests := []struct {
+		expr     string
+		expected string
+	}{
+		{">=1.0.0", ">=1.0.0"},
+		{"<2.0.0", "<2.0.0"},
+		{"=1.5.0", "=1.5.0"},
+		{"!=0.9.0", "!=0.9.0"},
+		{"^1.2.3", "^1.2.3"},
+		{"~1.2", "~1.2"},
+	}
+	for _, tt := range tests {
+		t.Run(tt.expr, func(t *testing.T) {
+			c, err := ParseConstraint(tt.expr)
+			if err != nil {
+				t.Fatalf("ParseConstraint(%q) error: %v", tt.expr, err)
+			}
+			if got := c.String(); got != tt.expected {
+				t.Errorf("Constraint.String() = %q, want %q", got, tt.expected)
+			}
+		})
+	}
+}
+
+func TestConstraintSet_String(t *testing.T) {
+	cs, err := ParseConstraintSet(">=1.0.0,<2.0.0")
+	if err != nil {
+		t.Fatalf("ParseConstraintSet error: %v", err)
+	}
+	got := cs.String()
+	if got != ">=1.0.0,<2.0.0" {
+		t.Errorf("ConstraintSet.String() = %q, want %q", got, ">=1.0.0,<2.0.0")
+	}
+}
