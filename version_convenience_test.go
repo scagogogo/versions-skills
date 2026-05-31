@@ -105,3 +105,42 @@ func TestVersion_MajorMinorPatch_Zero(t *testing.T) {
 		t.Errorf("Patch() = %d, want 0", v.Patch())
 	}
 }
+
+func TestVersion_IsMilestone(t *testing.T) {
+	if !NewVersion("1.0.0-milestone1").IsMilestone() {
+		t.Error("1.0.0-milestone1 should be milestone")
+	}
+	if !NewVersion("1.0.0-m1").IsMilestone() {
+		t.Error("1.0.0-m1 should be milestone (short form)")
+	}
+	if NewVersion("1.0.0-beta").IsMilestone() {
+		t.Error("1.0.0-beta should not be milestone")
+	}
+}
+
+func TestVersion_IsNightly(t *testing.T) {
+	if !NewVersion("1.0.0-nightly").IsNightly() {
+		t.Error("1.0.0-nightly should be nightly")
+	}
+	if NewVersion("1.0.0-beta").IsNightly() {
+		t.Error("1.0.0-beta should not be nightly")
+	}
+}
+
+func TestVersion_IsFinal(t *testing.T) {
+	if !NewVersion("1.0.0-final").IsFinal() {
+		t.Error("1.0.0-final should be final")
+	}
+	if NewVersion("1.0.0").IsFinal() {
+		t.Error("1.0.0 should not be final (no suffix)")
+	}
+}
+
+func TestVersion_IsGA(t *testing.T) {
+	if !NewVersion("1.0.0-ga").IsGA() {
+		t.Error("1.0.0-ga should be GA")
+	}
+	if NewVersion("1.0.0").IsGA() {
+		t.Error("1.0.0 should not be GA (no suffix)")
+	}
+}

@@ -330,6 +330,36 @@ func (x *Version) IsSnapshot() bool {
 	return GetSuffixWeight(string(x.Suffix)) == SuffixWeightSnapshot
 }
 
+// IsMilestone 判断版本是否为里程碑版
+//
+// 里程碑版是指后缀包含 milestone/m 标识的版本，如 "1.0.0-m1"、"1.0.0-milestone1"。
+func (x *Version) IsMilestone() bool {
+	w := GetSuffixWeight(string(x.Suffix))
+	return w == SuffixWeightMilestone
+}
+
+// IsNightly 判断版本是否为夜间构建版
+//
+// 夜间构建版是指后缀包含 nightly 标识的版本，如 "1.0.0-nightly"。
+func (x *Version) IsNightly() bool {
+	return GetSuffixWeight(string(x.Suffix)) == SuffixWeightNightly
+}
+
+// IsFinal 判断版本是否为 Final 版本
+//
+// Final 版本是指后缀包含 final 标识的版本（Maven 生态常见），如 "1.0.0-final"。
+// 注意：Final 后缀与无后缀的正式版语义相同，但 IsFinal 专用于检测显式的 final 后缀。
+func (x *Version) IsFinal() bool {
+	return GetSuffixWeight(string(x.Suffix)) == SuffixWeightFinal
+}
+
+// IsGA 判断版本是否为 GA（Generally Available）版本
+//
+// GA 版本是指后缀包含 ga 标识的版本，如 "1.0.0-ga"。
+func (x *Version) IsGA() bool {
+	return GetSuffixWeight(string(x.Suffix)) == SuffixWeightGA
+}
+
 // IsNewerThan 判断当前版本是否比目标版本更新
 //
 // 等价于 CompareTo(target) > 0，但语义更清晰。
