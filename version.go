@@ -13,6 +13,15 @@ var (
 	//
 	// 当尝试解析不符合要求的版本号字符串时返回此错误
 	ErrVersionInvalid = errors.New("version invalid")
+
+	// ErrEmptyConstraint 表示约束表达式为空的错误
+	ErrEmptyConstraint = errors.New("empty constraint expression")
+
+	// ErrMissingVersionInConstraint 表示约束表达式中缺少版本号的错误
+	ErrMissingVersionInConstraint = errors.New("missing version in constraint")
+
+	// ErrInvalidVersionInConstraint 表示约束表达式中版本号无效的错误
+	ErrInvalidVersionInConstraint = errors.New("invalid version in constraint")
 )
 
 // Version 用于表示一个版本号

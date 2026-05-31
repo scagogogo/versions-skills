@@ -82,7 +82,7 @@ type ConstraintSet struct {
 func ParseConstraint(expr string) (*Constraint, error) {
 	expr = strings.TrimSpace(expr)
 	if expr == "" {
-		return nil, fmt.Errorf("empty constraint expression")
+		return nil, ErrEmptyConstraint
 	}
 
 	// 按操作符长度降序匹配，避免 >= 被 > 先匹配
@@ -104,11 +104,11 @@ func ParseConstraint(expr string) (*Constraint, error) {
 		if strings.HasPrefix(expr, string(o.op)) {
 			versionStr := strings.TrimSpace(expr[o.len:])
 			if versionStr == "" {
-				return nil, fmt.Errorf("missing version after operator %s", o.op)
+				return nil, ErrMissingVersionInConstraint
 			}
 			v := NewVersion(versionStr)
 			if !v.IsValid() {
-				return nil, fmt.Errorf("invalid version in constraint: %s", versionStr)
+				return nil, ErrInvalidVersionInConstraint
 			}
 			return &Constraint{Operator: o.op, Version: v}, nil
 		}
@@ -122,7 +122,7 @@ func ParseConstraint(expr string) (*Constraint, error) {
 	// 无操作符前缀，视为等于
 	v := NewVersion(expr)
 	if !v.IsValid() {
-		return nil, fmt.Errorf("invalid version in constraint: %s", expr)
+		return nil, ErrInvalidVersionInConstraint
 	}
 	return &Constraint{Operator: ConstraintEqual, Version: v}, nil
 }
