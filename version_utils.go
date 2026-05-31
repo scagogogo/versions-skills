@@ -145,3 +145,75 @@ func Count(versions []*Version, predicate func(*Version) bool) int {
 	}
 	return n
 }
+
+// FilterByMinor 过滤指定次版本号的版本
+//
+// 返回所有次版本号等于指定值的版本。
+//
+// 参数:
+//   - versions: 版本对象列表
+//   - minor: 目标次版本号
+//
+// 返回:
+//   - []*Version: 满足条件的版本列表
+func FilterByMinor(versions []*Version, minor int) []*Version {
+	return Filter(versions, func(v *Version) bool {
+		return v.Minor() == minor
+	})
+}
+
+// FilterByPrefix 过滤指定前缀的版本
+//
+// 返回所有前缀等于指定值的版本。
+//
+// 参数:
+//   - versions: 版本对象列表
+//   - prefix: 目标前缀字符串，如 "v"
+//
+// 返回:
+//   - []*Version: 满足条件的版本列表
+func FilterByPrefix(versions []*Version, prefix string) []*Version {
+	return Filter(versions, func(v *Version) bool {
+		return string(v.Prefix) == prefix
+	})
+}
+
+// Difference 返回在 a 中但不在 b 中的版本（差集）
+//
+// 根据 Raw 字段判断版本是否相同。返回的版本保持 a 中的原始顺序。
+//
+// 参数:
+//   - a: 版本对象列表
+//   - b: 要排除的版本对象列表
+//
+// 返回:
+//   - []*Version: 差集版本列表
+func Difference(a, b []*Version) []*Version {
+	bSet := make(map[string]bool, len(b))
+	for _, v := range b {
+		bSet[v.Raw] = true
+	}
+	return Filter(a, func(v *Version) bool {
+		return !bSet[v.Raw]
+	})
+}
+
+// Intersection 返回同时存在于 a 和 b 中的版本（交集）
+//
+// 根据 Raw 字段判断版本是否相同。返回的版本保持 a 中的原始顺序。
+//
+// 参数:
+//   - a: 版本对象列表
+//   - b: 版本对象列表
+//
+// 返回:
+//   - []*Version: 交集版本列表
+func Intersection(a, b []*Version) []*Version {
+	bSet := make(map[string]bool, len(b))
+	for _, v := range b {
+		bSet[v.Raw] = true
+	}
+	return Filter(a, func(v *Version) bool {
+		return bSet[v.Raw]
+	})
+}

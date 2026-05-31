@@ -96,3 +96,58 @@ func TestCount(t *testing.T) {
 		t.Errorf("Count prerelease = %d, want 2", n)
 	}
 }
+
+func TestFilterByMinor(t *testing.T) {
+	versions := NewVersions("1.0.0", "1.1.0", "2.1.0", "2.2.0")
+	result := FilterByMinor(versions, 1)
+	if len(result) != 2 {
+		t.Errorf("FilterByMinor(1) = %d, want 2", len(result))
+	}
+}
+
+func TestFilterByPrefix(t *testing.T) {
+	versions := NewVersions("1.0.0", "v1.0.0", "v2.0.0")
+	result := FilterByPrefix(versions, "v")
+	if len(result) != 2 {
+		t.Errorf("FilterByPrefix(\"v\") = %d, want 2", len(result))
+	}
+}
+
+func TestDifference(t *testing.T) {
+	a := NewVersions("1.0.0", "1.1.0", "1.2.0")
+	b := NewVersions("1.1.0", "2.0.0")
+	result := Difference(a, b)
+	if len(result) != 2 {
+		t.Errorf("Difference() = %d, want 2", len(result))
+	}
+	for _, v := range result {
+		if v.Raw == "1.1.0" {
+			t.Error("Difference() should not contain 1.1.0")
+		}
+	}
+}
+
+func TestDifference_Empty(t *testing.T) {
+	a := NewVersions("1.0.0")
+	result := Difference(a, nil)
+	if len(result) != 1 {
+		t.Errorf("Difference(a, nil) = %d, want 1", len(result))
+	}
+}
+
+func TestIntersection(t *testing.T) {
+	a := NewVersions("1.0.0", "1.1.0", "1.2.0")
+	b := NewVersions("1.1.0", "1.2.0", "2.0.0")
+	result := Intersection(a, b)
+	if len(result) != 2 {
+		t.Errorf("Intersection() = %d, want 2", len(result))
+	}
+}
+
+func TestIntersection_Empty(t *testing.T) {
+	a := NewVersions("1.0.0")
+	result := Intersection(a, nil)
+	if len(result) != 0 {
+		t.Errorf("Intersection(a, nil) = %d, want 0", len(result))
+	}
+}
