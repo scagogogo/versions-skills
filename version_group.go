@@ -213,6 +213,52 @@ func (x *VersionGroup) SortVersions() []*Version {
 	return versions
 }
 
+// GetLatest 获取版本组中最新的版本
+//
+// 返回按排序后最新的版本，如果组为空则返回 nil。
+func (x *VersionGroup) GetLatest() *Version {
+	sorted := x.SortVersions()
+	if len(sorted) == 0 {
+		return nil
+	}
+	return sorted[len(sorted)-1]
+}
+
+// GetOldest 获取版本组中最旧的版本
+//
+// 返回按排序后最旧的版本，如果组为空则返回 nil。
+func (x *VersionGroup) GetOldest() *Version {
+	sorted := x.SortVersions()
+	if len(sorted) == 0 {
+		return nil
+	}
+	return sorted[0]
+}
+
+// Count 返回版本组中的版本数量
+func (x *VersionGroup) Count() int {
+	return len(x.VersionMap)
+}
+
+// StableVersions 返回版本组中所有稳定版本
+func (x *VersionGroup) StableVersions() []*Version {
+	return Filter(x.Versions(), func(v *Version) bool {
+		return v.IsStable()
+	})
+}
+
+// PrereleaseVersions 返回版本组中所有预发布版本
+func (x *VersionGroup) PrereleaseVersions() []*Version {
+	return Filter(x.Versions(), func(v *Version) bool {
+		return v.IsPrerelease()
+	})
+}
+
+// LatestStable 获取版本组中最新稳定版本
+func (x *VersionGroup) LatestStable() *Version {
+	return LatestStable(x.Versions())
+}
+
 // QueryRangeVersions 获取组内指定区间内的版本
 //
 // 该方法根据给定的起始和结束版本范围，返回组内符合条件的版本数组。
