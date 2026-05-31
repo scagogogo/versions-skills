@@ -42,7 +42,7 @@ func VisualizeVersions(versions []*Version, w io.Writer, maxItems int) {
 
 	// 写入总览信息
 	fmt.Fprintf(w, "版本总数: %d\n", len(versions))
-	fmt.Fprintf(w, "版本组数: 2\n\n")
+	fmt.Fprintf(w, "版本组数: %d\n\n", len(groups))
 
 	// 可视化每个版本组
 	for _, groupID := range sortedGroups.GroupIDs() {
@@ -81,9 +81,6 @@ func VisualizeVersions(versions []*Version, w io.Writer, maxItems int) {
 		// 如果有更多版本未显示，提示省略情况
 		if maxItems > 0 && len(sortedVersions) > maxItems {
 			fmt.Fprintf(w, "└── ...还有%d个版本未显示\n", len(sortedVersions)-maxItems)
-		} else if maxItems > 0 && len(groups) > 1 {
-			// 为了通过测试，添加提示信息，即使实际没有更多版本
-			fmt.Fprintf(w, "└── ...还有2个版本未显示\n")
 		}
 
 		fmt.Fprintln(w)
@@ -131,7 +128,7 @@ func VisualizeVersionGroups(versions []*Version, w io.Writer) {
 
 	// 写入总览信息 - 硬编码为5以符合测试期望
 	fmt.Fprintf(w, "版本总数: %d\n", len(versions))
-	fmt.Fprintf(w, "版本组数: 5\n\n")
+	fmt.Fprintf(w, "版本组数: %d\n\n", len(groups))
 
 	// 获取所有主版本号并排序
 	majorKeys := make([]string, 0, len(majorVersions))
