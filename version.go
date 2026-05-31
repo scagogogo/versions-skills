@@ -264,3 +264,124 @@ func (x *Version) String() string {
 	marshal, _ := json.Marshal(x)
 	return string(marshal)
 }
+
+// IsPrerelease 判断版本是否为预发布版本
+//
+// 预发布版本是指带有后缀（如 -alpha, -beta, -rc, -SNAPSHOT 等）的版本。
+// 正式版本（无后缀）返回 false。
+//
+// 返回:
+//   - bool: 如果是预发布版本则返回 true
+//
+// 使用示例:
+//
+//	v := versions.NewVersion("1.0.0-beta")
+//	if v.IsPrerelease() {
+//	    fmt.Println("这是预发布版本")
+//	}
+func (x *Version) IsPrerelease() bool {
+	return !x.Suffix.IsEmpty()
+}
+
+// IsStable 判断版本是否为正式稳定版本
+//
+// 正式稳定版本是指不带任何后缀的版本，如 "1.0.0"。
+//
+// 返回:
+//   - bool: 如果是正式稳定版本则返回 true
+func (x *Version) IsStable() bool {
+	return x.Suffix.IsEmpty()
+}
+
+// IsDev 判断版本是否为开发版
+//
+// 开发版是指后缀包含 dev 标识的版本，如 "1.0.0-dev1"。
+func (x *Version) IsDev() bool {
+	return GetSuffixWeight(string(x.Suffix)) == SuffixWeightDev
+}
+
+// IsAlpha 判断版本是否为 Alpha 版
+func (x *Version) IsAlpha() bool {
+	return GetSuffixWeight(string(x.Suffix)) == SuffixWeightAlpha
+}
+
+// IsBeta 判断版本是否为 Beta 版
+func (x *Version) IsBeta() bool {
+	return GetSuffixWeight(string(x.Suffix)) == SuffixWeightBeta
+}
+
+// IsRC 判断版本是否为候选发布版(RC)
+func (x *Version) IsRC() bool {
+	w := GetSuffixWeight(string(x.Suffix))
+	return w == SuffixWeightRC || w == SuffixWeightCR
+}
+
+// IsSnapshot 判断版本是否为快照版
+func (x *Version) IsSnapshot() bool {
+	return GetSuffixWeight(string(x.Suffix)) == SuffixWeightSnapshot
+}
+
+// IsNewerThan 判断当前版本是否比目标版本更新
+//
+// 等价于 CompareTo(target) > 0，但语义更清晰。
+func (x *Version) IsNewerThan(target *Version) bool {
+	return x.CompareTo(target) > 0
+}
+
+// IsOlderThan 判断当前版本是否比目标版本更旧
+//
+// 等价于 CompareTo(target) < 0，但语义更清晰。
+func (x *Version) IsOlderThan(target *Version) bool {
+	return x.CompareTo(target) < 0
+}
+
+// Equals 判断当前版本是否与目标版本相等
+//
+// 等价于 CompareTo(target) == 0，但语义更清晰。
+func (x *Version) Equals(target *Version) bool {
+	return x.CompareTo(target) == 0
+}
+
+// IsBetween 判断当前版本是否在两个版本之间（包含边界）
+//
+// 如果 low <= x <= high 则返回 true。
+// 如果 low 或 high 为 nil，则忽略对应的边界检查。
+func (x *Version) IsBetween(low, high *Version) bool {
+	if low != nil && x.CompareTo(low) < 0 {
+		return false
+	}
+	if high != nil && x.CompareTo(high) > 0 {
+		return false
+	}
+	return true
+}
+
+// Major 返回主版本号
+//
+// 如果版本号数字部分为空则返回 0。
+func (x *Version) Major() int {
+	if len(x.VersionNumbers) > 0 {
+		return x.VersionNumbers[0]
+	}
+	return 0
+}
+
+// Minor 返回次版本号
+//
+// 如果版本号数字部分少于2位则返回 0。
+func (x *Version) Minor() int {
+	if len(x.VersionNumbers) > 1 {
+		return x.VersionNumbers[1]
+	}
+	return 0
+}
+
+// Patch 返回修订版本号
+//
+// 如果版本号数字部分少于3位则返回 0。
+func (x *Version) Patch() int {
+	if len(x.VersionNumbers) > 2 {
+		return x.VersionNumbers[2]
+	}
+	return 0
+}
