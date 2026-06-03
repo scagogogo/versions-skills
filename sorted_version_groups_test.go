@@ -136,3 +136,55 @@ func TestSortedVersionGroups_QueryRange(t *testing.T) {
 	//	fmt.Println(v.Raw)
 	//}
 }
+
+func TestSortedVersionGroups_Len(t *testing.T) {
+	versions := NewVersions("1.0.0", "1.1.0", "2.0.0")
+	svg := NewSortedVersionGroups(versions)
+	if svg.Len() != 3 {
+		t.Errorf("Len() = %d, want 3", svg.Len())
+	}
+}
+
+func TestSortedVersionGroups_Get(t *testing.T) {
+	versions := NewVersions("1.0.0", "1.1.0", "2.0.0")
+	svg := NewSortedVersionGroups(versions)
+	g := svg.Get("1.0.0")
+	if g == nil {
+		t.Fatal("Get(\"1.0.0\") returned nil")
+	}
+	if g.ID() != "1.0.0" {
+		t.Errorf("Get().ID() = %q, want %q", g.ID(), "1.0.0")
+	}
+	if svg.Get("99.99") != nil {
+		t.Error("Get(\"99.99\") should return nil for non-existent group")
+	}
+}
+
+func TestSortedVersionGroups_At(t *testing.T) {
+	versions := NewVersions("2.0.0", "1.0.0")
+	svg := NewSortedVersionGroups(versions)
+	first := svg.At(0)
+	if first == nil {
+		t.Fatal("At(0) returned nil")
+	}
+	if first.ID() != "1.0.0" {
+		t.Errorf("At(0).ID() = %q, want %q", first.ID(), "1.0.0")
+	}
+	if svg.At(-1) != nil {
+		t.Error("At(-1) should return nil")
+	}
+	if svg.At(99) != nil {
+		t.Error("At(99) should return nil")
+	}
+}
+
+func TestSortedVersionGroups_Contains(t *testing.T) {
+	versions := NewVersions("1.0.0", "2.0.0")
+	svg := NewSortedVersionGroups(versions)
+	if !svg.Contains("1.0.0") {
+		t.Error("Should contain group 1.0.0")
+	}
+	if svg.Contains("99.99") {
+		t.Error("Should not contain group 99.99")
+	}
+}

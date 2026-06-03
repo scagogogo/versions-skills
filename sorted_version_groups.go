@@ -148,3 +148,53 @@ func (x *SortedVersionGroups) QueryRange(start, end *tuple.Tuple2[*Version, Cont
 	}
 	return versions
 }
+
+// Len 返回版本组的数量
+func (x *SortedVersionGroups) Len() int {
+	return len(x.groupSlice)
+}
+
+// Get 根据组 ID 获取版本组
+//
+// 如果组 ID 不存在则返回 nil。
+//
+// 参数:
+//   - groupID: 版本组 ID，如 "1.2"
+//
+// 返回:
+//   - *VersionGroup: 对应的版本组，不存在则返回 nil
+func (x *SortedVersionGroups) Get(groupID string) *VersionGroup {
+	idx, exists := x.groupIdToIndexMap[groupID]
+	if !exists {
+		return nil
+	}
+	return x.groupSlice[idx]
+}
+
+// At 根据索引获取版本组
+//
+// 返回排序后指定位置的版本组。如果索引越界则返回 nil。
+//
+// 参数:
+//   - index: 从 0 开始的索引位置
+//
+// 返回:
+//   - *VersionGroup: 对应的版本组，越界则返回 nil
+func (x *SortedVersionGroups) At(index int) *VersionGroup {
+	if index < 0 || index >= len(x.groupSlice) {
+		return nil
+	}
+	return x.groupSlice[index]
+}
+
+// Contains 检查是否包含指定组 ID 的版本组
+//
+// 参数:
+//   - groupID: 版本组 ID
+//
+// 返回:
+//   - bool: 如果存在则返回 true
+func (x *SortedVersionGroups) Contains(groupID string) bool {
+	_, exists := x.groupIdToIndexMap[groupID]
+	return exists
+}
