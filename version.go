@@ -360,6 +360,36 @@ func (x *Version) IsGA() bool {
 	return GetSuffixWeight(string(x.Suffix)) == SuffixWeightGA
 }
 
+// IsPre 判断版本是否为预发布版（pre 标识）
+//
+// 预发布版是指后缀包含 pre 标识的版本，如 "1.0.0-pre1"。
+// 注意：这是显式的 pre 后缀，与 IsPrerelease()（判断是否有任何后缀）不同。
+func (x *Version) IsPre() bool {
+	return GetSuffixWeight(string(x.Suffix)) == SuffixWeightPre
+}
+
+// IsRelease 判断版本是否带有 release 后缀
+//
+// 带 release 后缀的版本如 "1.0.0-release"。
+// 注意：这与 IsStable()（无后缀）不同，IsRelease 检测的是显式的 "-release" 后缀。
+func (x *Version) IsRelease() bool {
+	return GetSuffixWeight(string(x.Suffix)) == SuffixWeightRelease
+}
+
+// IsSP 判断版本是否为服务包版本
+//
+// 服务包版本是指后缀包含 sp 标识的版本，如 "1.0.0-sp1"。
+func (x *Version) IsSP() bool {
+	return GetSuffixWeight(string(x.Suffix)) == SuffixWeightSP
+}
+
+// IsPost 判断版本是否为 Post 发布版
+//
+// Post 发布版是指后缀包含 post 标识的版本（PEP 440 规范），如 "1.0.0-post1"。
+func (x *Version) IsPost() bool {
+	return GetSuffixWeight(string(x.Suffix)) == SuffixWeightPost
+}
+
 // IsNewerThan 判断当前版本是否比目标版本更新
 //
 // 等价于 CompareTo(target) > 0，但语义更清晰。

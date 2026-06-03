@@ -144,3 +144,39 @@ func TestVersion_IsGA(t *testing.T) {
 		t.Error("1.0.0 should not be GA (no suffix)")
 	}
 }
+
+func TestVersion_IsPre(t *testing.T) {
+	if !NewVersion("1.0.0-pre1").IsPre() {
+		t.Error("1.0.0-pre1 should be pre")
+	}
+	if NewVersion("1.0.0-beta").IsPre() {
+		t.Error("1.0.0-beta should not be pre")
+	}
+}
+
+func TestVersion_IsRelease(t *testing.T) {
+	if !NewVersion("1.0.0-release").IsRelease() {
+		t.Error("1.0.0-release should be release")
+	}
+	if NewVersion("1.0.0").IsRelease() {
+		t.Error("1.0.0 should not be release (no suffix)")
+	}
+}
+
+func TestVersion_IsSP(t *testing.T) {
+	if !NewVersion("1.0.0-sp1").IsSP() {
+		t.Error("1.0.0-sp1 should be SP")
+	}
+	if NewVersion("1.0.0").IsSP() {
+		t.Error("1.0.0 should not be SP")
+	}
+}
+
+func TestVersion_IsPost(t *testing.T) {
+	if !NewVersion("1.0.0-post1").IsPost() {
+		t.Error("1.0.0-post1 should be post")
+	}
+	if NewVersion("1.0.0").IsPost() {
+		t.Error("1.0.0 should not be post")
+	}
+}
