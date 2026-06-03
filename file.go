@@ -1,6 +1,7 @@
 package versions
 
 import (
+	"io"
 	"os"
 	"strings"
 )
@@ -94,6 +95,67 @@ func ReadVersionsStringFromFile(filepath string) ([]string, error) {
 			continue
 		}
 		versions = append(versions, line)
+	}
+	return versions, nil
+}
+
+// WriteVersionsToFile 将版本列表写入文件
+//
+// 每个版本号占一行，写入版本号数字部分拼接而成的字符串。
+// 该函数会先对版本进行排序，确保输出有序。
+//
+// 参数:
+//   - versions: 要写入的版本对象列表
+//   - filepath: 输出文件路径
+//
+// 返回:
+//   - error: 如果文件写入失败则返回错误
+//
+// 使用示例:
+//
+//	versions := versions.NewVersions("2.0.0", "1.0.0", "1.1.0")
+//	err := versions.WriteVersionsToFile(versions, "./output.txt")
+func WriteVersionsToFile(versions []*Version, filepath string) error {
+	sorted := SortVersionSlice(versions)
+	var sb strings.Builder
+	for i, v := range sorted {
+		if i > 0 {
+			sb.WriteString("\n")
+		}
+		sb.WriteString(v.Raw)
+	}
+	return os.WriteFile(filepath, []byte(sb.String()), 0644)
+}
+
+// ReadVersionsFromReader 从 io.Reader 读取版本号并解析
+//
+// 该函数从任意的 io.Reader 中读取版本号列表，每行一个版本号，
+// 并将其解析为 Version 对象数组。适用于从网络连接、字符串缓冲区等读取版本。
+//
+// 参数:
+//   - reader: 实现 io.Reader 接口的读取器
+//
+// 返回:
+//   - []*Version: 解析后的 Version 对象数组
+//   - error: 如果读取失败则返回错误
+//
+// 使用示例:
+//
+//	data := strings.NewReader("1.0.0\n1.1.0\n2.0.0\n")
+//	versions, err := versions.ReadVersionsFromReader(data)
+func ReadVersionsFromReader(reader io.Reader) ([]*Version, error) {
+	bytes, err := io.ReadAll(reader)
+	if err != nil {
+		return nil, err
+	}
+	versions := make([]*Version, 0)
+	for _, line := range strings.Split(string(bytes), "\n") {
+		line = strings.TrimSpace(line)
+		if line == "" {
+			continue
+		}
+		v := NewVersionStringParser(line).Parse()
+		versions = append(versions, v)
 	}
 	return versions, nil
 }

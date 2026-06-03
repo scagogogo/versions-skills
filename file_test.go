@@ -1,6 +1,9 @@
 package versions
 
 import (
+	"os"
+	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -23,4 +26,41 @@ func TestReadVersionsFromFile(t *testing.T) {
 	versions, err := ReadVersionsFromFile("test_data/fast_json_versions.txt")
 	assert.Nil(t, err)
 	assert.True(t, len(versions) > 0)
+}
+
+func TestWriteVersionsToFile(t *testing.T) {
+	versions := NewVersions("2.0.0", "1.0.0", "1.1.0")
+	tmpFile := filepath.Join(t.TempDir(), "versions.txt")
+	err := WriteVersionsToFile(versions, tmpFile)
+	if err != nil {
+		t.Fatalf("WriteVersionsToFile error: %v", err)
+	}
+	data, err := os.ReadFile(tmpFile)
+	if err != nil {
+		t.Fatalf("ReadFile error: %v", err)
+	}
+	content := string(data)
+	if !strings.Contains(content, "1.0.0") {
+		t.Error("Output should contain 1.0.0")
+	}
+	if !strings.Contains(content, "1.1.0") {
+		t.Error("Output should contain 1.1.0")
+	}
+	if !strings.Contains(content, "2.0.0") {
+		t.Error("Output should contain 2.0.0")
+	}
+}
+
+func TestReadVersionsFromReader(t *testing.T) {
+	data := strings.NewReader("1.0.0\n1.1.0\n2.0.0\n")
+	versions, err := ReadVersionsFromReader(data)
+	if err != nil {
+		t.Fatalf("ReadVersionsFromReader error: %v", err)
+	}
+	if len(versions) != 3 {
+		t.Errorf("len(versions) = %d, want 3", len(versions))
+	}
+	if versions[0].Raw != "1.0.0" {
+		t.Errorf("versions[0].Raw = %q, want %q", versions[0].Raw, "1.0.0")
+	}
 }
