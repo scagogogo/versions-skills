@@ -151,3 +151,42 @@ func TestIntersection_Empty(t *testing.T) {
 		t.Errorf("Intersection(a, nil) = %d, want 0", len(result))
 	}
 }
+
+func TestUnion(t *testing.T) {
+	a := NewVersions("1.0.0", "1.1.0")
+	b := NewVersions("1.1.0", "2.0.0")
+	result := Union(a, b)
+	if len(result) != 3 {
+		t.Errorf("Union() = %d, want 3", len(result))
+	}
+}
+
+func TestUnion_Empty(t *testing.T) {
+	a := NewVersions("1.0.0")
+	result := Union(a, nil)
+	if len(result) != 1 {
+		t.Errorf("Union(a, nil) = %d, want 1", len(result))
+	}
+}
+
+func TestPartition(t *testing.T) {
+	versions := NewVersions("1.0.0", "1.0.0-beta", "1.1.0", "1.1.0-alpha")
+	stable, pre := Partition(versions, func(v *Version) bool {
+		return v.IsStable()
+	})
+	if len(stable) != 2 {
+		t.Errorf("Partition stable = %d, want 2", len(stable))
+	}
+	if len(pre) != 2 {
+		t.Errorf("Partition prerelease = %d, want 2", len(pre))
+	}
+}
+
+func TestPartition_Empty(t *testing.T) {
+	stable, pre := Partition(nil, func(v *Version) bool {
+		return v.IsStable()
+	})
+	if len(stable) != 0 || len(pre) != 0 {
+		t.Errorf("Partition(nil) = (%d, %d), want (0, 0)", len(stable), len(pre))
+	}
+}

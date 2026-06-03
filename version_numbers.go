@@ -129,3 +129,53 @@ func (x VersionNumbers) BuildGroupID() string {
 	}
 	return s.String()
 }
+
+// Len 返回版本号数字部分的长度
+func (x VersionNumbers) Len() int {
+	return len(x)
+}
+
+// At 返回指定索引位置的版本号数字
+//
+// 如果索引越界则返回 0。
+//
+// 参数:
+//   - index: 从 0 开始的索引
+//
+// 返回:
+//   - int: 对应位置的版本号数字，越界返回 0
+func (x VersionNumbers) At(index int) int {
+	if index < 0 || index >= len(x) {
+		return 0
+	}
+	return x[index]
+}
+
+// String 返回版本号数字部分的字符串表示
+//
+// 等价于 BuildGroupID()，提供更符合 Go 惯例的 String() 方法。
+//
+// 返回:
+//   - string: 如 "1.2.3"
+func (x VersionNumbers) String() string {
+	return x.BuildGroupID()
+}
+
+// Equals 判断两个版本号数字部分是否相等
+//
+// 参数:
+//   - target: 目标版本号数字部分
+//
+// 返回:
+//   - bool: 如果完全相等则返回 true
+func (x VersionNumbers) Equals(target VersionNumbers) bool {
+	if len(x) != len(target) {
+		return false
+	}
+	for i := range x {
+		if x[i] != target[i] {
+			return false
+		}
+	}
+	return true
+}
