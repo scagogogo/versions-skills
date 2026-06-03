@@ -180,3 +180,39 @@ func TestVersion_IsPost(t *testing.T) {
 		t.Error("1.0.0 should not be post")
 	}
 }
+
+func TestVersion_Satisfies(t *testing.T) {
+	c, _ := ParseConstraint(">=1.0.0")
+	v := NewVersion("1.5.0")
+	if !v.Satisfies(c) {
+		t.Error("1.5.0 should satisfy >=1.0.0")
+	}
+	v2 := NewVersion("0.9.0")
+	if v2.Satisfies(c) {
+		t.Error("0.9.0 should not satisfy >=1.0.0")
+	}
+}
+
+func TestVersion_Matches(t *testing.T) {
+	v := NewVersion("1.5.0")
+	ok, err := v.Matches(">=1.0.0,<2.0.0")
+	if err != nil {
+		t.Fatalf("Matches() error: %v", err)
+	}
+	if !ok {
+		t.Error("1.5.0 should match >=1.0.0,<2.0.0")
+	}
+
+	ok2, err2 := v.Matches(">=2.0.0")
+	if err2 != nil {
+		t.Fatalf("Matches() error: %v", err2)
+	}
+	if ok2 {
+		t.Error("1.5.0 should not match >=2.0.0")
+	}
+
+	_, err3 := v.Matches("not-valid")
+	if err3 == nil {
+		t.Error("Matches() should return error for invalid expression")
+	}
+}

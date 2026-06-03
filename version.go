@@ -390,6 +390,55 @@ func (x *Version) IsPost() bool {
 	return GetSuffixWeight(string(x.Suffix)) == SuffixWeightPost
 }
 
+// Satisfies 判断版本是否满足给定的约束条件
+//
+// 这是 Constraint.Match(v) 的反向调用方式，语义更自然：
+// v.Satisfies(constraint) 等价于 constraint.Match(v)。
+//
+// 参数:
+//   - constraint: 版本约束条件
+//
+// 返回:
+//   - bool: 如果版本满足约束则返回 true
+//
+// 使用示例:
+//
+//	c, _ := versions.ParseConstraint(">=1.0.0")
+//	v := versions.NewVersion("1.5.0")
+//	if v.Satisfies(c) {
+//	    fmt.Println("版本满足约束")
+//	}
+func (x *Version) Satisfies(constraint *Constraint) bool {
+	return constraint.Match(x)
+}
+
+// Matches 判断版本是否满足约束表达式字符串
+//
+// 该方法是 ParseConstraintSet + Match 的便捷组合，
+// 适用于需要从字符串快速判断版本是否满足约束的场景。
+//
+// 参数:
+//   - expr: 约束表达式字符串，如 ">=1.0.0"
+//
+// 返回:
+//   - bool: 如果版本满足约束则返回 true
+//   - error: 如果约束表达式解析失败则返回错误
+//
+// 使用示例:
+//
+//	v := versions.NewVersion("1.5.0")
+//	ok, err := v.Matches(">=1.0.0,<2.0.0")
+//	if ok {
+//	    fmt.Println("版本在范围内")
+//	}
+func (x *Version) Matches(expr string) (bool, error) {
+	cs, err := ParseConstraintSet(expr)
+	if err != nil {
+		return false, err
+	}
+	return cs.Match(x), nil
+}
+
 // IsNewerThan 判断当前版本是否比目标版本更新
 //
 // 等价于 CompareTo(target) > 0，但语义更清晰。
