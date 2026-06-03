@@ -259,6 +259,30 @@ func (x *VersionGroup) LatestStable() *Version {
 	return LatestStable(x.Versions())
 }
 
+// Remove 从版本组中移除指定的版本
+//
+// 如果版本存在于组中，则删除并返回 true；否则返回 false。
+//
+// 参数:
+//   - v: 要移除的版本对象
+//
+// 返回:
+//   - bool: 如果版本存在并被移除则返回 true
+func (x *VersionGroup) Remove(v *Version) bool {
+	if _, exists := x.VersionMap[v.Raw]; exists {
+		delete(x.VersionMap, v.Raw)
+		return true
+	}
+	return false
+}
+
+// LatestPrerelease 获取版本组中最新预发布版本
+//
+// 返回按排序后最新的预发布版本，如果组中无预发布版本则返回 nil。
+func (x *VersionGroup) LatestPrerelease() *Version {
+	return LatestPrerelease(x.Versions())
+}
+
 // QueryRangeVersions 获取组内指定区间内的版本
 //
 // 该方法根据给定的起始和结束版本范围，返回组内符合条件的版本数组。
