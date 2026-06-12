@@ -1,6 +1,9 @@
 package versions
 
-import "testing"
+import (
+	"testing"
+	"time"
+)
 
 func TestVersion_IsPrerelease(t *testing.T) {
 	if NewVersion("1.0.0").IsPrerelease() {
@@ -214,5 +217,73 @@ func TestVersion_Matches(t *testing.T) {
 	_, err3 := v.Matches("not-valid")
 	if err3 == nil {
 		t.Error("Matches() should return error for invalid expression")
+	}
+}
+
+func TestVersion_RawString(t *testing.T) {
+	v := NewVersion("v1.2.3-beta1")
+	if v.RawString() != "v1.2.3-beta1" {
+		t.Errorf("RawString() = %q, want %q", v.RawString(), "v1.2.3-beta1")
+	}
+	// Verify it's different from String() which returns JSON
+	if v.String() == v.RawString() {
+		t.Error("String() and RawString() should differ — String returns JSON")
+	}
+}
+
+func TestVersion_WithNumbers(t *testing.T) {
+	v := NewVersion("1.2.3")
+	newV := v.WithNumbers([]int{2, 0, 0})
+	if newV.Major() != 2 || newV.Minor() != 0 || newV.Patch() != 0 {
+		t.Errorf("WithNumbers() = %v, want [2,0,0]", newV.VersionNumbers)
+	}
+	// Original should not be modified
+	if v.Major() != 1 {
+		t.Error("WithNumbers() should not modify original")
+	}
+}
+
+func TestVersion_SubVersion(t *testing.T) {
+	v1 := NewVersion("1.0.0-beta2")
+	if v1.SubVersion() != 2 {
+		t.Errorf("SubVersion() = %d, want 2", v1.SubVersion())
+	}
+	v2 := NewVersion("1.0.0-beta")
+	if v2.SubVersion() != 0 {
+		t.Errorf("SubVersion() for no number = %d, want 0", v2.SubVersion())
+	}
+}
+
+func TestVersion_SuffixWeight(t *testing.T) {
+	v := NewVersion("1.0.0-beta")
+	if v.SuffixWeight() != SuffixWeightBeta {
+		t.Errorf("SuffixWeight() = %d, want %d (SuffixWeightBeta)", v.SuffixWeight(), SuffixWeightBeta)
+	}
+	v2 := NewVersion("1.0.0")
+	if v2.SuffixWeight() != SuffixWeightUnknown {
+		t.Errorf("SuffixWeight() for stable = %d, want %d (SuffixWeightUnknown)", v2.SuffixWeight(), SuffixWeightUnknown)
+	}
+}
+
+func TestVersion_WithPublicTime(t *testing.T) {
+	v := NewVersion("1.2.3")
+	tt := time.Date(2024, 6, 1, 0, 0, 0, 0, time.UTC)
+	newV := v.WithPublicTime(tt)
+	if newV.PublicTime != tt {
+		t.Errorf("WithPublicTime() time mismatch")
+	}
+	if !v.PublicTime.IsZero() {
+		t.Error("WithPublicTime() should not modify original's time")
+	}
+}
+
+func TestVersion_IsZero(t *testing.T) {
+	var v Version
+	if !v.IsZero() {
+		t.Error("Zero value Version should be IsZero()")
+	}
+	v2 := NewVersion("1.0.0")
+	if v2.IsZero() {
+		t.Error("Parsed version should not be IsZero()")
 	}
 }

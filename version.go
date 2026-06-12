@@ -503,3 +503,101 @@ func (x *Version) Patch() int {
 	}
 	return 0
 }
+
+// RawString 返回版本的原始字符串表示
+//
+// 与 String()（返回 JSON 格式）不同，RawString() 返回解析前的原始版本字符串，
+// 如 "v1.2.3-beta1"。这是获取版本字符串最直接的方式。
+//
+// 返回:
+//   - string: 原始版本字符串
+//
+// 使用示例:
+//
+//	v := versions.NewVersion("v1.2.3-beta1")
+//	fmt.Println(v.RawString()) // 输出: v1.2.3-beta1
+func (x *Version) RawString() string {
+	return x.Raw
+}
+
+// WithNumbers 返回一个修改版本号数字部分的新版本对象
+//
+// 原版本对象不变，返回一个新对象，其版本号数字部分被替换为指定值。
+// 前缀和后缀保持不变。
+//
+// 参数:
+//   - numbers: 新的版本号数字部分
+//
+// 返回:
+//   - *Version: 修改版本号后的新版本对象
+//
+// 使用示例:
+//
+//	v := versions.NewVersion("1.2.3")
+//	newV := v.WithNumbers([]int{2, 0, 0})
+//	// newV.Raw == "2.0.0"
+func (x *Version) WithNumbers(numbers []int) *Version {
+	return NewVersionBuilder().
+		Prefix(string(x.Prefix)).
+		Numbers(numbers).
+		Suffix(string(x.Suffix)).
+		Build()
+}
+
+// SubVersion 返回后缀中的子版本号
+//
+// 例如 "-beta2" 返回 2，"-rc1" 返回 1。如果后缀中没有数字则返回 0。
+// 该方法将内部使用的 extractSubVersion 函数暴露为公开 API。
+//
+// 返回:
+//   - int: 后缀中的子版本号数字
+//
+// 使用示例:
+//
+//	v := versions.NewVersion("1.0.0-beta2")
+//	fmt.Println(v.SubVersion()) // 输出: 2
+func (x *Version) SubVersion() int {
+	return extractSubVersion(string(x.Suffix))
+}
+
+// SuffixWeight 返回版本后缀的语义权重
+//
+// 等价于 GetSuffixWeight(string(x.Suffix))，但作为方法调用更方便。
+//
+// 返回:
+//   - SuffixWeight: 后缀的语义权重值
+//
+// 使用示例:
+//
+//	v := versions.NewVersion("1.0.0-beta")
+//	w := v.SuffixWeight()
+//	fmt.Println(w == versions.SuffixWeightBeta) // true
+func (x *Version) SuffixWeight() SuffixWeight {
+	return GetSuffixWeight(string(x.Suffix))
+}
+
+// WithPublicTime 返回一个修改发布时间的新版本对象
+//
+// 原版本对象不变，返回一个新对象，其发布时间被替换为指定值。
+//
+// 参数:
+//   - t: 新的发布时间
+//
+// 返回:
+//   - *Version: 修改发布时间后的新版本对象
+func (x *Version) WithPublicTime(t time.Time) *Version {
+	cloned := x.Clone()
+	cloned.PublicTime = t
+	return cloned
+}
+
+// IsZero 判断版本是否为零值
+//
+// 零值版本是未初始化的 Version{} 结构体，其所有字段都是默认值。
+// 与 IsValid()（检查是否有版本号数字）不同，IsZero 检查是否完全没有被设置。
+//
+// 返回:
+//   - bool: 如果是零值则返回 true
+func (x *Version) IsZero() bool {
+	return x.Raw == "" && len(x.VersionNumbers) == 0 && x.Prefix.IsEmpty() && x.Suffix.IsEmpty() && x.PublicTime.IsZero()
+}
