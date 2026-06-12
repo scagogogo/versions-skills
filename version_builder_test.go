@@ -1,6 +1,9 @@
 package versions
 
-import "testing"
+import (
+	"testing"
+	"time"
+)
 
 func TestVersionBuilder_FullBuild(t *testing.T) {
 	v := NewVersionBuilder().
@@ -80,5 +83,13 @@ func TestVersion_BumpPatch_ClearsSuffix(t *testing.T) {
 	bumped := v.BumpPatch()
 	if bumped.IsPrerelease() {
 		t.Error("BumpPatch() should clear suffix")
+	}
+}
+
+func TestVersionBuilder_PublicTime(t *testing.T) {
+	tt := time.Date(2024, 6, 1, 0, 0, 0, 0, time.UTC)
+	v := NewVersionBuilder().Major(1).Minor(2).Patch(3).PublicTime(tt).Build()
+	if v.PublicTime != tt {
+		t.Errorf("PublicTime not set correctly, got %v, want %v", v.PublicTime, tt)
 	}
 }

@@ -3,6 +3,7 @@ package versions
 import (
 	"strconv"
 	"strings"
+	"time"
 )
 
 // VersionBuilder 提供流式 API 构建版本对象
@@ -21,9 +22,10 @@ import (
 //	    Build()
 //	// v.Raw == "v1.2.3-beta1"
 type VersionBuilder struct {
-	prefix  string
-	numbers []int
-	suffix  string
+	prefix     string
+	numbers    []int
+	suffix     string
+	publicTime time.Time
 }
 
 // NewVersionBuilder 创建一个新的版本构建器
@@ -73,10 +75,18 @@ func (b *VersionBuilder) Suffix(suffix string) *VersionBuilder {
 	return b
 }
 
+// PublicTime 设置版本发布时间
+func (b *VersionBuilder) PublicTime(t time.Time) *VersionBuilder {
+	b.publicTime = t
+	return b
+}
+
 // Build 构建并返回版本对象
 func (b *VersionBuilder) Build() *Version {
 	raw := b.buildRawString()
-	return NewVersion(raw)
+	v := NewVersion(raw)
+	v.PublicTime = b.publicTime
+	return v
 }
 
 // buildRawString 从构建器组件重建版本字符串

@@ -1,5 +1,7 @@
 package versions
 
+import "time"
+
 // Clone 创建版本的深拷贝
 //
 // 返回一个与原版本完全相同的新 Version 对象，修改拷贝不会影响原版本。
@@ -146,4 +148,19 @@ func (x *Version) WithPatch(patch int) *Version {
 		Numbers(numbers).
 		Suffix(string(x.Suffix)).
 		Build()
+}
+
+// WithPublicTime 返回一个修改发布时间的新版本对象
+//
+// 原版本对象不变，返回一个新对象，其发布时间被替换为指定值。
+//
+// 参数:
+//   - t: 新的发布时间
+//
+// 返回:
+//   - *Version: 修改发布时间后的新版本对象
+func (x *Version) WithPublicTime(t time.Time) *Version {
+	cloned := x.Clone()
+	cloned.PublicTime = t
+	return cloned
 }

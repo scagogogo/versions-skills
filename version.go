@@ -270,7 +270,19 @@ func (x *Version) CompareTo(target *Version) int {
 //	version := versions.NewVersion("1.2.3")
 //	fmt.Println(version.String()) // 输出JSON格式的版本信息
 func (x *Version) String() string {
-	marshal, _ := json.Marshal(x)
+	marshal, _ := json.Marshal(struct {
+		Raw            string         `json:"raw"`
+		PublicTime     time.Time      `json:"public_time"`
+		VersionNumbers VersionNumbers `json:"version_numbers"`
+		Prefix         VersionPrefix  `json:"prefix"`
+		Suffix         VersionSuffix  `json:"suffix"`
+	}{
+		Raw:            x.Raw,
+		PublicTime:     x.PublicTime,
+		VersionNumbers: x.VersionNumbers,
+		Prefix:         x.Prefix,
+		Suffix:         x.Suffix,
+	})
 	return string(marshal)
 }
 
@@ -576,21 +588,6 @@ func (x *Version) SuffixWeight() SuffixWeight {
 	return GetSuffixWeight(string(x.Suffix))
 }
 
-// WithPublicTime 返回一个修改发布时间的新版本对象
-//
-// 原版本对象不变，返回一个新对象，其发布时间被替换为指定值。
-//
-// 参数:
-//   - t: 新的发布时间
-//
-// 返回:
-//   - *Version: 修改发布时间后的新版本对象
-func (x *Version) WithPublicTime(t time.Time) *Version {
-	cloned := x.Clone()
-	cloned.PublicTime = t
-	return cloned
-}
-
 // IsZero 判断版本是否为零值
 //
 // 零值版本是未初始化的 Version{} 结构体，其所有字段都是默认值。
@@ -600,4 +597,35 @@ func (x *Version) WithPublicTime(t time.Time) *Version {
 //   - bool: 如果是零值则返回 true
 func (x *Version) IsZero() bool {
 	return x.Raw == "" && len(x.VersionNumbers) == 0 && x.Prefix.IsEmpty() && x.Suffix.IsEmpty() && x.PublicTime.IsZero()
+}
+
+// MarshalText 实现 encoding.TextMarshaler 接口
+//
+// 将版本序列化为原始版本字符串的字节切片。
+// 这使得 Version 可以被 encoding/json、toml、yaml 等序列化格式自动处理。
+//
+// 返回:
+//   - []byte: 原始版本字符串的字节切片
+//   - error: 始终为 nil
+func (x Version) MarshalText() ([]byte, error) {
+	return []byte(x.Raw), nil
+}
+
+// UnmarshalText 实现 encoding.TextUnmarshaler 接口
+//
+// 从字节切片反序列化版本对象。解析给定的版本字符串，
+// 如果版本无效则返回 ErrVersionInvalid。
+//
+// 参数:
+//   - text: 版本字符串的字节切片
+//
+// 返回:
+//   - error: 如果版本无效则返回 ErrVersionInvalid
+func (x *Version) UnmarshalText(text []byte) error {
+	v := NewVersion(string(text))
+	if !v.IsValid() {
+		return ErrVersionInvalid
+	}
+	*x = *v
+	return nil
 }

@@ -134,3 +134,33 @@ func TestVersion_CompareTo(t *testing.T) {
 	empty2 := NewVersion("")
 	assert.Equal(t, 0, empty1.CompareTo(empty2))
 }
+
+func TestVersion_MarshalText(t *testing.T) {
+	v := NewVersion("v1.2.3-beta1")
+	text, err := v.MarshalText()
+	if err != nil {
+		t.Fatalf("MarshalText error: %v", err)
+	}
+	if string(text) != "v1.2.3-beta1" {
+		t.Errorf("MarshalText() = %q, want %q", string(text), "v1.2.3-beta1")
+	}
+}
+
+func TestVersion_UnmarshalText(t *testing.T) {
+	var v Version
+	err := v.UnmarshalText([]byte("1.2.3"))
+	if err != nil {
+		t.Fatalf("UnmarshalText error: %v", err)
+	}
+	if v.Major() != 1 || v.Minor() != 2 || v.Patch() != 3 {
+		t.Errorf("UnmarshalText result = %v, want [1,2,3]", v.VersionNumbers)
+	}
+}
+
+func TestVersion_UnmarshalText_Invalid(t *testing.T) {
+	var v Version
+	err := v.UnmarshalText([]byte("not-a-version"))
+	if err == nil {
+		t.Error("UnmarshalText should return error for invalid version")
+	}
+}
