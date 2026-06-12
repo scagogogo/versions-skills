@@ -203,3 +203,20 @@ func TestConstraintUnion_String(t *testing.T) {
 		t.Errorf("String() = %q, should contain ||", s)
 	}
 }
+
+func TestConstraintSet_Satisfies(t *testing.T) {
+	cs, _ := ParseConstraintSet(">=1.0.0,<2.0.0")
+	if !cs.Satisfies(NewVersion("1.5.0")) {
+		t.Error("1.5.0 should satisfy >=1.0.0,<2.0.0")
+	}
+	if cs.Satisfies(NewVersion("2.5.0")) {
+		t.Error("2.5.0 should not satisfy >=1.0.0,<2.0.0")
+	}
+}
+
+func TestConstraintSet_Len(t *testing.T) {
+	cs, _ := ParseConstraintSet(">=1.0.0,<2.0.0")
+	if cs.Len() != 2 {
+		t.Errorf("Len() = %d, want 2", cs.Len())
+	}
+}

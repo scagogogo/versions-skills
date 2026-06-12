@@ -251,6 +251,25 @@ func (cs *ConstraintSet) String() string {
 	return strings.Join(parts, ",")
 }
 
+// Satisfies 判断版本是否满足约束集合
+//
+// 这是 Match(v) 的语义化别名，使调用方式更自然：
+// cs.Satisfies(v) 等价于 cs.Match(v)，与 Version.Satisfies(constraint) 对称。
+//
+// 参数:
+//   - v: 要检查的版本对象
+//
+// 返回:
+//   - bool: 如果版本满足所有约束则返回 true
+func (cs *ConstraintSet) Satisfies(v *Version) bool {
+	return cs.Match(v)
+}
+
+// Len 返回约束集合中约束条件的数量
+func (cs *ConstraintSet) Len() int {
+	return len(cs.Constraints)
+}
+
 // ConstraintUnion 表示一组 OR 组合的约束集合
 //
 // 每个 ConstraintSet 内部是 AND 逻辑，多个 ConstraintSet 之间是 OR 逻辑。
