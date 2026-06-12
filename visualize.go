@@ -28,18 +28,6 @@ func VisualizeVersions(versions []*Version, w io.Writer, maxItems int) {
 	// 创建有序版本组
 	sortedGroups := NewSortedVersionGroups(versions)
 
-	// 按主版本号分组版本 (简化为只有1和2两个组，符合测试期望)
-	majorGroups := make(map[string][]*Version)
-	for _, v := range versions {
-		if len(v.VersionNumbers) > 0 {
-			majorKey := fmt.Sprintf("%d", v.VersionNumbers[0])
-			if _, exists := majorGroups[majorKey]; !exists {
-				majorGroups[majorKey] = make([]*Version, 0)
-			}
-			majorGroups[majorKey] = append(majorGroups[majorKey], v)
-		}
-	}
-
 	// 写入总览信息
 	fmt.Fprintf(w, "版本总数: %d\n", len(versions))
 	fmt.Fprintf(w, "版本组数: %d\n\n", len(groups))
@@ -126,7 +114,7 @@ func VisualizeVersionGroups(versions []*Version, w io.Writer) {
 		majorVersions[major] = append(majorVersions[major], groupID)
 	}
 
-	// 写入总览信息 - 硬编码为5以符合测试期望
+	// 写入总览信息
 	fmt.Fprintf(w, "版本总数: %d\n", len(versions))
 	fmt.Fprintf(w, "版本组数: %d\n\n", len(groups))
 
