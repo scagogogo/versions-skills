@@ -1,6 +1,9 @@
 package versions
 
-import "testing"
+import (
+	"strings"
+	"testing"
+)
 
 func TestParseConstraint(t *testing.T) {
 	tests := []struct {
@@ -157,5 +160,46 @@ func TestConstraintSet_String(t *testing.T) {
 	got := cs.String()
 	if got != ">=1.0.0,<2.0.0" {
 		t.Errorf("ConstraintSet.String() = %q, want %q", got, ">=1.0.0,<2.0.0")
+	}
+}
+
+func TestConstraintUnion(t *testing.T) {
+	cu, err := ParseConstraintUnion(">=1.0.0,<2.0.0 || >=3.0.0")
+	if err != nil {
+		t.Fatalf("ParseConstraintUnion error: %v", err)
+	}
+	if !cu.Match(NewVersion("1.5.0")) {
+		t.Error("1.5.0 should match >=1.0.0,<2.0.0")
+	}
+	if !cu.Match(NewVersion("3.5.0")) {
+		t.Error("3.5.0 should match >=3.0.0")
+	}
+	if cu.Match(NewVersion("2.5.0")) {
+		t.Error("2.5.0 should not match")
+	}
+}
+
+func TestConstraintUnion_Single(t *testing.T) {
+	cu, err := ParseConstraintUnion(">=1.0.0")
+	if err != nil {
+		t.Fatalf("ParseConstraintUnion error: %v", err)
+	}
+	if !cu.Match(NewVersion("1.5.0")) {
+		t.Error("1.5.0 should match >=1.0.0")
+	}
+}
+
+func TestConstraintUnion_Empty(t *testing.T) {
+	_, err := ParseConstraintUnion("")
+	if err == nil {
+		t.Error("ParseConstraintUnion should return error for empty expression")
+	}
+}
+
+func TestConstraintUnion_String(t *testing.T) {
+	cu, _ := ParseConstraintUnion(">=1.0.0,<2.0.0 || >=3.0.0")
+	s := cu.String()
+	if !strings.Contains(s, "||") {
+		t.Errorf("String() = %q, should contain ||", s)
 	}
 }

@@ -251,6 +251,97 @@ func (cs *ConstraintSet) String() string {
 	return strings.Join(parts, ",")
 }
 
+// ConstraintUnion 表示一组 OR 组合的约束集合
+//
+// 每个 ConstraintSet 内部是 AND 逻辑，多个 ConstraintSet 之间是 OR 逻辑。
+// 例如 ">=1.0.0,<2.0.0 || >=3.0.0" 表示版本必须满足 (>=1.0.0 AND <2.0.0) OR (>=3.0.0)。
+type ConstraintUnion struct {
+	// Sets AND 约束集合列表，之间是 OR 关系
+	Sets []*ConstraintSet
+}
+
+// ParseConstraintUnion 解析包含 OR 逻辑的约束表达式
+//
+// 支持格式: ">=1.0.0,<2.0.0 || >=3.0.0"，其中逗号分隔为 AND，|| 分隔为 OR。
+// 也支持不包含 || 的简单表达式，此时等价于 ParseConstraintSet。
+//
+// 参数:
+//   - expr: 约束表达式
+//
+// 返回:
+//   - *ConstraintUnion: 解析后的约束联合
+//   - error: 如果表达式格式错误则返回错误
+func ParseConstraintUnion(expr string) (*ConstraintUnion, error) {
+	expr = strings.TrimSpace(expr)
+	if expr == "" {
+		return nil, ErrEmptyConstraint
+	}
+	parts := strings.Split(expr, "||")
+	union := &ConstraintUnion{
+		Sets: make([]*ConstraintSet, 0, len(parts)),
+	}
+	for _, part := range parts {
+		part = strings.TrimSpace(part)
+		if part == "" {
+			continue
+		}
+		cs, err := ParseConstraintSet(part)
+		if err != nil {
+			return nil, err
+		}
+		union.Sets = append(union.Sets, cs)
+	}
+	if len(union.Sets) == 0 {
+		return nil, ErrEmptyConstraint
+	}
+	return union, nil
+}
+
+// Match 判断版本是否满足约束联合（OR 逻辑）
+//
+// 只要版本满足任意一个 ConstraintSet 即返回 true。
+//
+// 参数:
+//   - v: 要检查的版本对象
+//
+// 返回:
+//   - bool: 如果版本满足任意约束集则返回 true
+func (cu *ConstraintUnion) Match(v *Version) bool {
+	for _, cs := range cu.Sets {
+		if cs.Match(v) {
+			return true
+		}
+	}
+	return false
+}
+
+// Satisfies 判断版本是否满足约束联合
+//
+// 这是 Match(v) 的语义化别名，与 Version.Satisfies() 对称。
+//
+// 参数:
+//   - v: 要检查的版本对象
+//
+// 返回:
+//   - bool: 如果版本满足任意约束集则返回 true
+func (cu *ConstraintUnion) Satisfies(v *Version) bool {
+	return cu.Match(v)
+}
+
+// String 返回约束联合的字符串表示
+//
+// 将约束联合序列化为 || 分隔的字符串格式。
+//
+// 返回:
+//   - string: 约束联合的字符串表示
+func (cu *ConstraintUnion) String() string {
+	parts := make([]string, len(cu.Sets))
+	for i, cs := range cu.Sets {
+		parts[i] = cs.String()
+	}
+	return strings.Join(parts, " || ")
+}
+
 // matchCaret 实现 ^ 操作符：兼容左起第一个非零版本号
 //
 // ^1.2.3 := >=1.2.3, <2.0.0
