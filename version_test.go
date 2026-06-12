@@ -199,3 +199,58 @@ func TestVersion_Metadata_PreservedInClone(t *testing.T) {
 		t.Errorf("Clone() Metadata = %q, want %q", cloned.Metadata, "build123")
 	}
 }
+
+func TestVersion_MarshalJSON(t *testing.T) {
+	v := NewVersion("1.2.3-beta")
+	data, err := json.Marshal(v)
+	if err != nil {
+		t.Fatalf("MarshalJSON error: %v", err)
+	}
+	if string(data) != `"1.2.3-beta"` {
+		t.Errorf("MarshalJSON = %s, want %q", string(data), `"1.2.3-beta"`)
+	}
+}
+
+func TestVersion_UnmarshalJSON(t *testing.T) {
+	var v Version
+	err := json.Unmarshal([]byte(`"1.2.3"`), &v)
+	if err != nil {
+		t.Fatalf("UnmarshalJSON error: %v", err)
+	}
+	if v.Major() != 1 {
+		t.Errorf("UnmarshalJSON Major = %d, want 1", v.Major())
+	}
+}
+
+func TestVersion_Scan(t *testing.T) {
+	var v Version
+	err := v.Scan("1.2.3")
+	if err != nil {
+		t.Fatalf("Scan error: %v", err)
+	}
+	if v.RawString() != "1.2.3" {
+		t.Errorf("Scan() = %q, want %q", v.RawString(), "1.2.3")
+	}
+}
+
+func TestVersion_Scan_Bytes(t *testing.T) {
+	var v Version
+	err := v.Scan([]byte("1.2.3"))
+	if err != nil {
+		t.Fatalf("Scan error: %v", err)
+	}
+	if v.RawString() != "1.2.3" {
+		t.Errorf("Scan() = %q, want %q", v.RawString(), "1.2.3")
+	}
+}
+
+func TestVersion_Value(t *testing.T) {
+	v := NewVersion("1.2.3")
+	val, err := v.Value()
+	if err != nil {
+		t.Fatalf("Value error: %v", err)
+	}
+	if val != "1.2.3" {
+		t.Errorf("Value() = %v, want %q", val, "1.2.3")
+	}
+}

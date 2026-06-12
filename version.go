@@ -1,6 +1,7 @@
 package versions
 
 import (
+	"database/sql/driver"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -726,4 +727,76 @@ func (x *Version) Segments64() []int64 {
 		result[i] = int64(n)
 	}
 	return result
+}
+
+// MarshalJSON 实现 json.Marshaler 接口
+//
+// 将版本序列化为 JSON 字符串（双引号包裹的原始版本字符串），
+// 而非默认的结构体 JSON。这使得版本在 JSON 上下文中表现为简单字符串。
+//
+// 返回:
+//   - []byte: JSON 编码的版本字符串
+//   - error: 始终为 nil
+func (x Version) MarshalJSON() ([]byte, error) {
+	return json.Marshal(x.Raw)
+}
+
+// UnmarshalJSON 实现 json.Unmarshaler 接口
+//
+// 从 JSON 字符串反序列化版本对象。
+//
+// 参数:
+//   - data: JSON 编码的版本字符串
+//
+// 返回:
+//   - error: 如果版本无效则返回错误
+func (x *Version) UnmarshalJSON(data []byte) error {
+	var s string
+	if err := json.Unmarshal(data, &s); err != nil {
+		return err
+	}
+	v := NewVersion(s)
+	if !v.IsValid() {
+		return ErrVersionInvalid
+	}
+	*x = *v
+	return nil
+}
+
+// Scan 实现 sql.Scanner 接口
+//
+// 从数据库扫描版本值。支持 string 和 []byte 类型。
+//
+// 参数:
+//   - src: 数据库值
+//
+// 返回:
+//   - error: 如果值类型不支持或版本无效则返回错误
+func (x *Version) Scan(src interface{}) error {
+	var s string
+	switch v := src.(type) {
+	case string:
+		s = v
+	case []byte:
+		s = string(v)
+	default:
+		return fmt.Errorf("cannot scan %T into Version", src)
+	}
+	parsed := NewVersion(s)
+	if !parsed.IsValid() {
+		return ErrVersionInvalid
+	}
+	*x = *parsed
+	return nil
+}
+
+// Value 实现 driver.Valuer 接口
+//
+// 返回版本字符串用于数据库存储。
+//
+// 返回:
+//   - driver.Value: 版本原始字符串
+//   - error: 始终为 nil
+func (x Version) Value() (driver.Value, error) {
+	return x.Raw, nil
 }
