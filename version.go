@@ -3,6 +3,7 @@ package versions
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"time"
 
 	compare_anything "github.com/golang-infrastructure/go-compare-anything"
@@ -117,6 +118,24 @@ func NewVersionE(versionStr string) (*Version, error) {
 	} else {
 		return nil, ErrVersionInvalid
 	}
+}
+
+// MustParse 解析版本号字符串，如果解析失败则 panic
+//
+// 这是 NewVersionE() 的 panic 变体，适用于初始化时确定版本号合法的场景，
+// 类似于 regexp.MustCompile 的模式。在版本号来自硬编码或测试数据的场景下非常有用。
+//
+// 参数:
+//   - versionStr: 版本号字符串
+//
+// 返回:
+//   - *Version: 解析后的版本对象
+func MustParse(versionStr string) *Version {
+	v, err := NewVersionE(versionStr)
+	if err != nil {
+		panic(fmt.Sprintf("MustParse(%q): %v", versionStr, err))
+	}
+	return v
 }
 
 // NewVersions 批量创建多个 Version 对象
@@ -628,4 +647,75 @@ func (x *Version) UnmarshalText(text []byte) error {
 	}
 	*x = *v
 	return nil
+}
+
+// Core 返回版本的核心部分（去除后缀）
+//
+// 返回一个新 Version 对象，只保留前缀和版本号数字部分，去除所有后缀。
+// 这是获取版本"纯净"数字部分的快捷方式。
+//
+// 返回:
+//   - *Version: 去除后缀后的核心版本对象
+//
+// 使用示例:
+//
+//	v := versions.NewVersion("1.2.3-beta1")
+//	core := v.Core()
+//	fmt.Println(core.RawString()) // 输出: "1.2.3"
+func (x *Version) Core() *Version {
+	return x.WithSuffix("")
+}
+
+// Validate 严格校验版本号格式
+//
+// 与 IsValid()（仅检查是否有版本号数字）不同，Validate 执行更严格的校验：
+// 1. 版本号数字部分不能为空
+// 2. 每个版本号数字必须 >= 0
+//
+// 返回:
+//   - error: 如果版本号不符合严格格式要求则返回错误
+func (x *Version) Validate() error {
+	if len(x.VersionNumbers) == 0 {
+		return ErrVersionInvalid
+	}
+	for _, n := range x.VersionNumbers {
+		if n < 0 {
+			return fmt.Errorf("version number %d is negative", n)
+		}
+	}
+	return nil
+}
+
+// Segments 返回版本号数字段的整数数组
+//
+// 等价于直接访问 VersionNumbers，但返回 []int 类型，
+// 便于与不使用 VersionNumbers 类型的代码交互。
+//
+// 返回:
+//   - []int: 版本号数字段数组
+//
+// 使用示例:
+//
+//	v := versions.NewVersion("1.2.3.4")
+//	segments := v.Segments()
+//	// segments == []int{1, 2, 3, 4}
+func (x *Version) Segments() []int {
+	result := make([]int, len(x.VersionNumbers))
+	copy(result, x.VersionNumbers)
+	return result
+}
+
+// Segments64 返回版本号数字段的 int64 数组
+//
+// 与 Segments() 相同，但返回 int64 类型，
+// 适用于需要大数值范围的场景。
+//
+// 返回:
+//   - []int64: 版本号数字段 int64 数组
+func (x *Version) Segments64() []int64 {
+	result := make([]int64, len(x.VersionNumbers))
+	for i, n := range x.VersionNumbers {
+		result[i] = int64(n)
+	}
+	return result
 }

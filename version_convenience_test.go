@@ -287,3 +287,65 @@ func TestVersion_IsZero(t *testing.T) {
 		t.Error("Parsed version should not be IsZero()")
 	}
 }
+
+func TestVersion_Core(t *testing.T) {
+	v := NewVersion("1.2.3-beta1")
+	core := v.Core()
+	if core.RawString() != "1.2.3" {
+		t.Errorf("Core() = %q, want %q", core.RawString(), "1.2.3")
+	}
+	if !core.IsStable() {
+		t.Error("Core() should be stable")
+	}
+	if v.IsStable() {
+		t.Error("Core() should not modify original")
+	}
+}
+
+func TestVersion_Validate(t *testing.T) {
+	v := NewVersion("1.2.3")
+	if err := v.Validate(); err != nil {
+		t.Errorf("Validate() error: %v", err)
+	}
+	var empty Version
+	if empty.Validate() == nil {
+		t.Error("Validate() should return error for empty version")
+	}
+}
+
+func TestVersion_Segments(t *testing.T) {
+	v := NewVersion("1.2.3")
+	segs := v.Segments()
+	if len(segs) != 3 || segs[0] != 1 || segs[1] != 2 || segs[2] != 3 {
+		t.Errorf("Segments() = %v, want [1,2,3]", segs)
+	}
+	segs[0] = 99
+	if v.Major() != 1 {
+		t.Error("Segments() should return a copy")
+	}
+}
+
+func TestVersion_Segments64(t *testing.T) {
+	v := NewVersion("1.2.3")
+	segs := v.Segments64()
+	if len(segs) != 3 || segs[0] != 1 || segs[1] != 2 || segs[2] != 3 {
+		t.Errorf("Segments64() = %v, want [1,2,3]", segs)
+	}
+}
+
+func TestMustParse(t *testing.T) {
+	v := MustParse("1.2.3")
+	if v.Major() != 1 {
+		t.Errorf("MustParse() Major = %d, want 1", v.Major())
+	}
+}
+
+func TestMustParse_Panic(t *testing.T) {
+	defer func() {
+		r := recover()
+		if r == nil {
+			t.Error("MustParse() should panic for empty string")
+		}
+	}()
+	MustParse("")
+}
