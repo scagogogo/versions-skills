@@ -24,3 +24,29 @@ func TestVersionPrefix_IsEmpty(t *testing.T) {
 	specialPrefix := VersionPrefix(" ")
 	assert.False(t, specialPrefix.IsEmpty())
 }
+
+func TestVersionPrefix_String(t *testing.T) {
+	p := VersionPrefix("v")
+	if p.String() != "v" {
+		t.Errorf("String() = %q, want %q", p.String(), "v")
+	}
+}
+
+func TestVersionPrefix_PurePrefix(t *testing.T) {
+	tests := []struct {
+		input    VersionPrefix
+		expected string
+	}{
+		{VersionPrefix("v"), "v"},
+		{VersionPrefix("curl-"), "curl"},
+		{VersionPrefix("lib."), "lib"},
+		{VersionPrefix("a-b."), "a-b"},
+		{VersionPrefix(""), ""},
+	}
+	for _, tt := range tests {
+		got := tt.input.PurePrefix()
+		if got != tt.expected {
+			t.Errorf("PurePrefix(%q) = %q, want %q", tt.input, got, tt.expected)
+		}
+	}
+}

@@ -51,3 +51,10 @@ func TestVersionSuffix_CompareTo(t *testing.T) {
 	assert.Equal(t, 1, nonEmpty.CompareTo(empty))  // 非空 > 空
 	assert.Equal(t, 0, empty.CompareTo(empty))     // 空 = 空
 }
+
+func TestVersionSuffix_String(t *testing.T) {
+	s := VersionSuffix("-beta1")
+	if s.String() != "-beta1" {
+		t.Errorf("String() = %q, want %q", s.String(), "-beta1")
+	}
+}

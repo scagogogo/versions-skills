@@ -188,3 +188,12 @@ func TestSortedVersionGroups_Contains(t *testing.T) {
 		t.Error("Should not contain group 99.99")
 	}
 }
+
+func TestSortedVersionGroups_Versions(t *testing.T) {
+	versions := NewVersions("1.0.0", "1.1.0", "2.0.0")
+	svg := NewSortedVersionGroups(versions)
+	all := svg.Versions()
+	if len(all) != 3 {
+		t.Errorf("Versions() = %d, want 3", len(all))
+	}
+}

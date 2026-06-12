@@ -1,6 +1,9 @@
 package versions
 
-import "testing"
+import (
+	"strings"
+	"testing"
+)
 
 func TestVersionGroup_GetLatest(t *testing.T) {
 	vg := NewVersionGroupFromVersions(NewVersions("1.0.0", "1.0.1", "1.0.2"))
@@ -75,5 +78,21 @@ func TestVersionGroup_LatestPrerelease_None(t *testing.T) {
 	vg := NewVersionGroupFromVersions(NewVersions("1.0.0", "1.0.1"))
 	if vg.LatestPrerelease() != nil {
 		t.Error("LatestPrerelease() should return nil when no prerelease versions")
+	}
+}
+
+func TestVersionGroup_String(t *testing.T) {
+	vg := NewVersionGroupFromVersions(NewVersions("1.0.0", "1.0.1"))
+	s := vg.String()
+	if !strings.Contains(s, "1.0") || !strings.Contains(s, "2") {
+		t.Errorf("String() = %q, should contain group ID and count", s)
+	}
+}
+
+func TestVersionGroup_Filter(t *testing.T) {
+	vg := NewVersionGroupFromVersions(NewVersions("1.0.0", "1.0.0-beta", "1.0.1"))
+	stable := vg.Filter(func(v *Version) bool { return v.IsStable() })
+	if len(stable) != 2 {
+		t.Errorf("Filter(stable) = %d, want 2", len(stable))
 	}
 }

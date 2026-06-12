@@ -47,7 +47,32 @@ func (x VersionPrefix) IsEmpty() bool {
 	return x == EmptyVersionPrefix
 }
 
-// 去除了分隔符的纯净的前缀，暂时用不到先不实现了
-//func (x VersionPrefix) PurePrefix() string {
+// String 返回前缀的字符串表示
 //
-//}
+// 实现 fmt.Stringer 接口。
+//
+// 返回:
+//   - string: 前缀字符串，如 "v"
+func (x VersionPrefix) String() string {
+	return string(x)
+}
+
+// PurePrefix 返回去除分隔符后的纯净前缀
+//
+// 纯净前缀是去除了末尾分隔符（如 "-"、"."、"_"）的前缀部分。
+// 例如 "curl-" 的纯净前缀为 "curl"，"v" 的纯净前缀仍为 "v"。
+//
+// 返回:
+//   - string: 去除末尾分隔符后的前缀
+func (x VersionPrefix) PurePrefix() string {
+	s := string(x)
+	for len(s) > 0 {
+		last := s[len(s)-1]
+		if last == '-' || last == '.' || last == '_' {
+			s = s[:len(s)-1]
+		} else {
+			break
+		}
+	}
+	return s
+}

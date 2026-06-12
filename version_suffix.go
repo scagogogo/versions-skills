@@ -77,6 +77,16 @@ func (x VersionSuffix) IsEmpty() bool {
 //	if result < 0 {
 //	    fmt.Println("alpha1 后缀的优先级低于 beta1 后缀")
 //	}
+// String 返回后缀的字符串表示
+//
+// 实现 fmt.Stringer 接口。
+//
+// 返回:
+//   - string: 后缀字符串，如 "-beta1"
+func (x VersionSuffix) String() string {
+	return string(x)
+}
+
 func (x VersionSuffix) CompareTo(target VersionSuffix) int {
 	weightX := GetSuffixWeight(string(x))
 	weightTarget := GetSuffixWeight(string(target))

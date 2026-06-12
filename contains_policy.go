@@ -36,3 +36,20 @@ const (
 	// 当设置为此值时，包含指定字符串的版本将被排除在结果之外
 	ContainsPolicyNo
 )
+
+// String 返回包含策略的可读名称
+//
+// 实现 fmt.Stringer 接口。
+//
+// 返回:
+//   - string: 策略名称，如 "none"、"yes"、"no"
+func (p ContainsPolicy) String() string {
+	switch p {
+	case ContainsPolicyYes:
+		return "yes"
+	case ContainsPolicyNo:
+		return "no"
+	default:
+		return "none"
+	}
+}

@@ -57,6 +57,18 @@ func TestVersionSuffix_CompareTo_WithWeight(t *testing.T) {
 	}
 }
 
+func TestSuffixWeight_String(t *testing.T) {
+	if SuffixWeightDev.String() != "dev" {
+		t.Errorf("SuffixWeightDev.String() = %q, want %q", SuffixWeightDev.String(), "dev")
+	}
+	if SuffixWeightAlpha.String() != "alpha" {
+		t.Errorf("SuffixWeightAlpha.String() = %q, want %q", SuffixWeightAlpha.String(), "alpha")
+	}
+	if SuffixWeightUnknown.String() != "unknown" {
+		t.Errorf("SuffixWeightUnknown.String() = %q, want %q", SuffixWeightUnknown.String(), "unknown")
+	}
+}
+
 func TestExtractSubVersion(t *testing.T) {
 	tests := []struct {
 		suffix string

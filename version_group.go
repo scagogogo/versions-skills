@@ -2,6 +2,7 @@ package versions
 
 import (
 	"sort"
+	"strconv"
 
 	compare_anything "github.com/golang-infrastructure/go-compare-anything"
 	"github.com/golang-infrastructure/go-tuple"
@@ -281,6 +282,30 @@ func (x *VersionGroup) Remove(v *Version) bool {
 // 返回按排序后最新的预发布版本，如果组中无预发布版本则返回 nil。
 func (x *VersionGroup) LatestPrerelease() *Version {
 	return LatestPrerelease(x.Versions())
+}
+
+// String 返回版本组的字符串表示
+//
+// 实现 fmt.Stringer 接口。
+// 格式为 "组ID (版本数)"，如 "1.2 (5个版本)"。
+//
+// 返回:
+//   - string: 版本组的字符串表示
+func (x *VersionGroup) String() string {
+	return x.ID() + " (" + strconv.Itoa(x.Count()) + "个版本)"
+}
+
+// Filter 根据谓词函数过滤组内版本
+//
+// 返回组内所有满足谓词条件的版本。
+//
+// 参数:
+//   - predicate: 过滤谓词函数
+//
+// 返回:
+//   - []*Version: 满足条件的版本列表
+func (x *VersionGroup) Filter(predicate func(*Version) bool) []*Version {
+	return Filter(x.Versions(), predicate)
 }
 
 // QueryRangeVersions 获取组内指定区间内的版本

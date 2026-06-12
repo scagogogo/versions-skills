@@ -111,6 +111,47 @@ func GetSuffixWeight(suffix string) SuffixWeight {
 	return SuffixWeightUnknown
 }
 
+// String 返回后缀权重的可读名称
+//
+// 实现 fmt.Stringer 接口。
+//
+// 返回:
+//   - string: 权重的可读名称，如 "dev"、"alpha"、"beta"、"rc"、"unknown" 等
+func (w SuffixWeight) String() string {
+	switch w {
+	case SuffixWeightDev:
+		return "dev"
+	case SuffixWeightSnapshot:
+		return "snapshot"
+	case SuffixWeightNightly:
+		return "nightly"
+	case SuffixWeightAlpha:
+		return "alpha"
+	case SuffixWeightBeta:
+		return "beta"
+	case SuffixWeightMilestone:
+		return "milestone"
+	case SuffixWeightRC:
+		return "rc"
+	case SuffixWeightPre:
+		return "pre"
+	case SuffixWeightCR:
+		return "cr"
+	case SuffixWeightFinal:
+		// SuffixWeightRelease and SuffixWeightGA share the same value (500),
+		// so they fall through to this case automatically.
+		return "release"
+	case SuffixWeightSP:
+		return "sp"
+	case SuffixWeightPatch:
+		return "patch"
+	case SuffixWeightPost:
+		return "post"
+	default:
+		return "unknown"
+	}
+}
+
 // extractSubVersion 从后缀中提取子版本号
 //
 // 例如 "-alpha1" 提取出 1，"-rc2" 提取出 2。

@@ -198,3 +198,17 @@ func (x *SortedVersionGroups) Contains(groupID string) bool {
 	_, exists := x.groupIdToIndexMap[groupID]
 	return exists
 }
+
+// Versions 返回所有版本组中的所有版本
+//
+// 版本按组排序，组内按版本排序。
+//
+// 返回:
+//   - []*Version: 所有版本的有序列表
+func (x *SortedVersionGroups) Versions() []*Version {
+	result := make([]*Version, 0)
+	for _, g := range x.groupSlice {
+		result = append(result, g.SortVersions()...)
+	}
+	return result
+}
