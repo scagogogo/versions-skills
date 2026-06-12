@@ -94,6 +94,27 @@ func (x *VersionStringParser) Parse() *Version {
 		}
 	}
 
+	// 保存原始字符串（含 metadata），用于 Raw 字段
+	originalRaw := x.versionStr
+
+	// 提取 semver build metadata（+ 号后面的部分）
+	// 在解析前缀/数字/后缀之前先剥离 metadata，确保 + 后的内容不被当作后缀。
+	// 但只有在 + 后的部分不包含 - 号时才剥离，因为像 "0.9.0+121-bcc5decc" 这样的
+	// Scala/Maven 版本中，+ 后面带 - 的部分实际上是预发布后缀而非 semver metadata。
+	// 在 semver 规范中，metadata 是纯标识符（不包含 -），而预发布标识符可以包含 -。
+	var metadata string
+	if idx := strings.LastIndex(x.versionStr, "+"); idx >= 0 {
+		metadataCandidate := x.versionStr[idx+1:]
+		// 只有当 + 后的部分不包含 - 号时才认为是 semver metadata
+		// 含有 - 的部分（如 "121-bcc5decc"）更可能是预发布后缀的一部分
+		if !strings.Contains(metadataCandidate, "-") {
+			metadata = metadataCandidate
+			x.versionStr = x.versionStr[:idx]
+			x.versionRunes = []rune(x.versionStr)
+			x.i = 0
+		}
+	}
+
 	// 采用一种迭代的方式，依次读取字符串中的每一个字符，从中提取出所有版本信息
 	var (
 		prefix         string
@@ -114,10 +135,11 @@ func (x *VersionStringParser) Parse() *Version {
 		// 对于纯字母版本，将整个字符串视为前缀，不设置版本号，保持VersionNumbers为空数组
 		if !containsDigit {
 			return &Version{
-				Raw:            x.versionStr,
+				Raw:            originalRaw,
 				VersionNumbers: make([]int, 0),
 				Prefix:         VersionPrefix(x.versionStr),
 				Suffix:         EmptyVersionSuffix,
+				Metadata:       metadata,
 			}
 		}
 	}
@@ -146,11 +168,13 @@ func (x *VersionStringParser) Parse() *Version {
 	suffix = x.readVersionSuffix(versionWithoutPrefix, versionNumbersString)
 
 	x.v = &Version{
-		Raw:            x.versionStr,
+		Raw:            originalRaw,
 		VersionNumbers: versionNumbers,
 		Prefix:         VersionPrefix(prefix),
 		Suffix:         VersionSuffix(suffix),
+		Metadata:       metadata,
 	}
+
 	return x.v
 }
 

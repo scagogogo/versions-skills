@@ -28,6 +28,7 @@ func (x *Version) Clone() *Version {
 		VersionNumbers: numbers,
 		Prefix:         x.Prefix,
 		Suffix:         x.Suffix,
+		Metadata:       x.Metadata,
 	}
 }
 
@@ -47,11 +48,13 @@ func (x *Version) Clone() *Version {
 //	newV := v.WithPrefix("v")
 //	// newV.Raw == "v1.2.3"
 func (x *Version) WithPrefix(prefix string) *Version {
-	return NewVersionBuilder().
+	v := NewVersionBuilder().
 		Prefix(prefix).
 		Numbers(x.VersionNumbers).
 		Suffix(string(x.Suffix)).
 		Build()
+	v.Metadata = x.Metadata
+	return v
 }
 
 // WithSuffix 返回一个修改后缀的新版本对象
@@ -70,11 +73,13 @@ func (x *Version) WithPrefix(prefix string) *Version {
 //	newV := v.WithSuffix("-rc1")
 //	// newV.Raw == "1.2.3-rc1"
 func (x *Version) WithSuffix(suffix string) *Version {
-	return NewVersionBuilder().
+	v := NewVersionBuilder().
 		Prefix(string(x.Prefix)).
 		Numbers(x.VersionNumbers).
 		Suffix(suffix).
 		Build()
+	v.Metadata = x.Metadata
+	return v
 }
 
 // WithMajor 返回一个修改主版本号的新版本对象
@@ -95,11 +100,13 @@ func (x *Version) WithMajor(major int) *Version {
 	} else {
 		numbers[0] = major
 	}
-	return NewVersionBuilder().
+	v := NewVersionBuilder().
 		Prefix(string(x.Prefix)).
 		Numbers(numbers).
 		Suffix(string(x.Suffix)).
 		Build()
+	v.Metadata = x.Metadata
+	return v
 }
 
 // WithMinor 返回一个修改次版本号的新版本对象
@@ -119,11 +126,13 @@ func (x *Version) WithMinor(minor int) *Version {
 		numbers = append(numbers, 0)
 	}
 	numbers[1] = minor
-	return NewVersionBuilder().
+	v := NewVersionBuilder().
 		Prefix(string(x.Prefix)).
 		Numbers(numbers).
 		Suffix(string(x.Suffix)).
 		Build()
+	v.Metadata = x.Metadata
+	return v
 }
 
 // WithPatch 返回一个修改修订版本号的新版本对象
@@ -143,11 +152,13 @@ func (x *Version) WithPatch(patch int) *Version {
 		numbers = append(numbers, 0)
 	}
 	numbers[2] = patch
-	return NewVersionBuilder().
+	v := NewVersionBuilder().
 		Prefix(string(x.Prefix)).
 		Numbers(numbers).
 		Suffix(string(x.Suffix)).
 		Build()
+	v.Metadata = x.Metadata
+	return v
 }
 
 // WithPublicTime 返回一个修改发布时间的新版本对象

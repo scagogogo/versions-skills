@@ -72,6 +72,12 @@ type Version struct {
 	// Suffix 版本号数字部分之后的后缀
 	// 例如对于版本号 "1.2.3-beta1"，Suffix 为 "-beta1"
 	Suffix VersionSuffix `json:"suffix"`
+
+	// Metadata semver 构建元数据
+	//
+	// 在 semver 规范中，构建元数据是版本号中 + 号后面的部分，如 "1.0.0+build123" 中的 "build123"。
+	// 根据 semver 规范，构建元数据不参与版本比较。
+	Metadata string `json:"metadata,omitempty"`
 }
 
 var _ compare_anything.Comparable[*Version] = &Version{}
@@ -568,11 +574,13 @@ func (x *Version) RawString() string {
 //	newV := v.WithNumbers([]int{2, 0, 0})
 //	// newV.Raw == "2.0.0"
 func (x *Version) WithNumbers(numbers []int) *Version {
-	return NewVersionBuilder().
+	v := NewVersionBuilder().
 		Prefix(string(x.Prefix)).
 		Numbers(numbers).
 		Suffix(string(x.Suffix)).
 		Build()
+	v.Metadata = x.Metadata
+	return v
 }
 
 // SubVersion 返回后缀中的子版本号

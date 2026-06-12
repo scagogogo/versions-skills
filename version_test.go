@@ -164,3 +164,38 @@ func TestVersion_UnmarshalText_Invalid(t *testing.T) {
 		t.Error("UnmarshalText should return error for invalid version")
 	}
 }
+
+func TestVersion_Metadata(t *testing.T) {
+	v := NewVersion("1.0.0+build123")
+	if v.Metadata != "build123" {
+		t.Errorf("Metadata = %q, want %q", v.Metadata, "build123")
+	}
+	if !v.IsStable() {
+		t.Error("1.0.0+build123 should be stable (metadata doesn't affect stability)")
+	}
+}
+
+func TestVersion_Metadata_Empty(t *testing.T) {
+	v := NewVersion("1.0.0")
+	if v.Metadata != "" {
+		t.Errorf("Metadata = %q, want empty", v.Metadata)
+	}
+}
+
+func TestVersion_Metadata_WithPrerelease(t *testing.T) {
+	v := NewVersion("1.0.0-beta+build456")
+	if v.Metadata != "build456" {
+		t.Errorf("Metadata = %q, want %q", v.Metadata, "build456")
+	}
+	if !v.IsPrerelease() {
+		t.Error("1.0.0-beta+build456 should be prerelease")
+	}
+}
+
+func TestVersion_Metadata_PreservedInClone(t *testing.T) {
+	v := NewVersion("1.0.0+build123")
+	cloned := v.Clone()
+	if cloned.Metadata != "build123" {
+		t.Errorf("Clone() Metadata = %q, want %q", cloned.Metadata, "build123")
+	}
+}
