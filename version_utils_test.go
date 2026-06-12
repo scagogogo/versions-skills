@@ -190,3 +190,35 @@ func TestPartition_Empty(t *testing.T) {
 		t.Errorf("Partition(nil) = (%d, %d), want (0, 0)", len(stable), len(pre))
 	}
 }
+
+func TestFilterByPatch(t *testing.T) {
+	versions := NewVersions("1.0.0", "1.0.1", "1.0.2")
+	result := FilterByPatch(versions, 1)
+	if len(result) != 1 || result[0].Raw != "1.0.1" {
+		t.Errorf("FilterByPatch(1) result unexpected")
+	}
+}
+
+func TestFilterBySuffix(t *testing.T) {
+	versions := NewVersions("1.0.0", "1.0.0-beta", "1.1.0-beta")
+	result := FilterBySuffix(versions, "-beta")
+	if len(result) != 2 {
+		t.Errorf("FilterBySuffix(\"-beta\") = %d, want 2", len(result))
+	}
+}
+
+func TestFilterByStable(t *testing.T) {
+	versions := NewVersions("1.0.0", "1.0.0-beta", "2.0.0-alpha", "2.0.0")
+	result := FilterByStable(versions)
+	if len(result) != 2 {
+		t.Errorf("FilterByStable() = %d, want 2", len(result))
+	}
+}
+
+func TestFilterByPrerelease(t *testing.T) {
+	versions := NewVersions("1.0.0", "1.0.0-beta", "2.0.0-alpha")
+	result := FilterByPrerelease(versions)
+	if len(result) != 2 {
+		t.Errorf("FilterByPrerelease() = %d, want 2", len(result))
+	}
+}

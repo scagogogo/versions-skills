@@ -266,3 +266,65 @@ func Partition(versions []*Version, predicate func(*Version) bool) ([]*Version, 
 	}
 	return matched, unmatched
 }
+
+// FilterByPatch 过滤指定修订版本号的版本
+//
+// 返回所有修订版本号等于指定值的版本。
+//
+// 参数:
+//   - versions: 版本对象列表
+//   - patch: 目标修订版本号
+//
+// 返回:
+//   - []*Version: 满足条件的版本列表
+func FilterByPatch(versions []*Version, patch int) []*Version {
+	return Filter(versions, func(v *Version) bool {
+		return v.Patch() == patch
+	})
+}
+
+// FilterBySuffix 过滤指定后缀的版本
+//
+// 返回所有后缀字符串等于指定值的版本。
+//
+// 参数:
+//   - versions: 版本对象列表
+//   - suffix: 目标后缀字符串，如 "-beta"
+//
+// 返回:
+//   - []*Version: 满足条件的版本列表
+func FilterBySuffix(versions []*Version, suffix string) []*Version {
+	return Filter(versions, func(v *Version) bool {
+		return string(v.Suffix) == suffix
+	})
+}
+
+// FilterByStable 返回所有稳定版本
+//
+// 稳定版本是指不带任何后缀的版本。等价于 Filter(versions, Version.IsStable)。
+//
+// 参数:
+//   - versions: 版本对象列表
+//
+// 返回:
+//   - []*Version: 所有稳定版本
+func FilterByStable(versions []*Version) []*Version {
+	return Filter(versions, func(v *Version) bool {
+		return v.IsStable()
+	})
+}
+
+// FilterByPrerelease 返回所有预发布版本
+//
+// 预发布版本是指带有后缀的版本。等价于 Filter(versions, Version.IsPrerelease)。
+//
+// 参数:
+//   - versions: 版本对象列表
+//
+// 返回:
+//   - []*Version: 所有预发布版本
+func FilterByPrerelease(versions []*Version) []*Version {
+	return Filter(versions, func(v *Version) bool {
+		return v.IsPrerelease()
+	})
+}
