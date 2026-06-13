@@ -6,8 +6,8 @@
     "name": "scagogogo",
     "url": "https://github.com/scagogogo"
   },
-  "homepage": "https://github.com/scagogogo/versions",
-  "repository": "https://github.com/scagogogo/versions",
+  "homepage": "https://github.com/scagogogo/versions-skills",
+  "repository": "https://github.com/scagogogo/versions-skills",
   "license": "MIT",
   "keywords": ["versions", "semver", "version-parsing", "version-sorting", "version-grouping", "go"]
 }

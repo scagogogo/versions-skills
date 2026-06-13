@@ -1,0 +1,47 @@
+name: Build CLI and MCP
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'cmd/**'
+      - 'internal/**'
+      - 'go.mod'
+      - 'go.sum'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'cmd/**'
+      - 'internal/**'
+      - 'go.mod'
+      - 'go.sum'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        go: ['1.23']
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ matrix.go }}
+
+      - name: Build CLI
+        run: go build -o versions ./cmd/versions
+
+      - name: Build MCP Server
+        run: go build -o versions-mcp ./cmd/versions-mcp
+
+      - name: Test CLI
+        run: |
+          ./versions --version
+          ./versions parse 1.2.3
+          ./versions compare 1.0.0 2.0.0
+          ./versions sort 3.0.0 1.0.0 2.0.0
+
+      - name: Run SDK tests
+        run: go test ./...

@@ -1,6 +1,6 @@
 ---
 name: version-sorting
-description: Use when sorting a list of version numbers in natural order. Provides expert guidance on using the Go versions SDK for version sorting.
+description: Use when sorting a list of version numbers in natural order. Covers SDK, CLI, and MCP access paths for version sorting operations.
 argument-hint: <version-sorting-task>
 ---
 
@@ -10,67 +10,254 @@ argument-hint: <version-sorting-task>
 
 - User needs to sort a list of version strings or Version objects
 - User needs to find the latest or oldest version in a collection
-- User needs to display versions in ascending/descending order
+- User needs to display versions in ascending or descending order
 - User is implementing version selection UI or dependency resolution
+- User wants to sort versions read from a file
 
-## API Reference
+## Quick Start
+
+### SDK (Go)
+
+```go
+sorted := versions.SortVersionStringSlice([]string{"2.0.0", "1.0.0", "1.10.0", "1.2.0"})
+// Result: ["1.0.0", "1.2.0", "1.10.0", "2.0.0"]
+```
+
+### CLI
+
+```bash
+# Sort version strings (ascending)
+versions sort 1.0.0 1.10.0 1.2.0 2.0.0
+
+# Sort in descending order
+versions sort --desc 1.0.0 1.10.0 1.2.0 2.0.0
+
+# Sort from a file
+versions sort --from-file versions.txt
+```
+
+### MCP
+
+```json
+{
+  "tool": "version_sort",
+  "arguments": {
+    "versions": ["2.0.0", "1.0.0", "1.10.0", "1.2.0"],
+    "descending": false
+  }
+}
+```
+
+## API Reference -- SDK
 
 ### SortVersionStringSlice
 
 **func SortVersionStringSlice(versionStringSlice []string) []string**
 
-Sorts a string slice of version numbers. Parses each string, sorts by Version.CompareTo rules, returns sorted strings.
+Sorts a string slice of version numbers. Parses each string, sorts by Version.CompareTo rules, returns sorted strings. Does not modify the original slice.
 
 ### SortVersionSlice
 
 **func SortVersionSlice(versions []*Version) []*Version**
 
-Sorts Version object slice. Uses group-based algorithm: groups by major version, sorts groups, sorts within each group, merges results.
+Sorts Version object slice. Uses group-based algorithm: groups by major version, sorts groups, sorts within each group, merges results. Does not modify the original slice.
 
-### SortVersionGroupMap / SortVersionGroupSlice
+### VersionSlice
+
+**type VersionSlice []*Version**
+
+An ordered collection type that implements sort.Interface. Allows direct use of `sort.Sort()` on version slices without closures.
+
+Methods:
+- **Len() int** -- returns the number of versions
+- **Less(i, j int) bool** -- returns true if version at index i is older than version at j
+- **Swap(i, j int)** -- swaps versions at indices i and j
+
+```go
+slice := versions.VersionSlice(versions.NewVersions("2.0.0", "1.0.0", "1.5.0"))
+sort.Sort(slice)  // slice is now sorted ascending
+```
+
+### SortVersionGroupMap
 
 **func SortVersionGroupMap(versionGroupMap map[string]*VersionGroup) []*VersionGroup**
+
+Converts a version group map to a sorted slice of VersionGroup objects.
+
+### SortVersionGroupSlice
+
 **func SortVersionGroupSlice(groupSlice []*VersionGroup)**
 
-Utility functions for sorting version group collections.
+In-place sort of a VersionGroup slice. Modifies the input slice directly.
 
-## Code Examples
+## CLI Commands
+
+### `versions sort`
+
+Sort version strings in natural (semantic) order.
+
+```bash
+versions sort <version1> <version2> ... <versionN>
+```
+
+**Flags:**
+- `--desc` -- Sort in descending order (latest first)
+- `--from-file <path>` -- Read versions from a file instead of arguments (one version per line)
+
+**Examples:**
+```bash
+# Basic ascending sort
+versions sort 1.0.0 1.10.0 1.2.0 2.0.0
+# Output: 1.0.0 1.2.0 1.10.0 2.0.0
+
+# Descending sort (latest first)
+versions sort --desc 1.0.0 1.10.0 1.2.0 2.0.0
+# Output: 2.0.0 1.10.0 1.2.0 1.0.0
+
+# Sort versions from a file
+versions sort --from-file releases.txt
+```
+
+### `versions sort-strings`
+
+Sort raw version strings (same as `versions sort` but explicitly for string input).
+
+```bash
+versions sort-strings <version1> <version2> ... <versionN>
+```
+
+**Flags:**
+- `--desc` -- Sort in descending order
+- `--from-file <path>` -- Read versions from a file
+
+## MCP Tools
+
+### `version_sort`
+
+Sort a list of version strings in semantic order.
+
+**Parameters:**
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `versions` | array of strings | Yes | List of version strings to sort |
+| `descending` | boolean | No | Sort in descending order (default: false) |
+
+**Example request:**
+```json
+{
+  "tool": "version_sort",
+  "arguments": {
+    "versions": ["2.0.0", "1.0.0", "1.10.0", "1.2.0"],
+    "descending": true
+  }
+}
+```
+
+**Example response:**
+```json
+{
+  "sorted_versions": ["2.0.0", "1.10.0", "1.2.0", "1.0.0"]
+}
+```
+
+## Code Examples (SDK)
+
+### Sort Version Strings
 
 ```go
 package main
 
 import (
     "fmt"
-    "github.com/scagogogo/versions"
+    "github.com/scagogogo/versions-skills"
 )
 
 func main() {
-    // Sort version strings
     unsorted := []string{"2.0.0", "1.0.0", "1.10.0", "1.2.0", "v1.5.0"}
     sorted := versions.SortVersionStringSlice(unsorted)
     for _, v := range sorted {
         fmt.Println(v)
     }
     // Output: 1.0.0, 1.2.0, v1.5.0, 1.10.0, 2.0.0
+}
+```
 
-    // Sort Version objects
+### Sort Version Objects and Find Latest
+
+```go
+package main
+
+import (
+    "fmt"
+    "github.com/scagogogo/versions-skills"
+)
+
+func main() {
     versionList := versions.NewVersions("2.0.0", "1.0.0", "1.10.0")
     sortedVersions := versions.SortVersionSlice(versionList)
-    for _, v := range sortedVersions {
-        fmt.Println(v.Raw)
-    }
-    // Output: 1.0.0, 1.10.0, 2.0.0
 
-    // Find latest version
+    // Find latest (last element after ascending sort)
     latest := sortedVersions[len(sortedVersions)-1]
     fmt.Printf("Latest: %s\n", latest.Raw)
+
+    // Find oldest (first element)
+    oldest := sortedVersions[0]
+    fmt.Printf("Oldest: %s\n", oldest.Raw)
+}
+```
+
+### Use VersionSlice with sort.Sort
+
+```go
+package main
+
+import (
+    "fmt"
+    "sort"
+    "github.com/scagogogo/versions-skills"
+)
+
+func main() {
+    slice := versions.VersionSlice(versions.NewVersions("3.0.0", "1.0.0", "2.0.0"))
+
+    // Direct sort using standard library -- no closures needed
+    sort.Sort(slice)
+
+    for _, v := range slice {
+        fmt.Println(v.Raw)
+    }
+    // Output: 1.0.0, 2.0.0, 3.0.0
+}
+```
+
+### Sort Version Groups
+
+```go
+package main
+
+import (
+    "fmt"
+    "github.com/scagogogo/versions-skills"
+)
+
+func main() {
+    versionList := versions.NewVersions("1.0.0", "1.1.0", "2.0.0", "2.1.0")
+    groupMap := versions.Group(versionList)
+    sortedGroups := versions.SortVersionGroupMap(groupMap)
+    for _, g := range sortedGroups {
+        fmt.Printf("Group %s: %d versions\n", g.ID(), g.Count())
+    }
 }
 ```
 
 ## Important Notes
 
-- SortVersionStringSlice creates new Version objects internally — O(n) extra space
-- SortVersionSlice uses a group-based algorithm for stable, semantically correct ordering
-- "1.10.0" correctly sorts after "1.2.0" (numeric, not alphabetic)
-- Pre-release versions sort before their release counterparts
-- Neither function modifies the original input slice
+- **SDK**: SortVersionStringSlice creates new Version objects internally -- O(n) extra space
+- **SDK**: SortVersionSlice uses a group-based algorithm for stable, semantically correct ordering
+- **SDK**: Neither SortVersionStringSlice nor SortVersionSlice modifies the original input slice
+- **SDK**: SortVersionGroupSlice modifies the input slice in-place (unlike the other sort functions)
+- **SDK**: VersionSlice implements sort.Interface -- use `sort.Sort()` directly, no closures needed
+- **All paths**: "1.10.0" correctly sorts after "1.2.0" (numeric, not alphabetic sorting)
+- **All paths**: Pre-release versions sort before their release counterparts (e.g., "1.0.0-beta" < "1.0.0")
+- **CLI**: The `--from-file` flag reads one version per line, ignores blank lines and `#` comments
+- **MCP**: The `descending` parameter defaults to false (ascending order)

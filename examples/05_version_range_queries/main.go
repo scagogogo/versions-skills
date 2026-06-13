@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/golang-infrastructure/go-tuple"
-	"github.com/scagogogo/versions"
+	"github.com/scagogogo/versions-skills"
 )
 
 func main() {

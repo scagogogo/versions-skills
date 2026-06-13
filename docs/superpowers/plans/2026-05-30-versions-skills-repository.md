@@ -34,8 +34,8 @@
     "name": "scagogogo",
     "url": "https://github.com/scagogogo"
   },
-  "homepage": "https://github.com/scagogogo/versions",
-  "repository": "https://github.com/scagogogo/versions",
+  "homepage": "https://github.com/scagogogo/versions-skills",
+  "repository": "https://github.com/scagogogo/versions-skills",
   "license": "MIT",
   "keywords": ["versions", "semver", "version-parsing", "version-sorting", "version-grouping", "go"]
 }
@@ -141,7 +141,7 @@ package main
 
 import (
     "fmt"
-    "github.com/scagogogo/versions"
+    "github.com/scagogogo/versions-skills"
 )
 
 func main() {
@@ -232,7 +232,7 @@ package main
 
 import (
     "fmt"
-    "github.com/scagogogo/versions"
+    "github.com/scagogogo/versions-skills"
 )
 
 func main() {
@@ -319,7 +319,7 @@ package main
 
 import (
     "fmt"
-    "github.com/scagogogo/versions"
+    "github.com/scagogogo/versions-skills"
 )
 
 func main() {
@@ -394,7 +394,7 @@ package main
 import (
     "fmt"
     "log"
-    "github.com/scagogogo/versions"
+    "github.com/scagogogo/versions-skills"
 )
 
 func main() {
@@ -531,7 +531,7 @@ package main
 
 import (
     "fmt"
-    "github.com/scagogogo/versions"
+    "github.com/scagogogo/versions-skills"
     "github.com/golang-infrastructure/go-tuple"
 )
 
@@ -617,7 +617,7 @@ package main
 
 import (
     "fmt"
-    "github.com/scagogogo/versions"
+    "github.com/scagogogo/versions-skills"
     "github.com/golang-infrastructure/go-tuple"
 )
 
@@ -701,7 +701,7 @@ package main
 import (
     "os"
     "time"
-    "github.com/scagogogo/versions"
+    "github.com/scagogogo/versions-skills"
 )
 
 func main() {
@@ -795,7 +795,7 @@ test2
 
 ```bash
 # 添加 marketplace
-claude marketplace add versions https://github.com/scagogogo/versions
+claude marketplace add versions https://github.com/scagogogo/versions-skills
 
 # 安装插件
 claude plugin install versions@versions

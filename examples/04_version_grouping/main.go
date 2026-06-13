@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/scagogogo/versions"
+	"github.com/scagogogo/versions-skills"
 )
 
 func main() {

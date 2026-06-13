@@ -25,6 +25,7 @@ type VersionBuilder struct {
 	prefix     string
 	numbers    []int
 	suffix     string
+	metadata   string
 	publicTime time.Time
 }
 
@@ -81,11 +82,18 @@ func (b *VersionBuilder) PublicTime(t time.Time) *VersionBuilder {
 	return b
 }
 
+// Metadata 设置构建元数据
+func (b *VersionBuilder) Metadata(metadata string) *VersionBuilder {
+	b.metadata = metadata
+	return b
+}
+
 // Build 构建并返回版本对象
 func (b *VersionBuilder) Build() *Version {
 	raw := b.buildRawString()
 	v := NewVersion(raw)
 	v.PublicTime = b.publicTime
+	v.Metadata = b.metadata
 	return v
 }
 

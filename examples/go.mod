@@ -4,7 +4,7 @@ go 1.24.2
 
 require (
 	github.com/golang-infrastructure/go-tuple v0.0.0-20221215155811-4ed54fe7d579
-	github.com/scagogogo/versions v0.0.0-20250415090233-6b77a610ff11
+	github.com/scagogogo/versions-skills v0.0.0-20250415090233-6b77a610ff11
 )
 
 require (

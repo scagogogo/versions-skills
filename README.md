@@ -2,9 +2,9 @@
 
 <div align="center">
 
-[![Go Tests](https://github.com/scagogogo/versions/actions/workflows/go-test.yml/badge.svg)](https://github.com/scagogogo/versions/actions/workflows/go-test.yml)
-[![Go Report Card](https://goreportcard.com/badge/github.com/scagogogo/versions)](https://goreportcard.com/report/github.com/scagogogo/versions)
-[![GoDoc](https://godoc.org/github.com/scagogogo/versions?status.svg)](https://godoc.org/github.com/scagogogo/versions)
+[![Go Tests](https://github.com/scagogogo/versions-skills/actions/workflows/go-test.yml/badge.svg)](https://github.com/scagogogo/versions-skills/actions/workflows/go-test.yml)
+[![Go Report Card](https://goreportcard.com/badge/github.com/scagogogo/versions-skills)](https://goreportcard.com/report/github.com/scagogogo/versions-skills)
+[![GoDoc](https://godoc.org/github.com/scagogogo/versions-skills?status.svg)](https://godoc.org/github.com/scagogogo/versions-skills)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 <img src="https://user-images.githubusercontent.com/5877/236610549-d20056f0-db64-4ba4-aabd-4f3cf78fb8d5.png" alt="Versions Logo" width="180"/>
@@ -78,7 +78,7 @@
 使用 `go get` 命令安装:
 
 ```bash
-go get -u github.com/scagogogo/versions
+go get -u github.com/scagogogo/versions-skills
 ```
 
 ---
@@ -92,7 +92,7 @@ package main
 
 import (
     "fmt"
-    "github.com/scagogogo/versions"
+    "github.com/scagogogo/versions-skills"
 )
 
 func main() {
@@ -1595,7 +1595,7 @@ versions.VisualizeVersions(filteredVersions, os.Stdout, 0) // 0表示显示所�
 
 ```bash
 # 添加 marketplace
-claude marketplace add versions https://github.com/scagogogo/versions
+claude marketplace add versions https://github.com/scagogogo/versions-skills
 
 # 安装插件
 claude plugin install versions@versions

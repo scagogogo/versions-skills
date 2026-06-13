@@ -1,0 +1,71 @@
+version: 2
+
+builds:
+  - id: versions
+    main: ./cmd/versions
+    binary: versions
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+    ldflags:
+      - -s -w -X github.com/scagogogo/versions-skills/internal/cli.Version={{.Version}}
+
+  - id: versions-mcp
+    main: ./cmd/versions-mcp
+    binary: versions-mcp
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+    ldflags:
+      - -s -w
+
+archives:
+  - id: versions
+    builds:
+      - versions
+    name_template: >-
+      versions_
+      {{- .Version }}_
+      {{- .Os }}_
+      {{- .Arch }}
+    format: tar.gz
+    format_overrides:
+      - goos: windows
+        format: zip
+
+  - id: versions-mcp
+    builds:
+      - versions-mcp
+    name_template: >-
+      versions-mcp_
+      {{- .Version }}_
+      {{- .Os }}_
+      {{- .Arch }}
+    format: tar.gz
+    format_overrides:
+      - goos: windows
+        format: zip
+
+checksum:
+  name_template: "checksums.txt"
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
+      - "^chore:"
+
+release:
+  github:
+    owner: scagogogo
+    name: versions-skills

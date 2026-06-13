@@ -5,7 +5,7 @@ import (
 	"log"
 	"path/filepath"
 
-	"github.com/scagogogo/versions"
+	"github.com/scagogogo/versions-skills"
 )
 
 func main() {

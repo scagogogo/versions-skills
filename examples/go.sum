@@ -12,8 +12,8 @@ github.com/golang-infrastructure/go-tuple v0.0.0-20221215155811-4ed54fe7d579 h1:
 github.com/golang-infrastructure/go-tuple v0.0.0-20221215155811-4ed54fe7d579/go.mod h1:cn8fHK0Sjxh7nSrnNpRa9wi1wIsmBLsjOip4LTjQz+Q=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
-github.com/scagogogo/versions v0.0.0-20250415090233-6b77a610ff11 h1:z4WTraIUpkrMHpcc4kQ/EHzkrqwArgV8zpd7VrAzO6M=
-github.com/scagogogo/versions v0.0.0-20250415090233-6b77a610ff11/go.mod h1:lcOJYJKz5nKTq+Y8pxo3SSqXALlpLTZW8J2p2N4f8RA=
+github.com/scagogogo/versions-skills v0.0.0-20250415090233-6b77a610ff11 h1:z4WTraIUpkrMHpcc4kQ/EHzkrqwArgV8zpd7VrAzO6M=
+github.com/scagogogo/versions-skills v0.0.0-20250415090233-6b77a610ff11/go.mod h1:lcOJYJKz5nKTq+Y8pxo3SSqXALlpLTZW8J2p2N4f8RA=
 github.com/stretchr/testify v1.8.2 h1:+h33VjcLVPDHtOdpUCuF+7gSuG3yGIftsP1YvFihtJ8=
 github.com/stretchr/testify v1.8.2/go.mod h1:w2LPCIKwWwSfY2zedu0+kehJoqGctiVI29o6fzry7u4=
 gopkg.in/yaml.v3 v3.0.1 h1:fxVm/GzAzEWqLHuvctI91KS9hhNmmWOoWu0XTYJS7CA=
