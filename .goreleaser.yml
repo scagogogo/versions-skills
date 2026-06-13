@@ -1,22 +1,136 @@
 version: 2
 
+before:
+  hooks:
+    - go mod tidy
+
 builds:
   - id: versions
     main: ./cmd/versions
     binary: versions
+    env:
+      - CGO_ENABLED=0
     goos:
       - linux
       - darwin
       - windows
+      - freebsd
+      - openbsd
+      - netbsd
     goarch:
       - amd64
       - arm64
+      - arm
+      - "386"
+      - mips
+      - mipsle
+      - mips64
+      - mips64le
+      - ppc64
+      - ppc64le
+      - s390x
+      - riscv64
+    goarm:
+      - "7"
+    gomips:
+      - hardfloat
+    ignore:
+      - goos: darwin
+        goarch: "386"
+      - goos: darwin
+        goarch: arm
+      - goos: darwin
+        goarch: mips
+      - goos: darwin
+        goarch: mipsle
+      - goos: darwin
+        goarch: mips64
+      - goos: darwin
+        goarch: mips64le
+      - goos: darwin
+        goarch: ppc64
+      - goos: darwin
+        goarch: ppc64le
+      - goos: darwin
+        goarch: s390x
+      - goos: darwin
+        goarch: riscv64
+      - goos: windows
+        goarch: arm
+      - goos: windows
+        goarch: mips
+      - goos: windows
+        goarch: mipsle
+      - goos: windows
+        goarch: mips64
+      - goos: windows
+        goarch: mips64le
+      - goos: windows
+        goarch: ppc64
+      - goos: windows
+        goarch: ppc64le
+      - goos: windows
+        goarch: s390x
+      - goos: windows
+        goarch: riscv64
+      - goos: freebsd
+        goarch: arm
+      - goos: freebsd
+        goarch: mips
+      - goos: freebsd
+        goarch: mipsle
+      - goos: freebsd
+        goarch: mips64
+      - goos: freebsd
+        goarch: mips64le
+      - goos: freebsd
+        goarch: riscv64
+      - goos: openbsd
+        goarch: arm
+      - goos: openbsd
+        goarch: "386"
+      - goos: openbsd
+        goarch: mips
+      - goos: openbsd
+        goarch: mipsle
+      - goos: openbsd
+        goarch: mips64
+      - goos: openbsd
+        goarch: mips64le
+      - goos: openbsd
+        goarch: ppc64
+      - goos: openbsd
+        goarch: ppc64le
+      - goos: openbsd
+        goarch: s390x
+      - goos: openbsd
+        goarch: riscv64
+      - goos: netbsd
+        goarch: arm
+      - goos: netbsd
+        goarch: mips
+      - goos: netbsd
+        goarch: mipsle
+      - goos: netbsd
+        goarch: mips64
+      - goos: netbsd
+        goarch: mips64le
+      - goos: netbsd
+        goarch: ppc64
+      - goos: netbsd
+        goarch: ppc64le
+      - goos: netbsd
+        goarch: s390x
+      - goos: netbsd
+        goarch: riscv64
     ldflags:
       - -s -w -X github.com/scagogogo/versions-skills/internal/cli.Version={{.Version}}
 
   - id: versions-mcp
     main: ./cmd/versions-mcp
     binary: versions-mcp
+    env:
+      - CGO_ENABLED=0
     goos:
       - linux
       - darwin
@@ -24,6 +138,17 @@ builds:
     goarch:
       - amd64
       - arm64
+      - arm
+      - "386"
+    goarm:
+      - "7"
+    ignore:
+      - goos: darwin
+        goarch: "386"
+      - goos: darwin
+        goarch: arm
+      - goos: windows
+        goarch: arm
     ldflags:
       - -s -w
 
@@ -40,6 +165,9 @@ archives:
     format_overrides:
       - goos: windows
         format: zip
+    files:
+      - LICENSE
+      - README.md
 
   - id: versions-mcp
     builds:
@@ -53,19 +181,72 @@ archives:
     format_overrides:
       - goos: windows
         format: zip
+    files:
+      - LICENSE
+      - README.md
 
 checksum:
   name_template: "checksums.txt"
 
+snapshot:
+  name_template: "{{ incpatch .Version }}-next"
+
 changelog:
   sort: asc
+  use: github
   filters:
     exclude:
       - "^docs:"
       - "^test:"
       - "^chore:"
+      - "^ci:"
+      - "^style:"
+  groups:
+    - title: Features
+      regexp: "^.*feat[(\\w)]*:+.*$"
+      order: 0
+    - title: Bug Fixes
+      regexp: "^.*fix[(\\w)]*:+.*$"
+      order: 1
+    - title: Others
+      order: 999
 
 release:
   github:
     owner: scagogogo
     name: versions-skills
+  draft: false
+  prerelease: auto
+  mode: replace
+
+brews:
+  - name: versions
+    ids:
+      - versions
+    repository:
+      owner: scagogogo
+      name: homebrew-tap
+    directory: Formula
+    homepage: "https://github.com/scagogogo/versions-skills"
+    description: "A powerful version parsing, comparison, sorting, and grouping CLI and SDK"
+    license: MIT
+    test: |
+      system "#{bin}/versions version"
+    install: |
+      bin.install "versions"
+
+nfpms:
+  - id: versions
+    builds:
+      - versions
+    package_name: versions
+    homepage: "https://github.com/scagogogo/versions-skills"
+    description: "A powerful version parsing, comparison, sorting, and grouping CLI"
+    maintainer: scagogogo <scagogogo@gmail.com>
+    license: MIT
+    formats:
+      - deb
+      - rpm
+      - apk
+    section: utils
+    priority: optional

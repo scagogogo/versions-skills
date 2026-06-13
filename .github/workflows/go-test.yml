@@ -5,7 +5,10 @@ on:
     branches: [ main ]
   pull_request:
     branches: [ main ]
-  workflow_dispatch:  # 允许手动触发
+  workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
   unit-test:
@@ -13,16 +16,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Go
-        uses: actions/setup-go@v4
+        uses: actions/setup-go@v5
         with:
-          go-version: '1.20'
+          go-version: '1.23'
           check-latest: true
 
       - name: 执行单元测试
-        run: go test -v ./...
+        run: go test -v -race ./...
 
   coverage:
     name: 覆盖率分析
@@ -30,18 +33,43 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Go
-        uses: actions/setup-go@v4
+        uses: actions/setup-go@v5
         with:
-          go-version: '1.20'
+          go-version: '1.23'
           check-latest: true
 
       - name: 生成测试覆盖率报告
         run: |
-          go test -coverprofile=coverage.out ./...
+          go test -coverprofile=coverage.out -race ./...
           go tool cover -func=coverage.out
+
+  lint:
+    name: 代码检查
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.23'
+          check-latest: true
+
+      - name: Run go vet
+        run: go vet ./...
+
+      - name: Run gofmt check
+        run: |
+          output=$(gofmt -l .)
+          if [ -n "$output" ]; then
+            echo "❌ 以下文件格式不正确："
+            echo "$output"
+            exit 1
+          fi
 
   examples:
     name: 示例代码验证
@@ -49,26 +77,24 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Go
-        uses: actions/setup-go@v4
+        uses: actions/setup-go@v5
         with:
-          go-version: '1.20'
+          go-version: '1.23'
           check-latest: true
-          
+
       - name: 运行示例代码
         run: |
           echo "运行所有示例代码..."
-          # 查找并运行所有示例目录中的main.go文件
           for example_dir in examples/*/; do
             if [ -f "${example_dir}main.go" ]; then
               echo "========================================"
               echo "运行示例: ${example_dir}"
               echo "========================================"
               go run ${example_dir}main.go
-              
-              # 检查运行结果
+
               if [ $? -ne 0 ]; then
                 echo "❌ 示例运行失败: ${example_dir}"
                 exit 1
@@ -78,4 +104,4 @@ jobs:
               echo ""
             fi
           done
-          echo "所有示例运行完成！" 
+          echo "所有示例运行完成！"
