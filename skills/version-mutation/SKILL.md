@@ -13,7 +13,27 @@ argument-hint: <version-mutation-task>
 - User needs to strip a version's suffix to get the core version
 - User needs to construct a version from individual parts
 
-## Quick Start
+## Installation
+
+### SDK (Go library)
+
+```bash
+go get github.com/scagogogo/versions-skills
+```
+
+### CLI binary
+
+Download from [GitHub Releases](https://github.com/scagogogo/versions-skills/releases/latest) or install via Go:
+
+```bash
+go install github.com/scagogogo/versions-skills/cmd/versions@latest
+```
+
+### MCP server
+
+```bash
+go install github.com/scagogogo/versions-skills/cmd/versions-mcp@latest
+```
 
 **SDK:**
 ```go

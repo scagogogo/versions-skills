@@ -13,7 +13,27 @@ argument-hint: <version-check-task>
 - User is building CI/CD conditionals based on version properties
 - User needs exit-code-based checks for shell scripts
 
-## Quick Start
+## Installation
+
+### SDK (Go library)
+
+```bash
+go get github.com/scagogogo/versions-skills
+```
+
+### CLI binary
+
+Download from [GitHub Releases](https://github.com/scagogogo/versions-skills/releases/latest) or install via Go:
+
+```bash
+go install github.com/scagogogo/versions-skills/cmd/versions@latest
+```
+
+### MCP server
+
+```bash
+go install github.com/scagogogo/versions-skills/cmd/versions-mcp@latest
+```
 
 **SDK:**
 ```go

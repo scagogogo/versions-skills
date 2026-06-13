@@ -14,6 +14,28 @@ argument-hint: <version-grouping-task>
 - User needs the latest, oldest, stable, or prerelease version within a group
 - User is building a version selector UI with hierarchical version choices
 
+## Installation
+
+### SDK (Go library)
+
+```bash
+go get github.com/scagogogo/versions-skills
+```
+
+### CLI binary
+
+Download from [GitHub Releases](https://github.com/scagogogo/versions-skills/releases/latest) or install via Go:
+
+```bash
+go install github.com/scagogogo/versions-skills/cmd/versions@latest
+```
+
+### MCP server
+
+```bash
+go install github.com/scagogogo/versions-skills/cmd/versions-mcp@latest
+```
+
 ## Quick Start
 
 ### SDK (Go)

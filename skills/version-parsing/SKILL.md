@@ -16,6 +16,28 @@ argument-hint: <version-string-or-task>
 - Serialize/deserialize versions (JSON, text, SQL)
 - Use custom delimiters for non-standard version formats (e.g. underscore-separated)
 
+## Installation
+
+### SDK (Go library)
+
+```bash
+go get github.com/scagogogo/versions-skills
+```
+
+### CLI binary
+
+Download from [GitHub Releases](https://github.com/scagogogo/versions-skills/releases/latest) or install via Go:
+
+```bash
+go install github.com/scagogogo/versions-skills/cmd/versions@latest
+```
+
+### MCP server
+
+```bash
+go install github.com/scagogogo/versions-skills/cmd/versions-mcp@latest
+```
+
 ## Quick Start
 
 ### SDK (Go)

@@ -14,6 +14,28 @@ argument-hint: <version-visualization-task>
 - User needs a summary view showing only group-level information
 - User is debugging version management logic or presenting version info in CLI
 
+## Installation
+
+### SDK (Go library)
+
+```bash
+go get github.com/scagogogo/versions-skills
+```
+
+### CLI binary
+
+Download from [GitHub Releases](https://github.com/scagogogo/versions-skills/releases/latest) or install via Go:
+
+```bash
+go install github.com/scagogogo/versions-skills/cmd/versions@latest
+```
+
+### MCP server
+
+```bash
+go install github.com/scagogogo/versions-skills/cmd/versions-mcp@latest
+```
+
 ## Quick Start
 
 ### SDK (Go)

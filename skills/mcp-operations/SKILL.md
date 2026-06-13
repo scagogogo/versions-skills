@@ -17,6 +17,25 @@ argument-hint: <mcp-tool-or-task>
 
 Install the MCP server binary:
 
+### Option 1: Download from GitHub Releases (Recommended)
+
+```bash
+# Visit https://github.com/scagogogo/versions-skills/releases/latest
+# Download versions-mcp for your platform
+
+# Linux amd64 example:
+curl -sL https://github.com/scagogogo/versions-skills/releases/latest/download/versions-mcp_0.1.0_linux_amd64.tar.gz | tar xz
+chmod +x versions-mcp && sudo mv versions-mcp /usr/local/bin/
+
+# macOS arm64 (Apple Silicon) example:
+curl -sL https://github.com/scagogogo/versions-skills/releases/latest/download/versions-mcp_0.1.0_darwin_arm64.tar.gz | tar xz
+chmod +x versions-mcp && sudo mv versions-mcp /usr/local/bin/
+
+# Windows: download the .zip from the releases page and extract
+```
+
+### Option 2: Install via Go
+
 ```bash
 go install github.com/scagogogo/versions-skills/cmd/versions-mcp@latest
 ```

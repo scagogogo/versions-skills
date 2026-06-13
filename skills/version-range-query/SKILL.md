@@ -14,6 +14,28 @@ argument-hint: <version-range-query-task>
 - User needs to check if a version is between two other versions
 - User is implementing dependency version resolution or compatibility checks
 
+## Installation
+
+### SDK (Go library)
+
+```bash
+go get github.com/scagogogo/versions-skills
+```
+
+### CLI binary
+
+Download from [GitHub Releases](https://github.com/scagogogo/versions-skills/releases/latest) or install via Go:
+
+```bash
+go install github.com/scagogogo/versions-skills/cmd/versions@latest
+```
+
+### MCP server
+
+```bash
+go install github.com/scagogogo/versions-skills/cmd/versions-mcp@latest
+```
+
 ## Quick Start
 
 ### SDK (Go)

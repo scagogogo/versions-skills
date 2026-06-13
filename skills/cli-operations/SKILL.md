@@ -15,8 +15,42 @@ argument-hint: <cli-command-or-task>
 
 ## Installation
 
+### Option 1: Download from GitHub Releases (Recommended)
+
+Pre-built binaries are available for Linux, macOS, Windows, FreeBSD, OpenBSD, and NetBSD on amd64, arm64, arm, 386, and more architectures.
+
+```bash
+# Download the latest release for your platform
+# Visit https://github.com/scagogogo/versions-skills/releases/latest
+
+# Linux amd64 example:
+curl -sL https://github.com/scagogogo/versions-skills/releases/latest/download/versions_0.1.0_linux_amd64.tar.gz | tar xz
+chmod +x versions && sudo mv versions /usr/local/bin/
+
+# macOS arm64 (Apple Silicon) example:
+curl -sL https://github.com/scagogogo/versions-skills/releases/latest/download/versions_0.1.0_darwin_arm64.tar.gz | tar xz
+chmod +x versions && sudo mv versions /usr/local/bin/
+
+# Windows: download the .zip from the releases page and extract
+```
+
+### Option 2: Install via Go
+
 ```bash
 go install github.com/scagogogo/versions-skills/cmd/versions@latest
+```
+
+### Option 3: Install from deb/rpm/apk package
+
+```bash
+# Debian/Ubuntu:
+sudo dpkg -i versions_0.1.0_linux_amd64.deb
+
+# RHEL/CentOS/Fedora:
+sudo rpm -i versions_0.1.0_linux_amd64.rpm
+
+# Alpine:
+sudo apk add versions_0.1.0_linux_amd64.apk
 ```
 
 ## Global Options

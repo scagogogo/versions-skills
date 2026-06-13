@@ -15,6 +15,28 @@ argument-hint: <version-comparison-task>
 - Pre-release vs release comparison (alpha < beta < rc < stable)
 - Batch comparison: checking if a version is newer/older/equal than a target
 
+## Installation
+
+### SDK (Go library)
+
+```bash
+go get github.com/scagogogo/versions-skills
+```
+
+### CLI binary
+
+Download from [GitHub Releases](https://github.com/scagogogo/versions-skills/releases/latest) or install via Go:
+
+```bash
+go install github.com/scagogogo/versions-skills/cmd/versions@latest
+```
+
+### MCP server
+
+```bash
+go install github.com/scagogogo/versions-skills/cmd/versions-mcp@latest
+```
+
 ## Quick Start
 
 ### SDK

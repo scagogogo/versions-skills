@@ -15,7 +15,27 @@ argument-hint: <version-property-task>
 - User needs the group ID for version grouping (e.g. "v1.2.3-beta1" → "1.2.3")
 - User needs to deep-copy a version for independent modification
 
-## Quick Start
+## Installation
+
+### SDK (Go library)
+
+```bash
+go get github.com/scagogogo/versions-skills
+```
+
+### CLI binary
+
+Download from [GitHub Releases](https://github.com/scagogogo/versions-skills/releases/latest) or install via Go:
+
+```bash
+go install github.com/scagogogo/versions-skills/cmd/versions@latest
+```
+
+### MCP server
+
+```bash
+go install github.com/scagogogo/versions-skills/cmd/versions-mcp@latest
+```
 
 **SDK:**
 ```go
