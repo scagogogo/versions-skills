@@ -44,10 +44,10 @@ var visualizeCmd = &cobra.Command{
 		}
 
 		data := map[string]interface{}{
-			"text":       buf.String(),
-			"count":      len(vs),
-			"groups":     visualizeGroups,
-			"max_items":  visualizeMaxItems,
+			"text":      buf.String(),
+			"count":     len(vs),
+			"groups":    visualizeGroups,
+			"max_items": visualizeMaxItems,
 		}
 
 		PrintResult("visualize", data, nil)

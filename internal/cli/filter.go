@@ -10,16 +10,16 @@ import (
 )
 
 var (
-	filterStable       bool
-	filterPrerelease   bool
-	filterMajor        string
-	filterMinor        string
-	filterPatch        string
-	filterPrefix       string
-	filterSuffix       string
-	filterConstraint   string
+	filterStable         bool
+	filterPrerelease     bool
+	filterMajor          string
+	filterMinor          string
+	filterPatch          string
+	filterPrefix         string
+	filterSuffix         string
+	filterConstraint     string
 	filterConstraintType string
-	filterFromFile     string
+	filterFromFile       string
 )
 
 var filterCmd = &cobra.Command{

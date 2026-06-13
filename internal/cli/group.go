@@ -9,7 +9,7 @@ import (
 )
 
 var (
-	groupID      string
+	groupID       string
 	groupFromFile string
 )
 

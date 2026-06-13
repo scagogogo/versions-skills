@@ -77,6 +77,7 @@ func (x VersionSuffix) IsEmpty() bool {
 //	if result < 0 {
 //	    fmt.Println("alpha1 后缀的优先级低于 beta1 后缀")
 //	}
+//
 // String 返回后缀的字符串表示
 //
 // 实现 fmt.Stringer 接口。

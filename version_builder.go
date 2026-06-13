@@ -127,7 +127,7 @@ func (x *Version) BumpMajor() *Version {
 	}
 	return NewVersionBuilder().
 		Prefix(string(x.Prefix)).
-		Major(x.Major()+1).
+		Major(x.Major() + 1).
 		Minor(0).
 		Patch(0).
 		Build()
@@ -143,7 +143,7 @@ func (x *Version) BumpMinor() *Version {
 	return NewVersionBuilder().
 		Prefix(string(x.Prefix)).
 		Major(x.Major()).
-		Minor(x.Minor()+1).
+		Minor(x.Minor() + 1).
 		Patch(0).
 		Build()
 }
@@ -159,6 +159,6 @@ func (x *Version) BumpPatch() *Version {
 		Prefix(string(x.Prefix)).
 		Major(x.Major()).
 		Minor(x.Minor()).
-		Patch(x.Patch()+1).
+		Patch(x.Patch() + 1).
 		Build()
 }

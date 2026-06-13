@@ -45,8 +45,8 @@ var partitionCmd = &cobra.Command{
 		matched, unmatched := versions.Partition(vs, predicate)
 
 		data := map[string]interface{}{
-			"matched":   verfmt.FormatVersionStrings(matched),
-			"unmatched": verfmt.FormatVersionStrings(unmatched),
+			"matched":         verfmt.FormatVersionStrings(matched),
+			"unmatched":       verfmt.FormatVersionStrings(unmatched),
 			"matched_count":   len(matched),
 			"unmatched_count": len(unmatched),
 		}

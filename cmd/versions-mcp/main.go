@@ -5,8 +5,8 @@ import (
 	"log"
 	"os"
 
-	"github.com/spf13/cobra"
 	mcpserver "github.com/scagogogo/versions-skills/internal/mcp"
+	"github.com/spf13/cobra"
 )
 
 var (

@@ -6,7 +6,7 @@ import (
 )
 
 var (
-	sortStringsDesc    bool
+	sortStringsDesc     bool
 	sortStringsFromFile string
 )
 

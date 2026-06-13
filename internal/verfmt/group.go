@@ -18,9 +18,9 @@ func FormatVersionGroup(g *versions.VersionGroup) map[string]interface{} {
 	latestPrerelease := g.LatestPrerelease()
 
 	result := map[string]interface{}{
-		"id":                 g.ID(),
-		"count":              g.Count(),
-		"versions":           FormatVersionStrings(g.SortVersions()),
+		"id":       g.ID(),
+		"count":    g.Count(),
+		"versions": FormatVersionStrings(g.SortVersions()),
 	}
 
 	if latest != nil {

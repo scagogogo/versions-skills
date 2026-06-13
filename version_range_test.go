@@ -58,7 +58,7 @@ func TestVersionRange_IsEmpty(t *testing.T) {
 	high := NewVersion("2.0.0")
 
 	assert.False(t, NewClosedRange(low, high).IsEmpty())
-	assert.True(t, NewOpenRange(low, low).IsEmpty())   // (1.0.0, 1.0.0) is empty
+	assert.True(t, NewOpenRange(low, low).IsEmpty())    // (1.0.0, 1.0.0) is empty
 	assert.False(t, NewClosedRange(low, low).IsEmpty()) // [1.0.0, 1.0.0] is not empty
 
 	reversedLow := NewVersion("2.0.0")
@@ -78,11 +78,11 @@ func TestIsSemver(t *testing.T) {
 	assert.True(t, NewVersion("0.0.0").IsSemver())
 
 	// Invalid semver
-	assert.False(t, NewVersion("1.2").IsSemver())       // only 2 segments
-	assert.False(t, NewVersion("1").IsSemver())         // only 1 segment
-	assert.False(t, NewVersion("01.2.3").IsSemver())    // leading zero
-	assert.False(t, NewVersion("1.02.3").IsSemver())    // leading zero
-	assert.False(t, NewVersion("1.2.03").IsSemver())    // leading zero
+	assert.False(t, NewVersion("1.2").IsSemver())    // only 2 segments
+	assert.False(t, NewVersion("1").IsSemver())      // only 1 segment
+	assert.False(t, NewVersion("01.2.3").IsSemver()) // leading zero
+	assert.False(t, NewVersion("1.02.3").IsSemver()) // leading zero
+	assert.False(t, NewVersion("1.2.03").IsSemver()) // leading zero
 }
 
 func TestValidateSemver(t *testing.T) {
