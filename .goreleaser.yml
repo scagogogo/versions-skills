@@ -161,10 +161,12 @@ archives:
       {{- .Version }}_
       {{- .Os }}_
       {{- .Arch }}
-    format: tar.gz
+    formats:
+      - tar.gz
     format_overrides:
       - goos: windows
-        format: zip
+        formats:
+          - zip
     files:
       - LICENSE
       - README.md
@@ -177,10 +179,12 @@ archives:
       {{- .Version }}_
       {{- .Os }}_
       {{- .Arch }}
-    format: tar.gz
+    formats:
+      - tar.gz
     format_overrides:
       - goos: windows
-        format: zip
+        formats:
+          - zip
     files:
       - LICENSE
       - README.md
@@ -189,7 +193,7 @@ checksum:
   name_template: "checksums.txt"
 
 snapshot:
-  name_template: "{{ incpatch .Version }}-next"
+  version_template: "{{ incpatch .Version }}-next"
 
 changelog:
   sort: asc
@@ -218,22 +222,6 @@ release:
   draft: false
   prerelease: auto
   mode: replace
-
-brews:
-  - name: versions
-    ids:
-      - versions
-    repository:
-      owner: scagogogo
-      name: homebrew-tap
-    directory: Formula
-    homepage: "https://github.com/scagogogo/versions-skills"
-    description: "A powerful version parsing, comparison, sorting, and grouping CLI and SDK"
-    license: MIT
-    test: |
-      system "#{bin}/versions version"
-    install: |
-      bin.install "versions"
 
 nfpms:
   - id: versions
