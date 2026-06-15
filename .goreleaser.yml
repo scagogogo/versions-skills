@@ -135,20 +135,115 @@ builds:
       - linux
       - darwin
       - windows
+      - freebsd
+      - openbsd
+      - netbsd
     goarch:
       - amd64
       - arm64
       - arm
       - "386"
+      - mips
+      - mipsle
+      - mips64
+      - mips64le
+      - ppc64
+      - ppc64le
+      - s390x
+      - riscv64
     goarm:
       - "7"
+    gomips:
+      - hardfloat
     ignore:
       - goos: darwin
         goarch: "386"
       - goos: darwin
         goarch: arm
+      - goos: darwin
+        goarch: mips
+      - goos: darwin
+        goarch: mipsle
+      - goos: darwin
+        goarch: mips64
+      - goos: darwin
+        goarch: mips64le
+      - goos: darwin
+        goarch: ppc64
+      - goos: darwin
+        goarch: ppc64le
+      - goos: darwin
+        goarch: s390x
+      - goos: darwin
+        goarch: riscv64
       - goos: windows
         goarch: arm
+      - goos: windows
+        goarch: mips
+      - goos: windows
+        goarch: mipsle
+      - goos: windows
+        goarch: mips64
+      - goos: windows
+        goarch: mips64le
+      - goos: windows
+        goarch: ppc64
+      - goos: windows
+        goarch: ppc64le
+      - goos: windows
+        goarch: s390x
+      - goos: windows
+        goarch: riscv64
+      - goos: freebsd
+        goarch: arm
+      - goos: freebsd
+        goarch: mips
+      - goos: freebsd
+        goarch: mipsle
+      - goos: freebsd
+        goarch: mips64
+      - goos: freebsd
+        goarch: mips64le
+      - goos: freebsd
+        goarch: riscv64
+      - goos: openbsd
+        goarch: arm
+      - goos: openbsd
+        goarch: "386"
+      - goos: openbsd
+        goarch: mips
+      - goos: openbsd
+        goarch: mipsle
+      - goos: openbsd
+        goarch: mips64
+      - goos: openbsd
+        goarch: mips64le
+      - goos: openbsd
+        goarch: ppc64
+      - goos: openbsd
+        goarch: ppc64le
+      - goos: openbsd
+        goarch: s390x
+      - goos: openbsd
+        goarch: riscv64
+      - goos: netbsd
+        goarch: arm
+      - goos: netbsd
+        goarch: mips
+      - goos: netbsd
+        goarch: mipsle
+      - goos: netbsd
+        goarch: mips64
+      - goos: netbsd
+        goarch: mips64le
+      - goos: netbsd
+        goarch: ppc64
+      - goos: netbsd
+        goarch: ppc64le
+      - goos: netbsd
+        goarch: s390x
+      - goos: netbsd
+        goarch: riscv64
     ldflags:
       - -s -w
 
@@ -161,12 +256,10 @@ archives:
       {{- .Version }}_
       {{- .Os }}_
       {{- .Arch }}
-    formats:
-      - tar.gz
+    format: tar.gz
     format_overrides:
       - goos: windows
-        formats:
-          - zip
+        format: zip
     files:
       - LICENSE
       - README.md
@@ -179,12 +272,10 @@ archives:
       {{- .Version }}_
       {{- .Os }}_
       {{- .Arch }}
-    formats:
-      - tar.gz
+    format: tar.gz
     format_overrides:
       - goos: windows
-        formats:
-          - zip
+        format: zip
     files:
       - LICENSE
       - README.md
@@ -230,6 +321,21 @@ nfpms:
     package_name: versions
     homepage: "https://github.com/scagogogo/versions-skills"
     description: "A powerful version parsing, comparison, sorting, and grouping CLI"
+    maintainer: scagogogo <scagogogo@gmail.com>
+    license: MIT
+    formats:
+      - deb
+      - rpm
+      - apk
+    section: utils
+    priority: optional
+
+  - id: versions-mcp
+    builds:
+      - versions-mcp
+    package_name: versions-mcp
+    homepage: "https://github.com/scagogogo/versions-skills"
+    description: "MCP server for version parsing, comparison, sorting, grouping, and constraint checking"
     maintainer: scagogogo <scagogogo@gmail.com>
     license: MIT
     formats:

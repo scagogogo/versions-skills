@@ -17,21 +17,49 @@ argument-hint: <cli-command-or-task>
 
 ### Option 1: Download from GitHub Releases (Recommended)
 
-Pre-built binaries are available for Linux, macOS, Windows, FreeBSD, OpenBSD, and NetBSD on amd64, arm64, arm, 386, and more architectures.
+Pre-built binaries are available for **Linux**, **macOS**, **Windows**, **FreeBSD**, **OpenBSD**, and **NetBSD** on **amd64**, **arm64**, **arm**, **386**, **mips**, **mipsle**, **mips64**, **mips64le**, **ppc64**, **ppc64le**, **s390x**, and **riscv64** architectures. Package managers: **deb**, **rpm**, **apk**.
+
+**Quick install (auto-detect platform):**
 
 ```bash
-# Download the latest release for your platform
-# Visit https://github.com/scagogogo/versions-skills/releases/latest
+# Linux/macOS — auto-detect and install the latest versions CLI
+curl -sL https://raw.githubusercontent.com/scagogogo/versions-skills/main/install.sh | bash
+```
 
-# Linux amd64 example:
-curl -sL https://github.com/scagogogo/versions-skills/releases/latest/download/versions_0.1.0_linux_amd64.tar.gz | tar xz
+**Manual platform-specific install:**
+
+Replace `{VERSION}` with the latest release tag (e.g. `0.1.0`) or use `/latest/download/` for the most recent release.
+
+```bash
+# Linux (amd64)
+curl -sL https://github.com/scagogogo/versions-skills/releases/latest/download/versions_{VERSION}_linux_amd64.tar.gz | tar xz
 chmod +x versions && sudo mv versions /usr/local/bin/
 
-# macOS arm64 (Apple Silicon) example:
-curl -sL https://github.com/scagogogo/versions-skills/releases/latest/download/versions_0.1.0_darwin_arm64.tar.gz | tar xz
+# Linux (arm64)
+curl -sL https://github.com/scagogogo/versions-skills/releases/latest/download/versions_{VERSION}_linux_arm64.tar.gz | tar xz
 chmod +x versions && sudo mv versions /usr/local/bin/
 
-# Windows: download the .zip from the releases page and extract
+# macOS (amd64 / Intel)
+curl -sL https://github.com/scagogogo/versions-skills/releases/latest/download/versions_{VERSION}_darwin_amd64.tar.gz | tar xz
+chmod +x versions && sudo mv versions /usr/local/bin/
+
+# macOS (arm64 / Apple Silicon)
+curl -sL https://github.com/scagogogo/versions-skills/releases/latest/download/versions_{VERSION}_darwin_arm64.tar.gz | tar xz
+chmod +x versions && sudo mv versions /usr/local/bin/
+
+# Windows (amd64) — download from releases page
+# https://github.com/scagogogo/versions-skills/releases/latest
+# Extract versions_{VERSION}_windows_amd64.zip
+
+# FreeBSD (amd64)
+curl -sL https://github.com/scagogogo/versions-skills/releases/latest/download/versions_{VERSION}_freebsd_amd64.tar.gz | tar xz
+chmod +x versions && sudo mv versions /usr/local/bin/
+
+# OpenBSD (amd64)
+curl -sL https://github.com/scagogogo/versions-skills/releases/latest/download/versions_{VERSION}_openbsd_amd64.tar.gz | tar xz
+
+# NetBSD (amd64)
+curl -sL https://github.com/scagogogo/versions-skills/releases/latest/download/versions_{VERSION}_netbsd_amd64.tar.gz | tar xz
 ```
 
 ### Option 2: Install via Go
@@ -43,15 +71,22 @@ go install github.com/scagogogo/versions-skills/cmd/versions@latest
 ### Option 3: Install from deb/rpm/apk package
 
 ```bash
-# Debian/Ubuntu:
-sudo dpkg -i versions_0.1.0_linux_amd64.deb
+# Debian/Ubuntu (.deb):
+curl -sLO https://github.com/scagogogo/versions-skills/releases/latest/download/versions_{VERSION}_linux_amd64.deb
+sudo dpkg -i versions_{VERSION}_linux_amd64.deb
 
-# RHEL/CentOS/Fedora:
-sudo rpm -i versions_0.1.0_linux_amd64.rpm
+# RHEL/CentOS/Fedora (.rpm):
+curl -sLO https://github.com/scagogogo/versions-skills/releases/latest/download/versions_{VERSION}_linux_amd64.rpm
+sudo rpm -i versions_{VERSION}_linux_amd64.rpm
 
-# Alpine:
-sudo apk add versions_0.1.0_linux_amd64.apk
+# Alpine (.apk):
+curl -sLO https://github.com/scagogogo/versions-skills/releases/latest/download/versions_{VERSION}_linux_amd64.apk
+sudo apk add versions_{VERSION}_linux_amd64.apk
 ```
+
+Replace `amd64` with `arm64`, `armv7`, `mips64le`, `ppc64le`, `riscv64`, or `s390x` as needed for your architecture.
+
+> **Note:** Package files (deb/rpm/apk) are available for Linux only. Replace `{VERSION}` with the actual release version (e.g. `0.2.0`). Check the [latest release page](https://github.com/scagogogo/versions-skills/releases/latest) for the current version and full asset list.
 
 ## Global Options
 

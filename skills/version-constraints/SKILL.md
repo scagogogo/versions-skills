@@ -13,6 +13,65 @@ argument-hint: <constraint-expression-or-task>
 - User needs to filter versions by semver ranges (caret, tilde, wildcards)
 - User is working with version expressions that combine AND/OR logic
 
+## Installation
+
+### SDK (Go library)
+
+```bash
+go get github.com/scagogogo/versions-skills
+```
+
+### CLI binary
+
+**Option A: Download from GitHub Releases (Recommended)**
+
+Pre-built binaries for Linux, macOS, Windows, FreeBSD, OpenBSD, and NetBSD on amd64, arm64, arm, 386, mips, mips64, mips64le, ppc64, ppc64le, s390x, and riscv64. Linux packages: deb, rpm, apk.
+
+```bash
+# Linux (amd64)
+curl -sL https://github.com/scagogogo/versions-skills/releases/latest/download/versions_{VERSION}_linux_amd64.tar.gz | tar xz
+chmod +x versions && sudo mv versions /usr/local/bin/
+
+# macOS (arm64 / Apple Silicon)
+curl -sL https://github.com/scagogogo/versions-skills/releases/latest/download/versions_{VERSION}_darwin_arm64.tar.gz | tar xz
+chmod +x versions && sudo mv versions /usr/local/bin/
+
+# Or install via package manager (Linux only):
+# Debian/Ubuntu: dpkg -i versions_{VERSION}_linux_amd64.deb
+# RHEL/Fedora:   rpm -i versions_{VERSION}_linux_amd64.rpm
+# Alpine:        apk add versions_{VERSION}_linux_amd64.apk
+```
+
+> Replace `{VERSION}` with the latest release tag (e.g. `0.2.0`). See the [releases page](https://github.com/scagogogo/versions-skills/releases/latest) for all available platforms and the current version.
+
+**Option B: Install via Go**
+
+```bash
+go install github.com/scagogogo/versions-skills/cmd/versions@latest
+```
+
+### MCP server
+
+**Option A: Download from GitHub Releases (Recommended)**
+
+```bash
+# Linux (amd64)
+curl -sL https://github.com/scagogogo/versions-skills/releases/latest/download/versions-mcp_{VERSION}_linux_amd64.tar.gz | tar xz
+chmod +x versions-mcp && sudo mv versions-mcp /usr/local/bin/
+
+# macOS (arm64 / Apple Silicon)
+curl -sL https://github.com/scagogogo/versions-skills/releases/latest/download/versions-mcp_{VERSION}_darwin_arm64.tar.gz | tar xz
+chmod +x versions-mcp && sudo mv versions-mcp /usr/local/bin/
+```
+
+> Replace `{VERSION}` with the latest release tag. See the [releases page](https://github.com/scagogogo/versions-skills/releases/latest) for all platforms.
+
+**Option B: Install via Go**
+
+```bash
+go install github.com/scagogogo/versions-skills/cmd/versions-mcp@latest
+```
+
 ## Constraint Syntax
 
 ### Operators
