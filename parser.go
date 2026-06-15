@@ -116,9 +116,10 @@ func (x *VersionStringParser) Parse() *Version {
 	}
 
 	// 采用一种迭代的方式，依次读取字符串中的每一个字符，从中提取出所有版本信息
+	// versionNumbers 在下方 readVersionNumbers 处被无条件赋值，因此这里仅声明、不预分配。
 	var (
 		prefix         string
-		versionNumbers = make([]int, 0)
+		versionNumbers []int
 		suffix         string
 	)
 

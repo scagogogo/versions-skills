@@ -28,7 +28,10 @@ func PrintResult(cmdName string, data interface{}, err error) {
 		if data != nil {
 			encoder := json.NewEncoder(os.Stdout)
 			encoder.SetIndent("", "  ")
-			encoder.Encode(data)
+			if err := encoder.Encode(data); err != nil {
+				fmt.Fprintf(os.Stderr, "JSON 编码失败: %v\n", err)
+				os.Exit(1)
+			}
 		}
 		return
 	}
