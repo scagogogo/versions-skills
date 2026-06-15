@@ -45,7 +45,7 @@ chmod +x versions && sudo mv versions /usr/local/bin/
 # Alpine:        apk add versions_{VERSION}_linux_amd64.apk
 ```
 
-> Replace `{VERSION}` with the latest release tag (e.g. `0.2.0`). See the [releases page](https://github.com/scagogogo/versions-skills/releases/latest) for all available platforms and the current version.
+> Replace `{VERSION}` with the latest release tag. See the [releases page](https://github.com/scagogogo/versions-skills/releases/latest) for all available platforms and the current version.
 
 **Option B: Install via Go**
 

@@ -4,7 +4,7 @@
 
 [![Go Tests](https://github.com/scagogogo/versions-skills/actions/workflows/go-test.yml/badge.svg)](https://github.com/scagogogo/versions-skills/actions/workflows/go-test.yml)
 [![Go Report Card](https://goreportcard.com/badge/github.com/scagogogo/versions-skills)](https://goreportcard.com/report/github.com/scagogogo/versions-skills)
-[![GoDoc](https://godoc.org/github.com/scagogogo/versions-skills?status.svg)](https://godoc.org/github.com/scagogogo/versions-skills)
+[![Go Reference](https://pkg.go.dev/badge/github.com/scagogogo/versions-skills.svg)](https://pkg.go.dev/github.com/scagogogo/versions-skills)
 [![GitHub Release](https://img.shields.io/github/v/release/scagogogo/versions-skills?include_prereleases)](https://github.com/scagogogo/versions-skills/releases/latest)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
@@ -47,7 +47,10 @@ fmt.Println(v.IsValid())  // true
 ### 💻 CLI — Recommended for scripts and CI/CD
 
 ```bash
-# Download from GitHub Releases (recommended)
+# One-line installer (Linux/macOS, auto-detects platform + version)
+curl -sL https://raw.githubusercontent.com/scagogogo/versions-skills/main/install.sh | bash
+
+# Or download a binary from GitHub Releases:
 # https://github.com/scagogogo/versions-skills/releases/latest
 
 # Or install via Go
@@ -319,6 +322,10 @@ go get github.com/scagogogo/versions-skills
 Pre-built binaries for **Linux**, **macOS**, **Windows**, **FreeBSD**, **OpenBSD**, and **NetBSD** on **amd64**, **arm64**, **arm**, **386**, **mips**, **mips64**, **mips64le**, **ppc64**, **ppc64le**, **s390x**, and **riscv64** architectures. Linux packages: **deb**, **rpm**, **apk**.
 
 ```bash
+# One-line installer (auto-detects platform + version):
+curl -sL https://raw.githubusercontent.com/scagogogo/versions-skills/main/install.sh | bash
+
+# Or download a specific binary manually:
 # Linux (amd64)
 curl -sL https://github.com/scagogogo/versions-skills/releases/latest/download/versions_{VERSION}_linux_amd64.tar.gz | tar xz
 chmod +x versions && sudo mv versions /usr/local/bin/
@@ -340,7 +347,7 @@ chmod +x versions && sudo mv versions /usr/local/bin/
 go install github.com/scagogogo/versions-skills/cmd/versions@latest
 ```
 
-> Replace `{VERSION}` with the latest release tag (e.g. `0.2.0`). See the [releases page](https://github.com/scagogogo/versions-skills/releases/latest) for all available platforms and the current version.
+> Prefer the one-line `install.sh` above, which resolves `{VERSION}` for you. For manual download, `{VERSION}` is the release tag shown at the top of the [releases page](https://github.com/scagogogo/versions-skills/releases/latest).
 
 ### MCP Server
 
@@ -353,7 +360,7 @@ chmod +x versions-mcp && sudo mv versions-mcp /usr/local/bin/
 go install github.com/scagogogo/versions-skills/cmd/versions-mcp@latest
 ```
 
-> Replace `{VERSION}` with the latest release tag. See the [releases page](https://github.com/scagogogo/versions-skills/releases/latest) for all platforms.
+> `{VERSION}` is the release tag shown at the top of the [releases page](https://github.com/scagogogo/versions-skills/releases/latest).
 
 ---
 

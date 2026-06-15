@@ -86,7 +86,7 @@ sudo apk add versions_{VERSION}_linux_amd64.apk
 
 Replace `amd64` with `arm64`, `armv7`, `mips64le`, `ppc64le`, `riscv64`, or `s390x` as needed for your architecture.
 
-> **Note:** Package files (deb/rpm/apk) are available for Linux only. Replace `{VERSION}` with the actual release version (e.g. `0.2.0`). Check the [latest release page](https://github.com/scagogogo/versions-skills/releases/latest) for the current version and full asset list.
+> **Note:** Package files (deb/rpm/apk) are available for Linux only. Replace `{VERSION}` with the actual release version. Check the [latest release page](https://github.com/scagogogo/versions-skills/releases/latest) for the current version and full asset list.
 
 ## Global Options
 
