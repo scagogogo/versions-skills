@@ -1,6 +1,7 @@
 {
   "name": "versions",
-  "description": "Go语言版本号解析计算SDK的Claude Code Skills — 提供版本号解析、比较、排序、分组、范围查询、可视化和文件操作的专业技能",
+  "displayName": "Versions-Skills",
+  "description": "Go version number parsing, comparison, sorting, grouping, constraint checking, visualization, and file operations — accessible via 13 specialized Claude Code skills, Go SDK, CLI, and MCP Server",
   "version": "0.1.0",
   "author": {
     "name": "scagogogo",
@@ -9,5 +10,5 @@
   "homepage": "https://github.com/scagogogo/versions-skills",
   "repository": "https://github.com/scagogogo/versions-skills",
   "license": "MIT",
-  "keywords": ["versions", "semver", "version-parsing", "version-sorting", "version-grouping", "go"]
+  "keywords": ["versions", "semver", "version-parsing", "version-sorting", "version-grouping", "version-constraints", "go", "mcp", "cli"]
 }

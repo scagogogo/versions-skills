@@ -316,26 +316,44 @@ go get github.com/scagogogo/versions-skills
 
 ### CLI Binary
 
-Download from [GitHub Releases](https://github.com/scagogogo/versions-skills/releases/latest):
+Pre-built binaries for **Linux**, **macOS**, **Windows**, **FreeBSD**, **OpenBSD**, and **NetBSD** on **amd64**, **arm64**, **arm**, **386**, **mips**, **mips64**, **mips64le**, **ppc64**, **ppc64le**, **s390x**, and **riscv64** architectures. Linux packages: **deb**, **rpm**, **apk**.
 
 ```bash
-# Linux amd64
-curl -sL https://github.com/scagogogo/versions-skills/releases/latest/download/versions_0.1.0_linux_amd64.tar.gz | tar xz
+# Linux (amd64)
+curl -sL https://github.com/scagogogo/versions-skills/releases/latest/download/versions_{VERSION}_linux_amd64.tar.gz | tar xz
 chmod +x versions && sudo mv versions /usr/local/bin/
 
 # macOS arm64 (Apple Silicon)
-curl -sL https://github.com/scagogogo/versions-skills/releases/latest/download/versions_0.1.0_darwin_arm64.tar.gz | tar xz
+curl -sL https://github.com/scagogogo/versions-skills/releases/latest/download/versions_{VERSION}_darwin_arm64.tar.gz | tar xz
 chmod +x versions && sudo mv versions /usr/local/bin/
+
+# macOS amd64 (Intel)
+curl -sL https://github.com/scagogogo/versions-skills/releases/latest/download/versions_{VERSION}_darwin_amd64.tar.gz | tar xz
+chmod +x versions && sudo mv versions /usr/local/bin/
+
+# Or install via package manager (Linux only):
+# Debian/Ubuntu: dpkg -i versions_{VERSION}_linux_amd64.deb
+# RHEL/Fedora:   rpm -i versions_{VERSION}_linux_amd64.rpm
+# Alpine:        apk add versions_{VERSION}_linux_amd64.apk
 
 # Or install via Go
 go install github.com/scagogogo/versions-skills/cmd/versions@latest
 ```
 
+> Replace `{VERSION}` with the latest release tag (e.g. `0.2.0`). See the [releases page](https://github.com/scagogogo/versions-skills/releases/latest) for all available platforms and the current version.
+
 ### MCP Server
 
 ```bash
+# Download binary from GitHub Releases
+curl -sL https://github.com/scagogogo/versions-skills/releases/latest/download/versions-mcp_{VERSION}_linux_amd64.tar.gz | tar xz
+chmod +x versions-mcp && sudo mv versions-mcp /usr/local/bin/
+
+# Or install via Go
 go install github.com/scagogogo/versions-skills/cmd/versions-mcp@latest
 ```
+
+> Replace `{VERSION}` with the latest release tag. See the [releases page](https://github.com/scagogogo/versions-skills/releases/latest) for all platforms.
 
 ---
 

@@ -1,6 +1,7 @@
 {
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
   "name": "versions",
-  "description": "Go语言版本号解析计算SDK的Claude Code Skills — 提供版本号解析、比较、排序、分组、范围查询、约束检查、可视化和文件操作的专业技能，同时支持CLI和MCP Server",
+  "description": "Go version number parsing, comparison, sorting, grouping, constraint checking, visualization, and file operations — accessible via 13 specialized Claude Code skills, Go SDK, CLI, and MCP Server",
   "owner": {
     "name": "scagogogo",
     "url": "https://github.com/scagogogo"
@@ -8,13 +9,17 @@
   "plugins": [
     {
       "name": "versions",
-      "description": "版本号解析、比较、排序、分组、范围查询、约束检查、可视化和文件操作的专业Skills",
-      "version": "0.2.0",
+      "description": "Professional skills for version number parsing, comparison, sorting, grouping, range queries, constraint checking, visualization, and file operations — with Go SDK, CLI, and MCP Server support",
+      "version": "0.1.0",
       "source": "./",
+      "category": "development",
       "author": {
         "name": "scagogogo",
         "url": "https://github.com/scagogogo"
-      }
+      },
+      "homepage": "https://github.com/scagogogo/versions-skills",
+      "keywords": ["versions", "semver", "version-parsing", "version-sorting", "version-grouping", "version-constraints", "go", "mcp", "cli"],
+      "tags": ["community-managed"]
     }
   ]
 }

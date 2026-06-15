@@ -6,6 +6,7 @@ on:
     paths:
       - 'cmd/**'
       - 'internal/**'
+      - '*.go'
       - 'go.mod'
       - 'go.sum'
   pull_request:
@@ -13,6 +14,7 @@ on:
     paths:
       - 'cmd/**'
       - 'internal/**'
+      - '*.go'
       - 'go.mod'
       - 'go.sum'
 
@@ -21,10 +23,16 @@ permissions:
 
 jobs:
   build:
+    name: Build (${{ matrix.goos }}/${{ matrix.goarch }})
     runs-on: ubuntu-latest
     strategy:
       matrix:
         go: ['1.23']
+        goos: [linux, darwin, windows]
+        goarch: [amd64, arm64]
+        exclude:
+          - goos: darwin
+            goarch: "386"
     steps:
       - uses: actions/checkout@v4
 
@@ -33,18 +41,45 @@ jobs:
         with:
           go-version: ${{ matrix.go }}
 
+      - name: Build CLI (${{ matrix.goos }}/${{ matrix.goarch }})
+        run: GOOS=${{ matrix.goos }} GOARCH=${{ matrix.goarch }} go build -o versions-${{ matrix.goos }}-${{ matrix.goarch }} ./cmd/versions
+
+      - name: Build MCP Server (${{ matrix.goos }}/${{ matrix.goarch }})
+        run: GOOS=${{ matrix.goos }} GOARCH=${{ matrix.goarch }} go build -o versions-mcp-${{ matrix.goos }}-${{ matrix.goarch }} ./cmd/versions-mcp
+
+  test-cli:
+    name: CLI Smoke Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.23'
+
       - name: Build CLI
         run: go build -o versions ./cmd/versions
 
-      - name: Build MCP Server
-        run: go build -o versions-mcp ./cmd/versions-mcp
-
-      - name: Test CLI
+      - name: Smoke test CLI
         run: |
           ./versions --version || true
           ./versions parse 1.2.3
           ./versions compare 1.0.0 2.0.0
           ./versions sort 3.0.0 1.0.0 2.0.0
+          ./versions info v1.2.3-beta1
+          ./versions validate 1.2.3
+          ./versions check --stable 1.2.3
+          ./versions group 1.0.0 1.1.0 2.0.0
+          echo "✅ CLI smoke tests passed"
+
+      - name: Build MCP Server
+        run: go build -o versions-mcp ./cmd/versions-mcp
+
+      - name: Smoke test MCP Server
+        run: |
+          ./versions-mcp --help || true
+          echo "✅ MCP server builds successfully"
 
       - name: Run SDK tests
         run: go test -race ./...

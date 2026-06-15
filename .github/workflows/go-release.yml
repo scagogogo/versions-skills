@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   test:
-    name: 测试
+    name: Tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -25,9 +25,26 @@ jobs:
       - name: Run tests
         run: go test -race ./...
 
+  validate-plugin:
+    name: Validate Plugin
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate plugin manifests
+        run: |
+          # Validate marketplace.json and plugin.json
+          # This requires claude CLI to be available
+          if command -v claude &> /dev/null; then
+            claude plugin validate . --strict
+          else
+            echo "⚠ claude CLI not available, skipping plugin validation"
+            echo "Run 'claude plugin validate . --strict' locally before releasing"
+          fi
+
   goreleaser:
-    name: 发布
-    needs: test
+    name: Release
+    needs: [test, validate-plugin]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

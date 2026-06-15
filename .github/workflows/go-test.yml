@@ -12,7 +12,7 @@ permissions:
 
 jobs:
   unit-test:
-    name: 单元测试
+    name: Unit Tests
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -24,11 +24,11 @@ jobs:
           go-version: '1.23'
           check-latest: true
 
-      - name: 执行单元测试
+      - name: Run unit tests
         run: go test -v -race ./...
 
   coverage:
-    name: 覆盖率分析
+    name: Coverage Analysis
     needs: unit-test
     runs-on: ubuntu-latest
     steps:
@@ -41,13 +41,13 @@ jobs:
           go-version: '1.23'
           check-latest: true
 
-      - name: 生成测试覆盖率报告
+      - name: Generate coverage report
         run: |
           go test -coverprofile=coverage.out -race ./...
           go tool cover -func=coverage.out
 
   lint:
-    name: 代码检查
+    name: Code Quality
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -66,13 +66,16 @@ jobs:
         run: |
           output=$(gofmt -l .)
           if [ -n "$output" ]; then
-            echo "❌ 以下文件格式不正确："
+            echo "❌ The following files are not properly formatted:"
             echo "$output"
+            echo ""
+            echo "Run 'gofmt -w .' to fix formatting."
             exit 1
           fi
+          echo "✅ All files are properly formatted."
 
   examples:
-    name: 示例代码验证
+    name: Examples Verification
     needs: unit-test
     runs-on: ubuntu-latest
     steps:
@@ -85,23 +88,23 @@ jobs:
           go-version: '1.23'
           check-latest: true
 
-      - name: 运行示例代码
+      - name: Run all examples
         run: |
-          echo "运行所有示例代码..."
+          echo "Running all examples..."
           for example_dir in examples/*/; do
             if [ -f "${example_dir}main.go" ]; then
               echo "========================================"
-              echo "运行示例: ${example_dir}"
+              echo "Running: ${example_dir}"
               echo "========================================"
               go run ${example_dir}main.go
 
               if [ $? -ne 0 ]; then
-                echo "❌ 示例运行失败: ${example_dir}"
+                echo "❌ Example failed: ${example_dir}"
                 exit 1
               else
-                echo "✅ 示例运行成功: ${example_dir}"
+                echo "✅ Example succeeded: ${example_dir}"
               fi
               echo ""
             fi
           done
-          echo "所有示例运行完成！"
+          echo "All examples ran successfully!"

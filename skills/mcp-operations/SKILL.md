@@ -19,20 +19,59 @@ Install the MCP server binary:
 
 ### Option 1: Download from GitHub Releases (Recommended)
 
+Pre-built binaries for **versions-mcp** are available for **Linux**, **macOS**, **Windows**, **FreeBSD**, **OpenBSD**, and **NetBSD** on **amd64**, **arm64**, **arm**, **386**, **mips**, **mipsle**, **mips64**, **mips64le**, **ppc64**, **ppc64le**, **s390x**, and **riscv64** architectures. Linux packages: **deb**, **rpm**, **apk**.
+
+Replace `{VERSION}` with the latest release tag (e.g. `0.1.0`) or use `/latest/download/` for the most recent release.
+
 ```bash
-# Visit https://github.com/scagogogo/versions-skills/releases/latest
-# Download versions-mcp for your platform
-
-# Linux amd64 example:
-curl -sL https://github.com/scagogogo/versions-skills/releases/latest/download/versions-mcp_0.1.0_linux_amd64.tar.gz | tar xz
+# Linux (amd64)
+curl -sL https://github.com/scagogogo/versions-skills/releases/latest/download/versions-mcp_{VERSION}_linux_amd64.tar.gz | tar xz
 chmod +x versions-mcp && sudo mv versions-mcp /usr/local/bin/
 
-# macOS arm64 (Apple Silicon) example:
-curl -sL https://github.com/scagogogo/versions-skills/releases/latest/download/versions-mcp_0.1.0_darwin_arm64.tar.gz | tar xz
+# Linux (arm64)
+curl -sL https://github.com/scagogogo/versions-skills/releases/latest/download/versions-mcp_{VERSION}_linux_arm64.tar.gz | tar xz
 chmod +x versions-mcp && sudo mv versions-mcp /usr/local/bin/
 
-# Windows: download the .zip from the releases page and extract
+# macOS (amd64 / Intel)
+curl -sL https://github.com/scagogogo/versions-skills/releases/latest/download/versions-mcp_{VERSION}_darwin_amd64.tar.gz | tar xz
+chmod +x versions-mcp && sudo mv versions-mcp /usr/local/bin/
+
+# macOS (arm64 / Apple Silicon)
+curl -sL https://github.com/scagogogo/versions-skills/releases/latest/download/versions-mcp_{VERSION}_darwin_arm64.tar.gz | tar xz
+chmod +x versions-mcp && sudo mv versions-mcp /usr/local/bin/
+
+# Windows (amd64) — download from releases page
+# https://github.com/scagogogo/versions-skills/releases/latest
+# Extract versions-mcp_{VERSION}_windows_amd64.zip
+
+# FreeBSD (amd64)
+curl -sL https://github.com/scagogogo/versions-skills/releases/latest/download/versions-mcp_{VERSION}_freebsd_amd64.tar.gz | tar xz
+chmod +x versions-mcp && sudo mv versions-mcp /usr/local/bin/
+
+# OpenBSD (amd64)
+curl -sL https://github.com/scagogogo/versions-skills/releases/latest/download/versions-mcp_{VERSION}_openbsd_amd64.tar.gz | tar xz
+
+# NetBSD (amd64)
+curl -sL https://github.com/scagogogo/versions-skills/releases/latest/download/versions-mcp_{VERSION}_netbsd_amd64.tar.gz | tar xz
 ```
+
+**Linux package install:**
+
+```bash
+# Debian/Ubuntu (.deb):
+curl -sLO https://github.com/scagogogo/versions-skills/releases/latest/download/versions-mcp_{VERSION}_linux_amd64.deb
+sudo dpkg -i versions-mcp_{VERSION}_linux_amd64.deb
+
+# RHEL/CentOS/Fedora (.rpm):
+curl -sLO https://github.com/scagogogo/versions-skills/releases/latest/download/versions-mcp_{VERSION}_linux_amd64.rpm
+sudo rpm -i versions-mcp_{VERSION}_linux_amd64.rpm
+
+# Alpine (.apk):
+curl -sLO https://github.com/scagogogo/versions-skills/releases/latest/download/versions-mcp_{VERSION}_linux_amd64.apk
+sudo apk add versions-mcp_{VERSION}_linux_amd64.apk
+```
+
+> **Note:** Replace `{VERSION}` with the actual release version (e.g. `0.2.0`). Replace `amd64` with your architecture. Check the [latest release page](https://github.com/scagogogo/versions-skills/releases/latest) for the current version and full asset list.
 
 ### Option 2: Install via Go
 
