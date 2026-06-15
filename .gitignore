@@ -1,2 +1,29 @@
+# Binaries / build outputs
+/versions
+/versions-mcp
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+/dist/
+
+# Test / coverage artifacts
+coverage.out
+coverage.html
+*.prof
+
+# Go workspace
+go.work
+go.work.sum
+
+# Editor / OS
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*~
+
+# Legacy local dirs
 test
 test2
