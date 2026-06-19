@@ -13,6 +13,42 @@ linters:
     - revive
     - misspell
 
+  settings:
+    errcheck:
+      # CLI and visualization code intentionally ignore fmt.Fprintf/Fprintln return values
+      # (writing to stdout/writers — errors are not actionable)
+      exclude-functions:
+        - fmt.Fprintln
+        - fmt.Fprintf
+        - (io.Writer).Write
+    revive:
+      rules:
+        # Cobra command Run functions always receive (cmd, args) — cmd is often unused
+        - name: unused-parameter
+          disabled: true
+        # Existing codebase uses mixed receiver names (v vs x) — not changing now
+        - name: receiver-naming
+          disabled: true
+        # Package comments are nice-to-have, not blockers
+        - name: package-comments
+          disabled: true
+        # Existing codebase has some else-after-return patterns
+        - name: indent-error-flow
+          disabled: true
+        # min/max predate Go 1.21 builtins — kept for backward compat
+        - name: redefines-builtin-id
+          disabled: true
+        # Exported method without comment — existing code, not blocking
+        - name: exported
+          disabled: true
+        # superfluous-else — style preference
+        - name: superfluous-else
+          disabled: true
+    staticcheck:
+      checks:
+        - all
+        - -QF1003  # tagged switch suggestion — style preference
+
 formatters:
   enable:
     - gofmt
