@@ -145,7 +145,7 @@ func printMapAsTable(w io.Writer, m map[string]interface{}) {
 			fmt.Fprintf(tw, "%s\t%v\n", k, v)
 		}
 	}
-	tw.Flush()
+	_ = tw.Flush()
 }
 
 // printSliceOfMapAsTable 将 []map[string]interface{} 以对齐表格形式输出
@@ -195,7 +195,7 @@ func printSliceOfMapAsTable(w io.Writer, items []map[string]interface{}) {
 		fmt.Fprintf(tw, "%s", strings.Join(vals, "\t"))
 		fmt.Fprintln(tw)
 	}
-	tw.Flush()
+	_ = tw.Flush()
 }
 
 // printMapAsText 将 map 以缩进文本形式输出

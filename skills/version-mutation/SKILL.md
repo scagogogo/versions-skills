@@ -1,133 +1,120 @@
 ---
 name: version-mutation
-description: Use when modifying version numbers — bumping, setting components, stripping suffixes, or building from parts. Covers BumpMajor/Minor/Patch, With* immutable modifications, Core, and VersionBuilder via SDK, CLI, and MCP.
-argument-hint: <version-mutation-task>
+description: Bump version numbers, modify version components, strip suffixes, or construct versions from parts.
+argument-hint: <mutation-task>
 ---
 
-# Version Mutation Skill
+# Version Mutation
+
+> **Setup:** See `/installation` for one-time SDK/CLI/MCP install.  
+> **Layers:** SDK (Go) → CLI (shell) → MCP (AI tools) — pick your entry point.
 
 ## When to Use
 
-- User needs to bump a version number (major, minor, or patch)
-- User needs to change a specific component of a version (prefix, suffix, major, minor, patch, numbers)
-- User needs to strip a version's suffix to get the core version
-- User needs to construct a version from individual parts
+- Bumping a version number (major, minor, or patch) for a release
+- Changing a specific component: prefix, suffix, major, minor, patch, or all numbers
+- Stripping a suffix to get the core version
+- Constructing a version from individual parts (prefix, numbers, suffix)
 
-## Installation
+## Decision Tree
 
-### SDK (Go library)
-
-```bash
-go get github.com/scagogogo/versions-skills
+```
+Need to increment a version for release?
+  → Use BumpMajor / BumpMinor / BumpPatch (clears suffix)
+Need to change one field while keeping the rest?
+  → Use With* methods (immutable, preserves suffix)
+Need to strip the suffix?
+  → Use Core()
+Need to build from scratch?
+  → Use VersionBuilder or version_build
 ```
 
-### CLI binary
+## Task Patterns
 
-**Option A: Download from GitHub Releases (Recommended)**
+### Bump a version for release
 
-Pre-built binaries for Linux, macOS, Windows, FreeBSD, OpenBSD, and NetBSD on amd64, arm64, arm, 386, mips, mips64, mips64le, ppc64, ppc64le, s390x, and riscv64. Linux packages: deb, rpm, apk.
+**Goal:** Increment the version number and clear the prerelease suffix.
 
-```bash
-# Linux (amd64)
-curl -sL https://github.com/scagogogo/versions-skills/releases/latest/download/versions_{VERSION}_linux_amd64.tar.gz | tar xz
-chmod +x versions && sudo mv versions /usr/local/bin/
+| Layer | Approach |
+|-------|----------|
+| SDK | `v := versions.NewVersion("1.2.3-beta1"); next := v.BumpPatch()` |
+| CLI | `versions bump 1.2.3-beta1 --patch` |
+| MCP | `{"tool": "version_bump", "arguments": {"version_string": "1.2.3-beta1", "bump_type": "patch"}}` |
 
-# macOS (arm64 / Apple Silicon)
-curl -sL https://github.com/scagogogo/versions-skills/releases/latest/download/versions_{VERSION}_darwin_arm64.tar.gz | tar xz
-chmod +x versions && sudo mv versions /usr/local/bin/
+### Change one component immutably
 
-# Or install via package manager (Linux only):
-# Debian/Ubuntu: dpkg -i versions_{VERSION}_linux_amd64.deb
-# RHEL/Fedora:   rpm -i versions_{VERSION}_linux_amd64.rpm
-# Alpine:        apk add versions_{VERSION}_linux_amd64.apk
-```
+**Goal:** Modify a single field (prefix, suffix, major, minor, patch) without affecting others.
 
-> Replace `{VERSION}` with the latest release tag. See the [releases page](https://github.com/scagogogo/versions-skills/releases/latest) for all available platforms and the current version.
+| Layer | Approach |
+|-------|----------|
+| SDK | `v.WithPrefix("v")`, `v.WithMajor(2)`, `v.WithSuffix("-beta1")` |
+| CLI | `versions set-prefix 1.2.3 v`, `versions set-major 1.2.3 2`, `versions set-suffix 1.2.3 -- -beta1` |
+| MCP | `{"tool": "version_build", "arguments": {"prefix": "v", "major": 2, "minor": 0, "patch": 0}}` |
 
-**Option B: Install via Go**
+### Strip suffix to get core version
 
-```bash
-go install github.com/scagogogo/versions-skills/cmd/versions@latest
-```
+**Goal:** Remove the prerelease suffix, keeping prefix and numbers.
 
-### MCP server
+| Layer | Approach |
+|-------|----------|
+| SDK | `v.Core()` → `"v1.2.3"` from `"v1.2.3-beta1"` |
+| CLI | `versions core v1.2.3-beta1` |
+| MCP | `{"tool": "version_core", "arguments": {"version_string": "v1.2.3-beta1"}}` |
 
-**Option A: Download from GitHub Releases (Recommended)**
+### Build a version from parts
 
-```bash
-# Linux (amd64)
-curl -sL https://github.com/scagogogo/versions-skills/releases/latest/download/versions-mcp_{VERSION}_linux_amd64.tar.gz | tar xz
-chmod +x versions-mcp && sudo mv versions-mcp /usr/local/bin/
+**Goal:** Construct a version string from individual components.
 
-# macOS (arm64 / Apple Silicon)
-curl -sL https://github.com/scagogogo/versions-skills/releases/latest/download/versions-mcp_{VERSION}_darwin_arm64.tar.gz | tar xz
-chmod +x versions-mcp && sudo mv versions-mcp /usr/local/bin/
-```
+| Layer | Approach |
+|-------|----------|
+| SDK | `versions.NewVersionBuilder().Prefix("v").Major(1).Minor(2).Patch(3).Suffix("-alpha1").Build()` |
+| CLI | `versions build --prefix v --major 1 --minor 2 --patch 3 --suffix -alpha1` |
+| MCP | `{"tool": "version_build", "arguments": {"prefix": "v", "major": 1, "minor": 2, "patch": 3, "suffix": "-alpha1"}}` |
 
-> Replace `{VERSION}` with the latest release tag. See the [releases page](https://github.com/scagogogo/versions-skills/releases/latest) for all platforms.
+### Replace all version numbers
 
-**Option B: Install via Go**
+**Goal:** Change all numeric segments while keeping prefix and suffix.
 
-```bash
-go install github.com/scagogogo/versions-skills/cmd/versions-mcp@latest
-```
+| Layer | Approach |
+|-------|----------|
+| SDK | `v.WithNumbers([]int{4, 5, 6})` → `"v4.5.6-beta1"` |
+| CLI | `versions set-numbers v1.2.3 4,5,6` |
+| MCP | `{"tool": "version_build", "arguments": {"prefix": "v", "numbers": [4, 5, 6], "suffix": "-beta1"}}` |
 
-**SDK:**
-```go
-v := versions.NewVersion("1.2.3-beta1")
-v.BumpMinor()          // 1.3.0
-v.Core()               // 1.2.3
-v.WithPrefix("v")      // v1.2.3-beta1
-```
+## API Reference
 
-**CLI:**
-```bash
-versions bump 1.2.3 --minor       # 1.3.0
-versions core v1.2.3-beta1        # v1.2.3
-versions set-prefix 1.2.3 v       # v1.2.3
-versions build --major 1 --minor 2 --patch 3  # 1.2.3
-```
-
-**MCP:**
-```
-version_bump(version_string="1.2.3", bump_type="minor")
-version_core(version_string="v1.2.3-beta1")
-version_build(major=1, minor=2, patch=3)
-```
-
-## API Reference — SDK
-
-### Bump Operations
+### SDK — Bump Operations
 
 All bump methods clear the suffix and return a new Version:
 
-| Method | Example | Result |
-|--------|---------|--------|
-| `BumpMajor()` | 1.2.3 → | 2.0.0 |
-| `BumpMinor()` | 1.2.3 → | 1.3.0 |
-| `BumpPatch()` | 1.2.3 → | 1.2.4 |
+```go
+v.BumpMajor() *Version  // 1.2.3 → 2.0.0
+v.BumpMinor() *Version  // 1.2.3 → 1.3.0
+v.BumpPatch() *Version  // 1.2.3 → 1.2.4
+```
 
-### Immutable Modification (With* methods)
+### SDK — Immutable Modification (With* methods)
 
 All `With*` methods return a **new** Version — the original is never modified:
 
-| Method | Signature | Description |
-|--------|-----------|-------------|
-| `WithPrefix(prefix string)` | `*Version` | Change prefix (e.g. "" → "v") |
-| `WithSuffix(suffix string)` | `*Version` | Change suffix (e.g. "" → "-beta1") |
-| `WithMajor(major int)` | `*Version` | Change Major number |
-| `WithMinor(minor int)` | `*Version` | Change Minor number |
-| `WithPatch(patch int)` | `*Version` | Change Patch number |
-| `WithNumbers(numbers []int)` | `*Version` | Replace all version numbers |
-| `WithPublicTime(t time.Time)` | `*Version` | Set release time |
+```go
+v.WithPrefix(prefix string) *Version       // change prefix (e.g. "" → "v")
+v.WithSuffix(suffix string) *Version       // change suffix (e.g. "" → "-beta1")
+v.WithMajor(major int) *Version            // change Major number
+v.WithMinor(minor int) *Version            // change Minor number
+v.WithPatch(patch int) *Version            // change Patch number
+v.WithNumbers(numbers []int) *Version      // replace all version numbers
+v.WithPublicTime(t time.Time) *Version     // set release time
+v.WithMetadata(m string) *Version          // set build metadata
+```
 
-### Core
+### SDK — Core
 
-**func (v *Version) Core() *Version**
+```go
+v.Core() *Version  // strip suffix, e.g. "v1.2.3-beta1" → "v1.2.3"
+```
 
-Returns a new Version with the suffix removed. E.g. `v1.2.3-beta1` → `v1.2.3`.
-
-### VersionBuilder
+### SDK — VersionBuilder
 
 ```go
 builder := versions.NewVersionBuilder()
@@ -140,100 +127,50 @@ builder.Numbers([]int{1, 2, 3, 4})  // overrides Major/Minor/Patch
 v := builder.Build()
 ```
 
-## CLI Commands
-
-### Bump
+### CLI Commands
 
 ```bash
-versions bump 1.2.3 --major    # 2.0.0
-versions bump 1.2.3 --minor    # 1.3.0
-versions bump 1.2.3 --patch    # 1.2.4
+# Bump
+versions bump <v> --major              # 2.0.0
+versions bump <v> --minor              # 1.3.0
+versions bump <v> --patch              # 1.2.4
+
+# Core (strip suffix)
+versions core <v>                      # strip suffix
+
+# Set (immutable modification)
+versions set-prefix <v> <prefix>       # change prefix
+versions set-suffix <v> -- <suffix>    # change suffix (-- required for -prefix)
+versions set-major <v> <n>             # change Major
+versions set-minor <v> <n>             # change Minor
+versions set-patch <v> <n>             # change Patch
+versions set-numbers <v> <n,n,...>     # replace all numbers
+
+# Build
+versions build --prefix v --major 1 --minor 2 --patch 3
+versions build --numbers 1,2,3,4
+versions build --prefix v --major 1 --suffix -alpha1
 ```
 
-### Core (strip suffix)
+### MCP Tools
 
-```bash
-versions core v1.2.3-beta1     # v1.2.3
-```
+| Tool | Arguments | Returns |
+|------|-----------|---------|
+| `version_bump` | `version_string`, `bump_type` (major/minor/patch) | bumped version string |
+| `version_core` | `version_string` | core version string |
+| `version_build` | `prefix?`, `major?`, `minor?`, `patch?`, `suffix?`, `numbers?` | constructed version string |
 
-### Set (immutable modification)
+## Cross-References
 
-```bash
-versions set-prefix 1.2.3 v           # v1.2.3
-versions set-suffix 1.2.3 -- -beta1   # 1.2.3-beta1
-versions set-major 1.2.3 2            # 2.2.3
-versions set-minor 1.2.3 5            # 1.5.3
-versions set-patch 1.2.3 9            # 1.2.9
-versions set-numbers v1.2.3 4,5,6     # v4.5.6
-```
-
-### Build
-
-```bash
-versions build --prefix v --major 1 --minor 2 --patch 3    # v1.2.3
-versions build --numbers 1,2,3,4                            # 1.2.3.4
-versions build --prefix v --major 1 --suffix -alpha1        # v1.0.0-alpha1
-```
-
-## MCP Tools
-
-| Tool | Parameters | Description |
-|------|-----------|-------------|
-| `version_bump` | `version_string`, `bump_type` (major/minor/patch) | Bump version |
-| `version_core` | `version_string` | Strip suffix |
-| `version_build` | `prefix`, `major`, `minor`, `patch`, `suffix` | Build version |
-
-## Code Examples
-
-```go
-package main
-
-import (
-    "fmt"
-    "github.com/scagogogo/versions-skills"
-)
-
-func main() {
-    v := versions.NewVersion("1.2.3-beta1")
-
-    // Bump operations (clear suffix)
-    fmt.Println(v.BumpMajor())  // 2.0.0
-    fmt.Println(v.BumpMinor())  // 1.3.0
-    fmt.Println(v.BumpPatch())  // 1.2.4
-    fmt.Println(v)               // 1.2.3-beta1 (original unchanged!)
-
-    // Core (strip suffix)
-    fmt.Println(v.Core())        // 1.2.3
-
-    // Immutable modifications
-    v2 := v.WithPrefix("v")
-    fmt.Println(v2)  // v1.2.3-beta1
-
-    v3 := v.WithSuffix("")
-    fmt.Println(v3)  // 1.2.3
-
-    v4 := v.WithMajor(2)
-    fmt.Println(v4)  // 2.2.3-beta1
-
-    v5 := v.WithNumbers([]int{4, 5, 6})
-    fmt.Println(v5)  // 4.5.6-beta1
-
-    // Builder pattern
-    built := versions.NewVersionBuilder().
-        Prefix("v").
-        Major(2).
-        Minor(0).
-        Patch(0).
-        Build()
-    fmt.Println(built)  // v2.0.0
-}
-```
+- [[version-check]] — check if a version is stable/prerelease before bumping
+- [[version-properties]] — inspect version components before mutation
+- [[version-parsing]] — parse version strings before mutating
 
 ## Important Notes
 
-- All `With*` and `Bump*` methods are **immutable** — they return a new Version, leaving the original unchanged
-- `Bump*` methods also **clear the suffix** (e.g. `1.2.3-beta1.BumpPatch()` → `1.2.4`, not `1.2.4-beta1`)
-- `With*` methods **preserve the suffix** unless you explicitly change it
-- `WithNumbers` replaces ALL version numbers, overriding `Major/Minor/Patch` in the builder
-- CLI `set-*` commands require `--` before suffixes starting with `-`: `versions set-suffix 1.2.3 -- -beta1`
-- The `VersionBuilder` is the most flexible construction method — use `Numbers()` for arbitrary-segment versions like `1.2.3.4.5`
+- **All `With*` and `Bump*` methods are immutable** — they return a new Version; the original is unchanged.
+- **`Bump*` clears the suffix**: `1.2.3-beta1.BumpPatch()` returns `1.2.4`, not `1.2.4-beta1`.
+- **`With*` preserves the suffix** unless you explicitly change it with `WithSuffix`.
+- **CLI `set-suffix` needs `--`**: suffixes starting with `-` require `--` separator: `versions set-suffix 1.2.3 -- -beta1`.
+- **`WithNumbers` replaces ALL numbers**, overriding Major/Minor/Patch in the builder.
+- **`VersionBuilder.Numbers()` overrides Major/Minor/Patch** — use it for arbitrary-segment versions like `1.2.3.4.5`.

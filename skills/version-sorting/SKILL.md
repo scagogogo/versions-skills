@@ -1,322 +1,258 @@
 ---
 name: version-sorting
-description: Use when sorting a list of version numbers in natural order. Covers SDK, CLI, and MCP access paths for version sorting operations.
-argument-hint: <version-sorting-task>
+description: Sort a list of version strings or Version objects in natural (semantic) order. Use when you need to order versions, find the latest/oldest in a collection, or display versions in ascending/descending order.
+argument-hint: <version1> <version2> ... <versionN>
 ---
 
-# Version Sorting Skill
+# Version Sorting
+
+> **Setup:** See `/installation` for one-time SDK/CLI/MCP install.  
+> **Layers:** SDK (Go) → CLI (shell) → MCP (AI tools) — pick your entry point.
 
 ## When to Use
 
-- User needs to sort a list of version strings or Version objects
-- User needs to find the latest or oldest version in a collection
-- User needs to display versions in ascending or descending order
-- User is implementing version selection UI or dependency resolution
-- User wants to sort versions read from a file
+- You have a list of version strings and need them in natural order
+- You need to find the latest or oldest version in a collection
+- You need to display versions in ascending or descending order
+- You are implementing version selection UI or dependency resolution
+- You need to sort versions read from a file
 
-## Installation
+## Decision Tree
 
-### SDK (Go library)
-
-```bash
-go get github.com/scagogogo/versions-skills
+```
+Need to sort versions?
+├─ Input is []string?                → SortVersionStringSlice() / versions sort / version_sort
+├─ Input is []*Version?              → SortVersionSlice() or VersionSlice + sort.Sort()
+├─ Need descending order?            → SortVersionStringSlice then reverse / --desc / descending:true
+├─ Input is from a file?             → versions sort --from-file <path>
+├─ Need to sort version groups?      → SortVersionGroupMap() or SortVersionGroupSlice()
+└─ Need latest/oldest after sort?    → Sort ascending, then take first (oldest) or last (latest)
 ```
 
-### CLI binary
+## Task Patterns
 
-**Option A: Download from GitHub Releases (Recommended)**
+### Sort version strings in ascending order
 
-Pre-built binaries for Linux, macOS, Windows, FreeBSD, OpenBSD, and NetBSD on amd64, arm64, arm, 386, mips, mips64, mips64le, ppc64, ppc64le, s390x, and riscv64. Linux packages: deb, rpm, apk.
+**Goal:** Sort `["2.0.0", "1.0.0", "1.10.0", "1.2.0"]` to `["1.0.0", "1.2.0", "1.10.0", "2.0.0"]`.
 
-```bash
-# Linux (amd64)
-curl -sL https://github.com/scagogogo/versions-skills/releases/latest/download/versions_{VERSION}_linux_amd64.tar.gz | tar xz
-chmod +x versions && sudo mv versions /usr/local/bin/
-
-# macOS (arm64 / Apple Silicon)
-curl -sL https://github.com/scagogogo/versions-skills/releases/latest/download/versions_{VERSION}_darwin_arm64.tar.gz | tar xz
-chmod +x versions && sudo mv versions /usr/local/bin/
-
-# Or install via package manager (Linux only):
-# Debian/Ubuntu: dpkg -i versions_{VERSION}_linux_amd64.deb
-# RHEL/Fedora:   rpm -i versions_{VERSION}_linux_amd64.rpm
-# Alpine:        apk add versions_{VERSION}_linux_amd64.apk
-```
-
-> Replace `{VERSION}` with the latest release tag. See the [releases page](https://github.com/scagogogo/versions-skills/releases/latest) for all available platforms and the current version.
-
-**Option B: Install via Go**
-
-```bash
-go install github.com/scagogogo/versions-skills/cmd/versions@latest
-```
-
-### MCP server
-
-**Option A: Download from GitHub Releases (Recommended)**
-
-```bash
-# Linux (amd64)
-curl -sL https://github.com/scagogogo/versions-skills/releases/latest/download/versions-mcp_{VERSION}_linux_amd64.tar.gz | tar xz
-chmod +x versions-mcp && sudo mv versions-mcp /usr/local/bin/
-
-# macOS (arm64 / Apple Silicon)
-curl -sL https://github.com/scagogogo/versions-skills/releases/latest/download/versions-mcp_{VERSION}_darwin_arm64.tar.gz | tar xz
-chmod +x versions-mcp && sudo mv versions-mcp /usr/local/bin/
-```
-
-> Replace `{VERSION}` with the latest release tag. See the [releases page](https://github.com/scagogogo/versions-skills/releases/latest) for all platforms.
-
-**Option B: Install via Go**
-
-```bash
-go install github.com/scagogogo/versions-skills/cmd/versions-mcp@latest
-```
-
-## Quick Start
-
-### SDK (Go)
-
+**SDK approach:**
 ```go
 sorted := versions.SortVersionStringSlice([]string{"2.0.0", "1.0.0", "1.10.0", "1.2.0"})
-// Result: ["1.0.0", "1.2.0", "1.10.0", "2.0.0"]
+// sorted = ["1.0.0", "1.2.0", "1.10.0", "2.0.0"]
+// Original slice is NOT modified
 ```
 
-### CLI
-
+**CLI approach:**
 ```bash
-# Sort version strings (ascending)
-versions sort 1.0.0 1.10.0 1.2.0 2.0.0
-
-# Sort in descending order
-versions sort --desc 1.0.0 1.10.0 1.2.0 2.0.0
-
-# Sort from a file
-versions sort --from-file versions.txt
+versions sort 2.0.0 1.0.0 1.10.0 1.2.0
+# Output: 1.0.0 1.2.0 1.10.0 2.0.0
 ```
 
-### MCP
-
+**MCP approach:**
 ```json
-{
-  "tool": "version_sort",
-  "arguments": {
-    "versions": ["2.0.0", "1.0.0", "1.10.0", "1.2.0"],
-    "descending": false
-  }
+{"tool": "version_sort", "arguments": {"versions": ["2.0.0", "1.0.0", "1.10.0", "1.2.0"]}}
+```
+
+### Sort in descending order (latest first)
+
+**Goal:** Get `["2.0.0", "1.10.0", "1.2.0", "1.0.0"]`.
+
+**SDK approach:**
+```go
+sorted := versions.SortVersionStringSlice(versions)
+// Then reverse in place or iterate backward
+for i := len(sorted) - 1; i >= 0; i-- {
+    fmt.Println(sorted[i])
 }
 ```
 
-## API Reference -- SDK
+**CLI approach:**
+```bash
+versions sort --desc 2.0.0 1.0.0 1.10.0 1.2.0
+# Output: 2.0.0 1.10.0 1.2.0 1.0.0
+```
 
-### SortVersionStringSlice
+**MCP approach:**
+```json
+{"tool": "version_sort", "arguments": {"versions": ["2.0.0", "1.0.0", "1.10.0", "1.2.0"], "descending": true}}
+```
 
-**func SortVersionStringSlice(versionStringSlice []string) []string**
+### Sort Version objects and find latest/oldest
 
-Sorts a string slice of version numbers. Parses each string, sorts by Version.CompareTo rules, returns sorted strings. Does not modify the original slice.
+**Goal:** Find the newest and oldest version in a collection of Version objects.
 
-### SortVersionSlice
+**SDK approach:**
+```go
+versionList := versions.NewVersions("2.0.0", "1.0.0", "1.10.0")
+sortedVersions := versions.SortVersionSlice(versionList)
+latest := sortedVersions[len(sortedVersions)-1]  // 2.0.0
+oldest := sortedVersions[0]                       // 1.0.0
+```
 
-**func SortVersionSlice(versions []*Version) []*Version**
+**CLI approach:**
+```bash
+versions sort --desc 2.0.0 1.0.0 1.10.0 | head -1  # latest
+versions sort 2.0.0 1.0.0 1.10.0 | head -1          # oldest
+```
 
-Sorts Version object slice. Uses group-based algorithm: groups by major version, sorts groups, sorts within each group, merges results. Does not modify the original slice.
+**MCP approach:**
+```json
+{"tool": "version_sort", "arguments": {"versions": ["2.0.0", "1.0.0", "1.10.0"], "descending": true}}
+```
 
-### VersionSlice
+### Sort versions from a file
 
-**type VersionSlice []*Version**
+**Goal:** Read versions from `releases.txt` and sort them.
 
-An ordered collection type that implements sort.Interface. Allows direct use of `sort.Sort()` on version slices without closures.
+**SDK approach:**
+```go
+// Use version_read_file to read, then sort
+// See [[version-read-write]] for file I/O
+```
 
-Methods:
-- **Len() int** -- returns the number of versions
-- **Less(i, j int) bool** -- returns true if version at index i is older than version at j
-- **Swap(i, j int)** -- swaps versions at indices i and j
+**CLI approach:**
+```bash
+versions sort --from-file releases.txt
+versions sort --desc --from-file releases.txt
+```
+
+**MCP approach:**
+```json
+{"tool": "version_read_file", "arguments": {"file_path": "releases.txt"}}
+```
+Then pass the result to `version_sort`.
+
+### Use VersionSlice with standard library sort
+
+**Goal:** Use Go's `sort.Sort()` directly on a version slice.
+
+**SDK approach:**
+```go
+slice := versions.VersionSlice(versions.NewVersions("3.0.0", "1.0.0", "2.0.0"))
+sort.Sort(slice) // no closures needed — VersionSlice implements sort.Interface
+// slice is now [1.0.0, 2.0.0, 3.0.0]
+```
+
+**CLI approach:**
+Not applicable — CLI handles sorting internally.
+
+**MCP approach:**
+Not applicable — MCP handles sorting internally.
+
+### Sort version groups
+
+**Goal:** Sort a map of version groups into a deterministic order.
+
+**SDK approach:**
+```go
+groupMap := versions.Group(versionList)
+sortedGroups := versions.SortVersionGroupMap(groupMap)
+for _, g := range sortedGroups {
+    fmt.Println(g.ID()) // groups in sorted order
+}
+```
+
+**CLI approach:**
+```bash
+versions group 1.0.0 1.1.0 2.0.0 2.1.0 3.0.0
+```
+
+**MCP approach:**
+```json
+{"tool": "version_group", "arguments": {"versions": ["1.0.0", "1.1.0", "2.0.0", "2.1.0", "3.0.0"]}}
+```
+
+## API Reference
+
+### SDK — Sort Functions
 
 ```go
-slice := versions.VersionSlice(versions.NewVersions("2.0.0", "1.0.0", "1.5.0"))
-sort.Sort(slice)  // slice is now sorted ascending
+// Sort string slices — parses each, sorts, returns sorted strings.
+// Does NOT modify the original slice. O(n) extra space.
+func SortVersionStringSlice(versionStringSlice []string) []string
+
+// Sort Version object slices — uses group-based algorithm.
+// Does NOT modify the original slice.
+func SortVersionSlice(versions []*Version) []*Version
+
+// Convert a version group map to a sorted slice of VersionGroup objects.
+func SortVersionGroupMap(versionGroupMap map[string]*VersionGroup) []*VersionGroup
+
+// In-place sort of a VersionGroup slice. MODIFIES the input slice directly.
+func SortVersionGroupSlice(groupSlice []*VersionGroup)
 ```
 
-### SortVersionGroupMap
+### SDK — VersionSlice Type
 
-**func SortVersionGroupMap(versionGroupMap map[string]*VersionGroup) []*VersionGroup**
+```go
+// VersionSlice implements sort.Interface — use sort.Sort() directly, no closures needed.
+type VersionSlice []*Version
 
-Converts a version group map to a sorted slice of VersionGroup objects.
+func (s VersionSlice) Len() int
+func (s VersionSlice) Less(i, j int) bool
+func (s VersionSlice) Swap(i, j int)
 
-### SortVersionGroupSlice
+// Additional methods beyond sort.Interface:
+func (s VersionSlice) Min() *Version                    // oldest version
+func (s VersionSlice) Max() *Version                    // newest version
+func (s VersionSlice) Filter(predicate func(*Version) bool) VersionSlice
+func (s VersionSlice) Contains(target *Version) bool
+func (s VersionSlice) IndexOf(target *Version) int
+func (s VersionSlice) Unique() VersionSlice
+func (s VersionSlice) Sort()                            // sort in-place
+func (s VersionSlice) Sorted() VersionSlice             // return sorted copy
+```
 
-**func SortVersionGroupSlice(groupSlice []*VersionGroup)**
-
-In-place sort of a VersionGroup slice. Modifies the input slice directly.
-
-## CLI Commands
-
-### `versions sort`
-
-Sort version strings in natural (semantic) order.
+### CLI Commands
 
 ```bash
+# Sort version strings in ascending order
 versions sort <version1> <version2> ... <versionN>
-```
 
-**Flags:**
-- `--desc` -- Sort in descending order (latest first)
-- `--from-file <path>` -- Read versions from a file instead of arguments (one version per line)
+# Sort in descending order (latest first)
+versions sort --desc <version1> <version2> ... <versionN>
+
+# Sort versions from a file (one per line, # comments, blank lines ignored)
+versions sort --from-file <path>
+versions sort --desc --from-file <path>
+
+# Alias for string sorting
+versions sort-strings <version1> <version2> ... <versionN>
+versions sort-strings --desc <version1> <version2> ...
+```
 
 **Examples:**
 ```bash
-# Basic ascending sort
 versions sort 1.0.0 1.10.0 1.2.0 2.0.0
 # Output: 1.0.0 1.2.0 1.10.0 2.0.0
 
-# Descending sort (latest first)
 versions sort --desc 1.0.0 1.10.0 1.2.0 2.0.0
 # Output: 2.0.0 1.10.0 1.2.0 1.0.0
 
-# Sort versions from a file
 versions sort --from-file releases.txt
 ```
 
-### `versions sort-strings`
+### MCP Tools
 
-Sort raw version strings (same as `versions sort` but explicitly for string input).
+| Tool | Arguments | Returns |
+|------|-----------|---------|
+| `version_sort` | `versions: string[]`, `descending?: bool` | `{sorted_versions: string[]}` |
+| `version_min` | `versions: string[]` | oldest version |
+| `version_max` | `versions: string[]` | newest version |
 
-```bash
-versions sort-strings <version1> <version2> ... <versionN>
-```
+## Cross-References
 
-**Flags:**
-- `--desc` -- Sort in descending order
-- `--from-file <path>` -- Read versions from a file
-
-## MCP Tools
-
-### `version_sort`
-
-Sort a list of version strings in semantic order.
-
-**Parameters:**
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `versions` | array of strings | Yes | List of version strings to sort |
-| `descending` | boolean | No | Sort in descending order (default: false) |
-
-**Example request:**
-```json
-{
-  "tool": "version_sort",
-  "arguments": {
-    "versions": ["2.0.0", "1.0.0", "1.10.0", "1.2.0"],
-    "descending": true
-  }
-}
-```
-
-**Example response:**
-```json
-{
-  "sorted_versions": ["2.0.0", "1.10.0", "1.2.0", "1.0.0"]
-}
-```
-
-## Code Examples (SDK)
-
-### Sort Version Strings
-
-```go
-package main
-
-import (
-    "fmt"
-    "github.com/scagogogo/versions-skills"
-)
-
-func main() {
-    unsorted := []string{"2.0.0", "1.0.0", "1.10.0", "1.2.0", "v1.5.0"}
-    sorted := versions.SortVersionStringSlice(unsorted)
-    for _, v := range sorted {
-        fmt.Println(v)
-    }
-    // Output: 1.0.0, 1.2.0, v1.5.0, 1.10.0, 2.0.0
-}
-```
-
-### Sort Version Objects and Find Latest
-
-```go
-package main
-
-import (
-    "fmt"
-    "github.com/scagogogo/versions-skills"
-)
-
-func main() {
-    versionList := versions.NewVersions("2.0.0", "1.0.0", "1.10.0")
-    sortedVersions := versions.SortVersionSlice(versionList)
-
-    // Find latest (last element after ascending sort)
-    latest := sortedVersions[len(sortedVersions)-1]
-    fmt.Printf("Latest: %s\n", latest.Raw)
-
-    // Find oldest (first element)
-    oldest := sortedVersions[0]
-    fmt.Printf("Oldest: %s\n", oldest.Raw)
-}
-```
-
-### Use VersionSlice with sort.Sort
-
-```go
-package main
-
-import (
-    "fmt"
-    "sort"
-    "github.com/scagogogo/versions-skills"
-)
-
-func main() {
-    slice := versions.VersionSlice(versions.NewVersions("3.0.0", "1.0.0", "2.0.0"))
-
-    // Direct sort using standard library -- no closures needed
-    sort.Sort(slice)
-
-    for _, v := range slice {
-        fmt.Println(v.Raw)
-    }
-    // Output: 1.0.0, 2.0.0, 3.0.0
-}
-```
-
-### Sort Version Groups
-
-```go
-package main
-
-import (
-    "fmt"
-    "github.com/scagogogo/versions-skills"
-)
-
-func main() {
-    versionList := versions.NewVersions("1.0.0", "1.1.0", "2.0.0", "2.1.0")
-    groupMap := versions.Group(versionList)
-    sortedGroups := versions.SortVersionGroupMap(groupMap)
-    for _, g := range sortedGroups {
-        fmt.Printf("Group %s: %d versions\n", g.ID(), g.Count())
-    }
-}
-```
+- [[version-comparison]] — for the underlying CompareTo logic used by sorting
+- [[version-parsing]] — for parsing version strings before sorting
+- [[version-grouping]] — for grouping versions before sorting groups
+- [[version-range-query]] — for querying sorted ranges
 
 ## Important Notes
 
-- **SDK**: SortVersionStringSlice creates new Version objects internally -- O(n) extra space
-- **SDK**: SortVersionSlice uses a group-based algorithm for stable, semantically correct ordering
-- **SDK**: Neither SortVersionStringSlice nor SortVersionSlice modifies the original input slice
-- **SDK**: SortVersionGroupSlice modifies the input slice in-place (unlike the other sort functions)
-- **SDK**: VersionSlice implements sort.Interface -- use `sort.Sort()` directly, no closures needed
-- **All paths**: "1.10.0" correctly sorts after "1.2.0" (numeric, not alphabetic sorting)
-- **All paths**: Pre-release versions sort before their release counterparts (e.g., "1.0.0-beta" < "1.0.0")
-- **CLI**: The `--from-file` flag reads one version per line, ignores blank lines and `#` comments
-- **MCP**: The `descending` parameter defaults to false (ascending order)
+- `SortVersionStringSlice` and `SortVersionSlice` do NOT modify the original input — they return new slices
+- `SortVersionGroupSlice` DOES modify the input slice in-place — unlike the other sort functions
+- `VersionSlice` implements `sort.Interface` — use `sort.Sort()` directly, no closures needed
+- `"1.10.0"` correctly sorts after `"1.2.0"` — numeric comparison, not alphabetical
+- Pre-release versions sort before their release counterparts: `"1.0.0-beta"` < `"1.0.0"`
+- CLI `--from-file` reads one version per line, ignores blank lines and `#` comments
+- MCP `descending` defaults to `false` (ascending order)

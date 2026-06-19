@@ -1,429 +1,293 @@
 ---
 name: version-grouping
-description: Use when grouping versions by major/minor version number, managing version collections by their version series. Covers SDK, CLI, and MCP access paths for version grouping.
-argument-hint: <version-grouping-task>
+description: Group versions by their version number series (major.minor). Use when you need to organize a large collection of versions into groups, find versions within a specific series, or query group-level aggregates (latest, oldest, stable, prerelease).
+argument-hint: <version1> <version2> ... <versionN>
 ---
 
-# Version Grouping Skill
+# Version Grouping
+
+> **Setup:** See `/installation` for one-time SDK/CLI/MCP install.  
+> **Layers:** SDK (Go) → CLI (shell) → MCP (AI tools) — pick your entry point.
 
 ## When to Use
 
-- User needs to group versions by their major/minor version number
-- User needs to organize a large collection of versions into version series
-- User needs to find all versions in a specific major version (e.g., all 1.x versions)
-- User needs the latest, oldest, stable, or prerelease version within a group
-- User is building a version selector UI with hierarchical version choices
+- You need to organize a large collection of versions into version series
+- You need to find all versions in a specific major.minor group (e.g., all 1.0.x versions)
+- You need the latest, oldest, stable, or prerelease version within a group
+- You need to navigate groups by index or check group membership
+- You are building a version selector UI with hierarchical version choices
 
-## Installation
+## Decision Tree
 
-### SDK (Go library)
-
-```bash
-go get github.com/scagogogo/versions-skills
+```
+Need to organize versions into groups?
+├─ Get all groups?                    → Group() / versions group / version_group
+├─ Need sorted groups?                → NewSortedVersionGroups()
+├─ List group IDs only?               → SortedVersionGroups.GroupIDs() / versions group-ids
+├─ Get a specific group by ID?        → SortedVersionGroups.Get("1.0") / versions group --id "1.0"
+├─ Find latest in a group?            → VersionGroup.GetLatest() / versions group-latest
+├─ Find latest stable in a group?     → VersionGroup.LatestStable() / versions group-latest-stable
+├─ Check if version exists in group?  → VersionGroup.Contains() / versions group-contains
+└─ Get group ID for a single version? → Version.BuildGroupID() / versions group-id
 ```
 
-### CLI binary
+## Task Patterns
 
-**Option A: Download from GitHub Releases (Recommended)**
+### Group versions by their number series
 
-Pre-built binaries for Linux, macOS, Windows, FreeBSD, OpenBSD, and NetBSD on amd64, arm64, arm, 386, mips, mips64, mips64le, ppc64, ppc64le, s390x, and riscv64. Linux packages: deb, rpm, apk.
+**Goal:** Group `["1.0.0", "1.0.1", "1.1.0", "2.0.0", "2.1.0"]` into series.
 
-```bash
-# Linux (amd64)
-curl -sL https://github.com/scagogogo/versions-skills/releases/latest/download/versions_{VERSION}_linux_amd64.tar.gz | tar xz
-chmod +x versions && sudo mv versions /usr/local/bin/
-
-# macOS (arm64 / Apple Silicon)
-curl -sL https://github.com/scagogogo/versions-skills/releases/latest/download/versions_{VERSION}_darwin_arm64.tar.gz | tar xz
-chmod +x versions && sudo mv versions /usr/local/bin/
-
-# Or install via package manager (Linux only):
-# Debian/Ubuntu: dpkg -i versions_{VERSION}_linux_amd64.deb
-# RHEL/Fedora:   rpm -i versions_{VERSION}_linux_amd64.rpm
-# Alpine:        apk add versions_{VERSION}_linux_amd64.apk
-```
-
-> Replace `{VERSION}` with the latest release tag. See the [releases page](https://github.com/scagogogo/versions-skills/releases/latest) for all available platforms and the current version.
-
-**Option B: Install via Go**
-
-```bash
-go install github.com/scagogogo/versions-skills/cmd/versions@latest
-```
-
-### MCP server
-
-**Option A: Download from GitHub Releases (Recommended)**
-
-```bash
-# Linux (amd64)
-curl -sL https://github.com/scagogogo/versions-skills/releases/latest/download/versions-mcp_{VERSION}_linux_amd64.tar.gz | tar xz
-chmod +x versions-mcp && sudo mv versions-mcp /usr/local/bin/
-
-# macOS (arm64 / Apple Silicon)
-curl -sL https://github.com/scagogogo/versions-skills/releases/latest/download/versions-mcp_{VERSION}_darwin_arm64.tar.gz | tar xz
-chmod +x versions-mcp && sudo mv versions-mcp /usr/local/bin/
-```
-
-> Replace `{VERSION}` with the latest release tag. See the [releases page](https://github.com/scagogogo/versions-skills/releases/latest) for all platforms.
-
-**Option B: Install via Go**
-
-```bash
-go install github.com/scagogogo/versions-skills/cmd/versions-mcp@latest
-```
-
-## Quick Start
-
-### SDK (Go)
-
+**SDK approach:**
 ```go
-versionList := versions.NewVersions("1.0.0", "1.1.0", "2.0.0", "2.1.0", "3.0.0")
+versionList := versions.NewVersions("1.0.0", "1.0.1", "1.1.0", "2.0.0", "2.1.0")
 sortedGroups := versions.NewSortedVersionGroups(versionList)
-fmt.Println(sortedGroups.GroupIDs())  // ["1.0", "1.1", "2.0", "2.1", "3.0"]
-```
-
-### CLI
-
-```bash
-# Group versions and display
-versions group 1.0.0 1.1.0 2.0.0 2.1.0 3.0.0
-
-# List all group IDs
-versions group-ids 1.0.0 1.1.0 2.0.0 2.1.0 3.0.0
-
-# Get latest version in a group
-versions group-latest --group-id "1.0" 1.0.0 1.0.1 1.0.2
-```
-
-### MCP
-
-```json
-{
-  "tool": "version_group",
-  "arguments": {
-    "versions": ["1.0.0", "1.1.0", "2.0.0", "2.1.0", "3.0.0"]
-  }
+for _, id := range sortedGroups.GroupIDs() {
+    group := sortedGroups.Get(id)
+    fmt.Printf("Group %s: %d versions\n", id, group.Count())
 }
 ```
 
-## API Reference -- SDK
+**CLI approach:**
+```bash
+versions group 1.0.0 1.0.1 1.1.0 2.0.0 2.1.0
+versions group-ids 1.0.0 1.0.1 1.1.0 2.0.0 2.1.0
+```
 
-### Group
+**MCP approach:**
+```json
+{"tool": "version_group", "arguments": {"versions": ["1.0.0", "1.0.1", "1.1.0", "2.0.0", "2.1.0"]}}
+```
 
-**func Group(versions []*Version) map[string]*VersionGroup**
+### Find latest version in a group
 
-Groups versions by their VersionNumbers' BuildGroupID (full number sequence). Returns a map of groupID to VersionGroup.
+**Goal:** Get the newest version in the `"1.0"` group.
 
-### VersionGroup Type
+**SDK approach:**
+```go
+sortedGroups := versions.NewSortedVersionGroups(versionList)
+group := sortedGroups.Get("1.0")
+if group != nil {
+    latest := group.GetLatest() // returns nil if group is empty
+    fmt.Println(latest.RawString())
+}
+```
+
+**CLI approach:**
+```bash
+versions group-latest --group-id "1.0" 1.0.0 1.0.1 1.0.2
+```
+
+**MCP approach:**
+```json
+{"tool": "version_group", "arguments": {"versions": ["1.0.0", "1.0.1", "1.0.2"], "group_id": "1.0", "operation": "latest"}}
+```
+
+### Find latest stable and prerelease in a group
+
+**Goal:** In group `"2.0"`, find the latest stable and latest prerelease separately.
+
+**SDK approach:**
+```go
+group := sortedGroups.Get("2.0")
+stable := group.LatestStable()         // nil if none
+prerelease := group.LatestPrerelease() // nil if none
+```
+
+**CLI approach:**
+```bash
+versions group-latest-stable --group-id "2.0" 2.0.0 2.0.1-rc1 2.0.1
+versions group-latest-prerelease --group-id "2.0" 2.0.0 2.0.1-rc1 2.0.1
+```
+
+**MCP approach:**
+```json
+{"tool": "version_group", "arguments": {"versions": ["2.0.0", "2.0.1-rc1", "2.0.1"], "group_id": "2.0", "operation": "latest_stable"}}
+```
+
+### Manipulate a version group (add, remove, check, filter)
+
+**Goal:** Build a group, add versions, check membership, filter by predicate.
+
+**SDK approach:**
+```go
+group := versions.NewVersionGroupFromVersions(versions.NewVersions("1.0.0", "1.0.1"))
+group.Add(versions.NewVersion("1.0.3"))
+group.Remove(versions.NewVersion("1.0.0"))
+exists := group.Contains(versions.NewVersion("1.0.1")) // true
+
+// Filter with a predicate
+stableOnly := group.Filter(func(v *versions.Version) bool {
+    return v.IsStable()
+})
+```
+
+**CLI approach:**
+```bash
+versions group-contains --group-id "1.0" --version "1.0.1" 1.0.0 1.0.1 1.0.2
+```
+
+**MCP approach:**
+```json
+{"tool": "version_group", "arguments": {"versions": ["1.0.0", "1.0.1", "1.0.2"], "group_id": "1.0", "operation": "contains", "target_version": "1.0.1"}}
+```
+
+### Navigate sorted groups by index
+
+**Goal:** Access the first and last group by position.
+
+**SDK approach:**
+```go
+sortedGroups := versions.NewSortedVersionGroups(versionList)
+first := sortedGroups.At(0)                         // nil if empty
+last := sortedGroups.At(sortedGroups.Len() - 1)     // nil if empty
+hasGroup := sortedGroups.Contains("1.0")            // true/false
+allVersions := sortedGroups.Versions()              // all versions across groups, sorted
+```
+
+**CLI approach:**
+Not directly available — use `versions group` to see all groups.
+
+**MCP approach:**
+Not directly available — use `version_group` to see all groups.
+
+### Get the group ID for a single version
+
+**Goal:** Determine that `"1.2.3"` belongs to group `"1.2"`.
+
+**SDK approach:**
+```go
+v := versions.NewVersion("1.2.3")
+groupId := v.BuildGroupID() // "1.2.3" — full number string as key
+```
+
+**CLI approach:**
+```bash
+versions group-id 1.2.3     # Output: 1.2
+```
+
+**MCP approach:**
+Not directly available — use `version_parse` and extract the BuildGroupID.
+
+## API Reference
+
+### SDK — Grouping Functions
+
+```go
+// Group versions by BuildGroupID (full number sequence).
+// Returns a map of groupID → *VersionGroup.
+func Group(versions []*Version) map[string]*VersionGroup
+
+// Create a pre-sorted version groups structure from a version list.
+// Efficient for repeated queries.
+func NewSortedVersionGroups(versions []*Version) *SortedVersionGroups
+```
+
+### SDK — VersionGroup Type
 
 ```go
 type VersionGroup struct {
     GroupVersionNumbers VersionNumbers
     VersionMap          map[string]*Version
 }
+
+// Constructors
+func NewVersionGroup(groupVersionNumbers VersionNumbers) *VersionGroup
+func NewVersionGroupFromVersions(versions []*Version) *VersionGroup
+
+// Core methods
+func (x *VersionGroup) Add(v *Version) bool           // add version; true if already existed
+func (x *VersionGroup) Contains(v *Version) bool      // membership check
+func (x *VersionGroup) Remove(v *Version) bool        // remove; true if it existed
+func (x *VersionGroup) ID() string                    // group ID (e.g. "1.2")
+func (x *VersionGroup) CompareTo(target *VersionGroup) int
+func (x *VersionGroup) Count() int                    // number of versions in group
+
+// Version access
+func (x *VersionGroup) Versions() []*Version          // all versions (unordered)
+func (x *VersionGroup) SortVersions() []*Version      // sorted versions (ascending)
+func (x *VersionGroup) GetLatest() *Version           // newest; nil if empty
+func (x *VersionGroup) GetOldest() *Version           // oldest; nil if empty
+
+// Filtering
+func (x *VersionGroup) StableVersions() []*Version    // all stable (no suffix) versions
+func (x *VersionGroup) PrereleaseVersions() []*Version // all prerelease versions
+func (x *VersionGroup) LatestStable() *Version        // newest stable; nil if none
+func (x *VersionGroup) LatestPrerelease() *Version    // newest prerelease; nil if none
+func (x *VersionGroup) Filter(predicate func(*Version) bool) []*Version
+
+// Range query within group (requires go-tuple)
+func (x *VersionGroup) QueryRangeVersions(start, end *tuple.Tuple2[*Version, ContainsPolicy]) []*Version
 ```
 
-**Core Methods:**
-- **NewVersionGroup(groupVersionNumbers VersionNumbers) *VersionGroup** -- create a new group
-- **NewVersionGroupFromVersions(versions []*Version) *VersionGroup** -- create from version array
-- **func (x *VersionGroup) Add(v *Version) bool** -- add version to group; returns true if version already existed
-- **func (x *VersionGroup) Contains(v *Version) bool** -- check if version exists in group
-- **func (x *VersionGroup) ID() string** -- get group ID (e.g., "1.2")
-- **func (x *VersionGroup) Versions() []*Version** -- get all versions (unordered)
-- **func (x *VersionGroup) SortVersions() []*Version** -- get sorted versions (ascending)
-- **func (x *VersionGroup) CompareTo(target *VersionGroup) int** -- compare two groups
-
-**Convenience Methods:**
-- **func (x *VersionGroup) GetLatest() *Version** -- return the newest version in the group; nil if empty
-- **func (x *VersionGroup) GetOldest() *Version** -- return the oldest version in the group; nil if empty
-- **func (x *VersionGroup) Count() int** -- return the number of versions in the group
-- **func (x *VersionGroup) StableVersions() []*Version** -- return all stable (no suffix) versions
-- **func (x *VersionGroup) PrereleaseVersions() []*Version** -- return all prerelease versions
-- **func (x *VersionGroup) LatestStable() *Version** -- return the newest stable version; nil if none
-- **func (x *VersionGroup) LatestPrerelease() *Version** -- return the newest prerelease version; nil if none
-- **func (x *VersionGroup) Remove(v *Version) bool** -- remove a version; returns true if it existed
-- **func (x *VersionGroup) Filter(predicate func(*Version) bool) []*Version** -- filter versions with a predicate
-
-**Range Query:**
-- **func (x *VersionGroup) QueryRangeVersions(start, end *tuple.Tuple2[*Version, ContainsPolicy]) []*Version** -- range query within group; returns sorted results
-
-### SortedVersionGroups Type
+### SDK — SortedVersionGroups Type
 
 ```go
-type SortedVersionGroups struct { ... }
+type SortedVersionGroups struct { /* ... */ }
+
+func NewSortedVersionGroups(versions []*Version) *SortedVersionGroups
+
+func (x *SortedVersionGroups) GroupIDs() []string                           // sorted group ID list
+func (x *SortedVersionGroups) Get(groupID string) *VersionGroup             // nil if not found
+func (x *SortedVersionGroups) At(index int) *VersionGroup                   // nil if out of bounds
+func (x *SortedVersionGroups) Contains(groupID string) bool                 // group existence check
+func (x *SortedVersionGroups) Len() int                                     // number of groups
+func (x *SortedVersionGroups) Versions() []*Version                         // all versions across all groups, sorted
+func (x *SortedVersionGroups) QueryRange(start, end *tuple.Tuple2[*Version, ContainsPolicy]) []*Version
 ```
 
-**Methods:**
-- **func NewSortedVersionGroups(versions []*Version) *SortedVersionGroups** -- create sorted groups from versions
-- **func (x *SortedVersionGroups) GroupIDs() []string** -- get sorted group ID list
-- **func (x *SortedVersionGroups) Get(groupID string) *VersionGroup** -- get group by ID; nil if not found
-- **func (x *SortedVersionGroups) At(index int) *VersionGroup** -- get group by index; nil if out of bounds
-- **func (x *SortedVersionGroups) Contains(groupID string) bool** -- check if a group ID exists
-- **func (x *SortedVersionGroups) Len() int** -- return number of groups
-- **func (x *SortedVersionGroups) Versions() []*Version** -- return all versions across all groups, sorted
-- **func (x *SortedVersionGroups) QueryRange(start, end *tuple.Tuple2[*Version, ContainsPolicy]) []*Version** -- cross-group range query
-
-## CLI Commands
-
-### `versions group`
-
-Group versions and display their structure.
+### CLI Commands
 
 ```bash
+# Group versions and display structure
 versions group <version1> <version2> ... <versionN>
-```
+versions group --id <groupID> <version1> <version2> ...
 
-**Flags:**
-- `--id <groupID>` -- Show only the specified group
-
-**Example:**
-```bash
-versions group 1.0.0 1.0.1 1.1.0 2.0.0 2.1.0
-versions group --id "1.0" 1.0.0 1.0.1 1.1.0 2.0.0
-```
-
-### `versions group-ids`
-
-List all version group IDs.
-
-```bash
+# List all group IDs
 versions group-ids <version1> <version2> ... <versionN>
-```
 
-### `versions group-latest`
-
-Get the latest version in a specific group.
-
-```bash
-versions group-latest --group-id <id> <version1> <version2> ...
-```
-
-### `versions group-oldest`
-
-Get the oldest version in a specific group.
-
-```bash
-versions group-oldest --group-id <id> <version1> <version2> ...
-```
-
-### `versions group-stable`
-
-Get all stable versions in a specific group.
-
-```bash
-versions group-stable --group-id <id> <version1> <version2> ...
-```
-
-### `versions group-prerelease`
-
-Get all prerelease versions in a specific group.
-
-```bash
-versions group-prerelease --group-id <id> <version1> <version2> ...
-```
-
-### `versions group-latest-stable`
-
-Get the latest stable version in a specific group.
-
-```bash
-versions group-latest-stable --group-id <id> <version1> <version2> ...
-```
-
-### `versions group-latest-prerelease`
-
-Get the latest prerelease version in a specific group.
-
-```bash
-versions group-latest-prerelease --group-id <id> <version1> <version2> ...
-```
-
-### `versions group-contains`
-
-Check if a specific version exists in a group.
-
-```bash
-versions group-contains --group-id <id> --version <version> <version1> <version2> ...
-```
-
-### `versions group-id`
-
-Get the group ID for a single version.
-
-```bash
+# Get the group ID for a single version
 versions group-id <version>
+
+# Group-level queries (all require --group-id)
+versions group-latest --group-id <id> <version1> <version2> ...
+versions group-oldest --group-id <id> <version1> <version2> ...
+versions group-stable --group-id <id> <version1> <version2> ...
+versions group-prerelease --group-id <id> <version1> <version2> ...
+versions group-latest-stable --group-id <id> <version1> <version2> ...
+versions group-latest-prerelease --group-id <id> <version1> <version2> ...
+versions group-contains --group-id <id> --version <v> <version1> <version2> ...
 ```
 
-**Example:**
+**Examples:**
 ```bash
-versions group-id 1.2.3
-# Output: 1.2
+versions group-id 1.2.3                              # Output: 1.2
+versions group-latest --group-id "1.0" 1.0.0 1.0.1 1.0.2
+versions group-contains --group-id "1.0" --version "1.0.1" 1.0.0 1.0.1 1.0.2
 ```
 
-## MCP Tools
+### MCP Tools
 
-### `version_group`
+| Tool | Arguments | Returns |
+|------|-----------|---------|
+| `version_group` | `versions: string[]`, `group_id?: string`, `operation?: string`, `target_version?: string` | group structure / query result |
 
-Group versions by their version number series and query group information.
+**Operations:** `"list"` (default), `"latest"`, `"oldest"`, `"stable"`, `"prerelease"`, `"latest_stable"`, `"latest_prerelease"`, `"contains"`
 
-**Parameters:**
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `versions` | array of strings | Yes | List of version strings to group |
-| `group_id` | string | No | Filter to a specific group ID |
-| `operation` | string | No | Operation: "list" (default), "latest", "oldest", "stable", "prerelease", "latest_stable", "latest_prerelease", "contains" |
-| `target_version` | string | No | Version to check (for "contains" operation) |
+## Cross-References
 
-**Example request:**
-```json
-{
-  "tool": "version_group",
-  "arguments": {
-    "versions": ["1.0.0", "1.0.1", "1.1.0", "2.0.0", "2.1.0"],
-    "group_id": "1.0",
-    "operation": "latest"
-  }
-}
-```
-
-**Example response:**
-```json
-{
-  "group_id": "1.0",
-  "versions": ["1.0.0", "1.0.1"],
-  "latest": "1.0.1"
-}
-```
-
-## Code Examples (SDK)
-
-### Basic Grouping
-
-```go
-package main
-
-import (
-    "fmt"
-    "github.com/scagogogo/versions-skills"
-)
-
-func main() {
-    versionList := versions.NewVersions("1.0.0", "1.1.0", "2.0.0", "2.1.0", "3.0.0")
-    groupMap := versions.Group(versionList)
-    for groupID, group := range groupMap {
-        fmt.Printf("Group %s: %d versions\n", groupID, group.Count())
-    }
-}
-```
-
-### Sorted Groups with Convenience Methods
-
-```go
-package main
-
-import (
-    "fmt"
-    "github.com/scagogogo/versions-skills"
-)
-
-func main() {
-    versionList := versions.NewVersions(
-        "1.0.0", "1.0.1", "1.0.2-beta", "1.0.2",
-        "2.0.0", "2.0.1-rc1", "2.0.1",
-    )
-    sortedGroups := versions.NewSortedVersionGroups(versionList)
-
-    // List all group IDs
-    fmt.Printf("Group IDs: %v\n", sortedGroups.GroupIDs())
-
-    // Get a specific group by ID
-    if group := sortedGroups.Get("1.0"); group != nil {
-        fmt.Printf("Group 1.0 latest: %s\n", group.GetLatest().Raw)
-        fmt.Printf("Group 1.0 oldest: %s\n", group.GetOldest().Raw)
-        fmt.Printf("Group 1.0 count: %d\n", group.Count())
-    }
-
-    // Stable and prerelease filtering
-    if group := sortedGroups.Get("2.0"); group != nil {
-        fmt.Printf("Stable: %v\n", group.StableVersions())
-        fmt.Printf("Prerelease: %v\n", group.PrereleaseVersions())
-        fmt.Printf("Latest stable: %s\n", group.LatestStable().Raw)
-        fmt.Printf("Latest prerelease: %s\n", group.LatestPrerelease().Raw)
-    }
-}
-```
-
-### Group Manipulation
-
-```go
-package main
-
-import (
-    "fmt"
-    "github.com/scagogogo/versions-skills"
-)
-
-func main() {
-    versionList := versions.NewVersions("1.0.0", "1.0.1", "1.0.2")
-    group := versions.NewVersionGroupFromVersions(versionList)
-
-    // Add a new version
-    group.Add(versions.NewVersion("1.0.3"))
-
-    // Remove a version
-    group.Remove(versions.NewVersion("1.0.0"))
-
-    // Check membership
-    fmt.Println(group.Contains(versions.NewVersion("1.0.1")))  // true
-    fmt.Println(group.Contains(versions.NewVersion("1.0.0")))  // false (removed)
-
-    // Filter with a predicate
-    onlyStable := group.Filter(func(v *versions.Version) bool {
-        return v.IsStable()
-    })
-    fmt.Printf("Stable versions: %d\n", len(onlyStable))
-}
-```
-
-### SortedVersionGroups Navigation
-
-```go
-package main
-
-import (
-    "fmt"
-    "github.com/scagogogo/versions-skills"
-)
-
-func main() {
-    versionList := versions.NewVersions("1.0.0", "1.1.0", "2.0.0", "2.1.0")
-    sortedGroups := versions.NewSortedVersionGroups(versionList)
-
-    // Access by index
-    fmt.Printf("First group: %s\n", sortedGroups.At(0).ID())
-    fmt.Printf("Last group: %s\n", sortedGroups.At(sortedGroups.Len()-1).ID())
-
-    // Check existence
-    fmt.Println(sortedGroups.Contains("1.0"))  // true
-    fmt.Println(sortedGroups.Contains("9.0"))  // false
-
-    // Get all versions sorted
-    allSorted := sortedGroups.Versions()
-    for _, v := range allSorted {
-        fmt.Println(v.Raw)
-    }
-}
-```
+- [[version-sorting]] — for sorting groups with SortVersionGroupMap / SortVersionGroupSlice
+- [[version-comparison]] — for the CompareTo logic behind GetLatest / GetOldest
+- [[version-range-query]] — for QueryRangeVersions within a group
+- [[version-check]] — for filtering with IsStable / IsPrerelease predicates
 
 ## Important Notes
 
-- **SDK**: Group() uses BuildGroupID() as the key -- this is the full version number string (e.g., "1.2.3"), NOT just the major version
-- **SDK**: VersionMap is keyed by Raw string -- duplicate raw strings overwrite
-- **SDK**: Versions() returns unordered results; use SortVersions() for ordered
-- **SDK**: SortedVersionGroups pre-sorts on construction -- efficient for repeated queries
-- **SDK**: GetLatest/GetOldest return nil if the group is empty
-- **SDK**: LatestStable/LatestPrerelease return nil if no matching versions exist
-- **SDK**: Remove returns false if the version was not in the group
-- **CLI**: All group subcommands accept `--group-id` to target a specific group
-- **MCP**: The `operation` parameter determines what information to return about the group
+- **SDK Group() uses BuildGroupID() as the key** — this is the full version number string (e.g., `"1.2.3"`), NOT just the major version. Check your SDK version for exact key format.
+- **VersionMap is keyed by Raw string** — duplicate raw strings overwrite each other in the map
+- **Versions() returns unordered results** within a group; use SortVersions() for ordered output
+- **GetLatest / GetOldest return nil if the group is empty** — always check for nil
+- **LatestStable / LatestPrerelease return nil if no matching versions exist**
+- **Remove returns false if the version was not in the group**
+- **SortedVersionGroups pre-sorts on construction** — efficient for repeated queries
+- **CLI --group-id targets a specific group** across all group subcommands
+- **MCP operation parameter** determines what information to return
