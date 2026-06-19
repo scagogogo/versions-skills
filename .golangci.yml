@@ -10,9 +10,12 @@ linters:
     - staticcheck
     - ineffassign
     - unused
-    - gofmt
     - revive
     - misspell
+
+formatters:
+  enable:
+    - gofmt
 
 issues:
   max-issues-per-linter: 0
