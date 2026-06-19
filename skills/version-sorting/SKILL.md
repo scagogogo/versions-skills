@@ -6,7 +6,8 @@ argument-hint: <version1> <version2> ... <versionN>
 
 # Version Sorting
 
-> **Prerequisite:** See `/installation` skill for SDK/CLI/MCP setup.
+> **Setup:** See `/installation` for one-time SDK/CLI/MCP install.  
+> **Layers:** SDK (Go) → CLI (shell) → MCP (AI tools) — pick your entry point.
 
 ## When to Use
 
@@ -160,6 +161,84 @@ versions group 1.0.0 1.1.0 2.0.0 2.1.0 3.0.0
 ```json
 {"tool": "version_group", "arguments": {"versions": ["1.0.0", "1.1.0", "2.0.0", "2.1.0", "3.0.0"]}}
 ```
+
+## API Reference
+
+### SDK — Sort Functions
+
+```go
+// Sort string slices — parses each, sorts, returns sorted strings.
+// Does NOT modify the original slice. O(n) extra space.
+func SortVersionStringSlice(versionStringSlice []string) []string
+
+// Sort Version object slices — uses group-based algorithm.
+// Does NOT modify the original slice.
+func SortVersionSlice(versions []*Version) []*Version
+
+// Convert a version group map to a sorted slice of VersionGroup objects.
+func SortVersionGroupMap(versionGroupMap map[string]*VersionGroup) []*VersionGroup
+
+// In-place sort of a VersionGroup slice. MODIFIES the input slice directly.
+func SortVersionGroupSlice(groupSlice []*VersionGroup)
+```
+
+### SDK — VersionSlice Type
+
+```go
+// VersionSlice implements sort.Interface — use sort.Sort() directly, no closures needed.
+type VersionSlice []*Version
+
+func (s VersionSlice) Len() int
+func (s VersionSlice) Less(i, j int) bool
+func (s VersionSlice) Swap(i, j int)
+
+// Additional methods beyond sort.Interface:
+func (s VersionSlice) Min() *Version                    // oldest version
+func (s VersionSlice) Max() *Version                    // newest version
+func (s VersionSlice) Filter(predicate func(*Version) bool) VersionSlice
+func (s VersionSlice) Contains(target *Version) bool
+func (s VersionSlice) IndexOf(target *Version) int
+func (s VersionSlice) Unique() VersionSlice
+func (s VersionSlice) Sort()                            // sort in-place
+func (s VersionSlice) Sorted() VersionSlice             // return sorted copy
+```
+
+### CLI Commands
+
+```bash
+# Sort version strings in ascending order
+versions sort <version1> <version2> ... <versionN>
+
+# Sort in descending order (latest first)
+versions sort --desc <version1> <version2> ... <versionN>
+
+# Sort versions from a file (one per line, # comments, blank lines ignored)
+versions sort --from-file <path>
+versions sort --desc --from-file <path>
+
+# Alias for string sorting
+versions sort-strings <version1> <version2> ... <versionN>
+versions sort-strings --desc <version1> <version2> ...
+```
+
+**Examples:**
+```bash
+versions sort 1.0.0 1.10.0 1.2.0 2.0.0
+# Output: 1.0.0 1.2.0 1.10.0 2.0.0
+
+versions sort --desc 1.0.0 1.10.0 1.2.0 2.0.0
+# Output: 2.0.0 1.10.0 1.2.0 1.0.0
+
+versions sort --from-file releases.txt
+```
+
+### MCP Tools
+
+| Tool | Arguments | Returns |
+|------|-----------|---------|
+| `version_sort` | `versions: string[]`, `descending?: bool` | `{sorted_versions: string[]}` |
+| `version_min` | `versions: string[]` | oldest version |
+| `version_max` | `versions: string[]` | newest version |
 
 ## Cross-References
 

@@ -6,7 +6,8 @@ argument-hint: <version1> <version2> ... <versionN>
 
 # Version Grouping
 
-> **Prerequisite:** See `/installation` skill for SDK/CLI/MCP setup.
+> **Setup:** See `/installation` for one-time SDK/CLI/MCP install.  
+> **Layers:** SDK (Go) → CLI (shell) → MCP (AI tools) — pick your entry point.
 
 ## When to Use
 
@@ -167,6 +168,111 @@ versions group-id 1.2.3     # Output: 1.2
 **MCP approach:**
 Not directly available — use `version_parse` and extract the BuildGroupID.
 
+## API Reference
+
+### SDK — Grouping Functions
+
+```go
+// Group versions by BuildGroupID (full number sequence).
+// Returns a map of groupID → *VersionGroup.
+func Group(versions []*Version) map[string]*VersionGroup
+
+// Create a pre-sorted version groups structure from a version list.
+// Efficient for repeated queries.
+func NewSortedVersionGroups(versions []*Version) *SortedVersionGroups
+```
+
+### SDK — VersionGroup Type
+
+```go
+type VersionGroup struct {
+    GroupVersionNumbers VersionNumbers
+    VersionMap          map[string]*Version
+}
+
+// Constructors
+func NewVersionGroup(groupVersionNumbers VersionNumbers) *VersionGroup
+func NewVersionGroupFromVersions(versions []*Version) *VersionGroup
+
+// Core methods
+func (x *VersionGroup) Add(v *Version) bool           // add version; true if already existed
+func (x *VersionGroup) Contains(v *Version) bool      // membership check
+func (x *VersionGroup) Remove(v *Version) bool        // remove; true if it existed
+func (x *VersionGroup) ID() string                    // group ID (e.g. "1.2")
+func (x *VersionGroup) CompareTo(target *VersionGroup) int
+func (x *VersionGroup) Count() int                    // number of versions in group
+
+// Version access
+func (x *VersionGroup) Versions() []*Version          // all versions (unordered)
+func (x *VersionGroup) SortVersions() []*Version      // sorted versions (ascending)
+func (x *VersionGroup) GetLatest() *Version           // newest; nil if empty
+func (x *VersionGroup) GetOldest() *Version           // oldest; nil if empty
+
+// Filtering
+func (x *VersionGroup) StableVersions() []*Version    // all stable (no suffix) versions
+func (x *VersionGroup) PrereleaseVersions() []*Version // all prerelease versions
+func (x *VersionGroup) LatestStable() *Version        // newest stable; nil if none
+func (x *VersionGroup) LatestPrerelease() *Version    // newest prerelease; nil if none
+func (x *VersionGroup) Filter(predicate func(*Version) bool) []*Version
+
+// Range query within group (requires go-tuple)
+func (x *VersionGroup) QueryRangeVersions(start, end *tuple.Tuple2[*Version, ContainsPolicy]) []*Version
+```
+
+### SDK — SortedVersionGroups Type
+
+```go
+type SortedVersionGroups struct { /* ... */ }
+
+func NewSortedVersionGroups(versions []*Version) *SortedVersionGroups
+
+func (x *SortedVersionGroups) GroupIDs() []string                           // sorted group ID list
+func (x *SortedVersionGroups) Get(groupID string) *VersionGroup             // nil if not found
+func (x *SortedVersionGroups) At(index int) *VersionGroup                   // nil if out of bounds
+func (x *SortedVersionGroups) Contains(groupID string) bool                 // group existence check
+func (x *SortedVersionGroups) Len() int                                     // number of groups
+func (x *SortedVersionGroups) Versions() []*Version                         // all versions across all groups, sorted
+func (x *SortedVersionGroups) QueryRange(start, end *tuple.Tuple2[*Version, ContainsPolicy]) []*Version
+```
+
+### CLI Commands
+
+```bash
+# Group versions and display structure
+versions group <version1> <version2> ... <versionN>
+versions group --id <groupID> <version1> <version2> ...
+
+# List all group IDs
+versions group-ids <version1> <version2> ... <versionN>
+
+# Get the group ID for a single version
+versions group-id <version>
+
+# Group-level queries (all require --group-id)
+versions group-latest --group-id <id> <version1> <version2> ...
+versions group-oldest --group-id <id> <version1> <version2> ...
+versions group-stable --group-id <id> <version1> <version2> ...
+versions group-prerelease --group-id <id> <version1> <version2> ...
+versions group-latest-stable --group-id <id> <version1> <version2> ...
+versions group-latest-prerelease --group-id <id> <version1> <version2> ...
+versions group-contains --group-id <id> --version <v> <version1> <version2> ...
+```
+
+**Examples:**
+```bash
+versions group-id 1.2.3                              # Output: 1.2
+versions group-latest --group-id "1.0" 1.0.0 1.0.1 1.0.2
+versions group-contains --group-id "1.0" --version "1.0.1" 1.0.0 1.0.1 1.0.2
+```
+
+### MCP Tools
+
+| Tool | Arguments | Returns |
+|------|-----------|---------|
+| `version_group` | `versions: string[]`, `group_id?: string`, `operation?: string`, `target_version?: string` | group structure / query result |
+
+**Operations:** `"list"` (default), `"latest"`, `"oldest"`, `"stable"`, `"prerelease"`, `"latest_stable"`, `"latest_prerelease"`, `"contains"`
+
 ## Cross-References
 
 - [[version-sorting]] — for sorting groups with SortVersionGroupMap / SortVersionGroupSlice
@@ -184,4 +290,4 @@ Not directly available — use `version_parse` and extract the BuildGroupID.
 - **Remove returns false if the version was not in the group**
 - **SortedVersionGroups pre-sorts on construction** — efficient for repeated queries
 - **CLI --group-id targets a specific group** across all group subcommands
-- **MCP operation parameter** determines what information to return: `"list"` (default), `"latest"`, `"oldest"`, `"stable"`, `"prerelease"`, `"latest_stable"`, `"latest_prerelease"`, `"contains"`
+- **MCP operation parameter** determines what information to return

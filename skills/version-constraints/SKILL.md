@@ -6,7 +6,8 @@ argument-hint: <constraint-expression> <version>
 
 # Version Constraints
 
-> **Prerequisite:** See `/installation` skill for SDK/CLI/MCP setup.
+> **Setup:** See `/installation` for one-time SDK/CLI/MCP install.  
+> **Layers:** SDK (Go) → CLI (shell) → MCP (AI tools) — pick your entry point.
 
 ## When to Use
 
@@ -44,6 +45,12 @@ Need to check version against constraints?
 | `x/X/*` | Wildcard | `1.x` | >=1.0.0, <2.0.0 |
 
 **Combining:** comma `,` = AND, double-pipe `||` = OR. Spaces around operators are NOT supported: use `>=1.0.0` not `>= 1.0.0`.
+
+**Caret `^` semantics:** `^1.2.3` = `>=1.2.3,<2.0.0`; `^0.2.3` = `>=0.2.3,<0.3.0` (more restrictive for 0.x); `^0.0.3` = `>=0.0.3,<0.0.4`.
+
+**Tilde `~` semantics:** `~1.2.3` = `>=1.2.3,<1.3.0` (patch-level changes only).
+
+**Wildcard semantics:** `1.x` = `1.X` = `1.*` = `>=1.0.0,<2.0.0`; `1.2.x` = `>=1.2.0,<1.3.0`.
 
 ## Task Patterns
 
@@ -162,6 +169,91 @@ versions filter --constraint ">=1.0.0,<2.0.0" 0.5.0 1.0.0 1.5.0 2.0.0
 ```json
 {"tool": "version_filter", "arguments": {"versions": ["0.5.0", "1.0.0", "1.5.0", "2.0.0"], "constraint": ">=1.0.0,<2.0.0"}}
 ```
+
+## API Reference
+
+### SDK — Parsing Functions
+
+```go
+// Parse a single constraint expression (e.g. ">=1.0.0", "^1.2.3", "~1.2.3")
+func ParseConstraint(expr string) (*Constraint, error)
+
+// Parse comma-separated AND constraints (e.g. ">=1.0.0,<2.0.0")
+func ParseConstraintSet(expr string) (*ConstraintSet, error)
+
+// Parse ||-separated OR constraint sets (e.g. ">=1.0.0,<2.0.0 || >=3.0.0")
+func ParseConstraintUnion(expr string) (*ConstraintUnion, error)
+```
+
+### SDK — Matching Methods
+
+```go
+// Single constraint matching
+func (c *Constraint) Match(v *Version) bool
+func (c *Constraint) String() string
+
+// ConstraintSet (AND logic) — all must match
+func (cs *ConstraintSet) Match(v *Version) bool
+func (cs *ConstraintSet) Satisfies(v *Version) bool   // alias for Match
+func (cs *ConstraintSet) Len() int
+func (cs *ConstraintSet) String() string
+
+// ConstraintUnion (OR logic) — any set must match
+func (cu *ConstraintUnion) Match(v *Version) bool
+func (cu *ConstraintUnion) Satisfies(v *Version) bool // alias for Match
+func (cu *ConstraintUnion) String() string
+
+// Version-centric convenience methods
+func (v *Version) Satisfies(constraint *Constraint) bool
+func (v *Version) Matches(expr string) (bool, error)  // parse + match one-liner
+```
+
+### SDK — Filter Functions
+
+```go
+func FilterByConstraint(versions []*Version, constraint *Constraint) []*Version
+func FilterByConstraintSet(versions []*Version, cs *ConstraintSet) []*Version
+```
+
+### CLI Commands
+
+```bash
+# Check constraint — single type
+versions constraint "<expr>" <version> --type single
+
+# Check constraint — ConstraintSet (AND logic, default)
+versions constraint "<expr>" <version>
+
+# Check constraint — ConstraintUnion (OR logic)
+versions constraint "<expr>" <version> --type union
+
+# Version-centric check (auto-detects type)
+versions satisfies <version> "<constraint-expression>"
+
+# Filter by constraint — single
+versions filter --constraint "<expr>" --constraint-type single <versions...>
+
+# Filter by constraint — set (default)
+versions filter --constraint "<expr>" <versions...>
+
+# Filter by constraint — union
+versions filter --constraint "<expr>" --constraint-type union <versions...>
+```
+
+**Examples:**
+```bash
+versions constraint ">=1.0.0,<2.0.0" 1.5.0         # AND logic
+versions constraint ">=1.0.0 || >=3.0.0" 3.5.0 --type union
+versions satisfies 1.5.0 ">=1.0.0,<2.0.0"
+versions filter --constraint ">=1.0.0,<2.0.0" 0.5.0 1.0.0 1.5.0 2.0.0
+```
+
+### MCP Tools
+
+| Tool | Arguments | Returns |
+|------|-----------|---------|
+| `version_constraint_check` | `expression: string`, `version: string`, `type?: string` | `{matches: bool}` |
+| `version_filter` | `versions: string[]`, `constraint?: string`, `stable?: bool`, `prerelease?: bool`, `major?: int`, `minor?: int`, `patch?: int`, `prefix?: string`, `suffix?: string` | filtered list |
 
 ## Cross-References
 

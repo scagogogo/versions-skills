@@ -6,7 +6,8 @@ argument-hint: <version1> <version2>
 
 # Version Comparison
 
-> **Prerequisite:** See `/installation` skill for SDK/CLI/MCP setup.
+> **Setup:** See `/installation` for one-time SDK/CLI/MCP install.  
+> **Layers:** SDK (Go) → CLI (shell) → MCP (AI tools) — pick your entry point.
 
 ## When to Use
 
@@ -138,6 +139,74 @@ Not directly available — use full version comparison.
 **MCP approach:**
 Not directly available — use `version_compare` with full version strings.
 
+## API Reference
+
+### SDK — Core Comparison Methods
+
+```go
+// CompareTo returns: -1 (x < target), 0 (equal), 1 (x > target)
+// Comparison order: VersionNumbers → Suffix → PublicTime → Raw string
+func (x *Version) CompareTo(target *Version) int
+
+// Boolean convenience methods
+func (x *Version) IsNewerThan(target *Version) bool   // CompareTo(target) > 0
+func (x *Version) IsOlderThan(target *Version) bool   // CompareTo(target) < 0
+func (x *Version) Equals(target *Version) bool         // CompareTo(target) == 0
+
+// Range check — inclusive on both bounds (low <= x <= high)
+// Pass nil to skip a bound
+func (x *Version) IsBetween(low, high *Version) bool
+```
+
+### SDK — Sub-Component Comparison
+
+```go
+// Compare number arrays element-by-element, left to right
+// Shorter arrays are less than longer ones when shared prefix matches
+func (x VersionNumbers) CompareTo(target []int) int
+
+// Compare suffixes by semantic weight:
+// dev(50) < snapshot(60) < nightly(70) < alpha(100) < beta(200)
+// < milestone(300) < rc(400) < final/release/ga(500) < sp(600)
+// < patch(700) < post(800) < empty/release(∞)
+// Unknown suffixes sort after known suffixes, alphabetically
+func (x VersionSuffix) CompareTo(target VersionSuffix) int
+```
+
+### SDK — VersionNumbers Constructor
+
+```go
+func NewVersionNumbers(nums []int) VersionNumbers
+```
+
+### CLI Commands
+
+```bash
+# Compare two versions — JSON output with result (-1/0/1) and description
+versions compare <version1> <version2>
+
+# Boolean comparison checks — exit 0 = true, exit 1 = false
+versions check --newer <target> <version>                   # IsNewerThan
+versions check --older <target> <version>                   # IsOlderThan
+versions check --equal <target> <version>                   # Equals
+versions check --between-low <low> --between-high <high> <v> # IsBetween
+```
+
+**Examples:**
+```bash
+versions compare 1.2.3 2.0.0           # {"result": -1, "description": "..."}
+versions check --newer 1.0.0 2.0.0     # exit 0 (true: 2.0.0 > 1.0.0)
+versions check --older 2.0.0 1.0.0     # exit 0 (true: 1.0.0 < 2.0.0)
+versions check --equal 1.0.0 1.0.0     # exit 0 (true)
+```
+
+### MCP Tools
+
+| Tool | Arguments | Returns |
+|------|-----------|---------|
+| `version_compare` | `version1: string`, `version2: string` | `{result: int, description: string}` |
+| `version_range_query` | `check_version: string`, `low: string`, `high: string` | between-ness result |
+
 ## Cross-References
 
 - [[version-parsing]] — for parsing version strings before comparison
@@ -148,7 +217,7 @@ Not directly available — use `version_compare` with full version strings.
 
 ## Important Notes
 
-- **Comparison order: VersionNumbers -> Suffix -> PublicTime -> Raw string** (Suffix is before PublicTime, not after)
+- **Comparison order: VersionNumbers → Suffix → PublicTime → Raw string** (Suffix is before PublicTime, not after)
 - **`1.0` and `1.0.0` are NOT equal** — shorter number arrays are less than longer ones when the shared prefix matches: `[1,0] < [1,0,0]`
 - **Empty suffix (release) is always greater than any non-empty suffix (prerelease)**: `1.0.0 > 1.0.0-beta > 1.0.0-alpha`
 - **Suffix comparison uses semantic weight, not alphabetical order**: dev(50) < alpha(100) < beta(200) < rc(400) < release(500)

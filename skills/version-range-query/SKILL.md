@@ -171,6 +171,47 @@ versions range 2.0.0 999.0.0 --include-end 1.0.0 2.0.0 2.1.0 3.0.0
 }
 ```
 
+## API Reference
+
+### SDK
+
+```go
+// Simple between check (inclusive both ends, nil boundaries skipped)
+func (x *Version) IsBetween(low, high *Version) bool
+
+// Range query within a single version group
+func (x *VersionGroup) QueryRangeVersions(start, end *tuple.Tuple2[*Version, ContainsPolicy]) []*Version
+
+// Cross-group range query across all groups
+func (x *SortedVersionGroups) QueryRange(start, end *tuple.Tuple2[*Version, ContainsPolicy]) []*Version
+
+// Boundary inclusion policy
+type ContainsPolicy int
+const (
+    ContainsPolicyNone ContainsPolicy = iota  // defaults to inclusive
+    ContainsPolicyYes                          // [ or ]
+    ContainsPolicyNo                           // ( or )
+)
+```
+
+### CLI Commands
+
+```bash
+versions range <start> <end> [versions...]    # range query
+  --include-start        # include start boundary (default: true)
+  --include-end          # include end boundary (default: false)
+  --from-file <path>     # read versions from file
+
+versions check <v> --between-low <low> --between-high <high>  # between check
+```
+
+### MCP Tools
+
+| Tool | Key Arguments | Returns |
+|------|--------------|---------|
+| `version_range_query` | `versions[]`, `start`, `end`, `include_start`, `include_end` | matching versions (sorted) |
+| `version_range_query` | `check_version`, `low`, `high` | `{between: bool}` |
+
 ## ContainsPolicy Reference
 
 | Policy | Symbol | Meaning |

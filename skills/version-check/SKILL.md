@@ -6,7 +6,8 @@ argument-hint: <version-string> --<flag>
 
 # Version Check
 
-> **Prerequisite:** See `/installation` skill for SDK/CLI/MCP setup.
+> **Setup:** See `/installation` for one-time SDK/CLI/MCP install.  
+> **Layers:** SDK (Go) → CLI (shell) → MCP (AI tools) — pick your entry point.
 
 ## When to Use
 
@@ -185,6 +186,104 @@ versions info v1.2.3-beta1
 ```json
 {"tool": "version_info", "arguments": {"version_string": "v1.2.3-beta1"}}
 ```
+
+## API Reference
+
+### SDK — Type Check Methods
+
+All return `bool`. A version matches exactly one suffix type based on its suffix pattern:
+
+| Method | Suffix Pattern | Weight |
+|--------|---------------|--------|
+| `IsDev()` | `-dev*` | 50 |
+| `IsSnapshot()` | `-snapshot*` | 60 |
+| `IsNightly()` | `-nightly*` | 70 |
+| `IsAlpha()` | `-alpha*` | 100 |
+| `IsBeta()` | `-beta*` | 200 |
+| `IsMilestone()` | `-milestone*` or `-m*` | 300 |
+| `IsRC()` | `-rc*` | 400 |
+| `IsFinal()` | `-final*` | 500 |
+| `IsGA()` | `-ga*` | 500 |
+| `IsRelease()` | `-release*` | 500 |
+| `IsPre()` | `-pre*` | — |
+| `IsSP()` | `-sp*` | 600 |
+| `IsPost()` | `-post*` | 800 |
+
+### SDK — Composite Checks
+
+```go
+func (x *Version) IsPrerelease() bool  // Suffix is non-empty (any suffix = prerelease)
+func (x *Version) IsStable() bool      // Suffix is empty (no suffix = stable)
+func (x *Version) IsZero() bool        // All version numbers are zero
+func (x *Version) IsValid() bool       // Has non-empty VersionNumbers
+func (x *Version) Validate() error     // Stricter: rejects negative numbers
+```
+
+### SDK — Comparison Predicates
+
+```go
+func (x *Version) IsNewerThan(target *Version) bool  // CompareTo(target) > 0
+func (x *Version) IsOlderThan(target *Version) bool  // CompareTo(target) < 0
+func (x *Version) Equals(target *Version) bool        // CompareTo(target) == 0
+func (x *Version) IsBetween(low, high *Version) bool  // low <= x <= high; nil = skip bound
+```
+
+### SDK — Suffix Weight
+
+```go
+func (x *Version) SuffixWeight() SuffixWeight  // semantic weight int
+func (x *Version) SubVersion() int             // numeric from suffix (e.g. "beta2" → 2)
+```
+
+### CLI Commands
+
+```bash
+# Type checks — exit 0 = true, exit 1 = false
+versions check --prerelease <version>
+versions check --stable <version>
+versions check --dev <version>
+versions check --alpha <version>
+versions check --beta <version>
+versions check --rc <version>
+versions check --snapshot <version>
+versions check --milestone <version>
+versions check --nightly <version>
+versions check --final <version>
+versions check --ga <version>
+versions check --pre <version>
+versions check --release <version>
+versions check --sp <version>
+versions check --post <version>
+versions check --zero <version>
+versions check --is-valid <version>
+
+# Comparison checks
+versions check --newer <target> <version>
+versions check --older <target> <version>
+versions check --equal <target> <version>
+versions check --between-low <low> --between-high <high> <version>
+
+# Get all info at once
+versions info <version>
+
+# Suffix weight
+versions suffix-weight <version>
+```
+
+**CI/CD pattern:**
+```bash
+if versions check --stable "$VERSION"; then deploy; fi
+if versions check --ga "$VERSION"; then deploy-production; fi
+```
+
+### MCP Tools
+
+| Tool | Arguments | Returns |
+|------|-----------|---------|
+| `version_info` | `version_string: string` | all Is* flags, segments, suffix info |
+| `version_validate` | `version_string: string` | `{valid: bool, error: string?}` |
+| `version_compare` | `version1: string`, `version2: string` | `{result: int, description: string}` |
+| `version_range_query` | `check_version: string`, `low: string`, `high: string` | between-ness result |
 
 ## Cross-References
 
