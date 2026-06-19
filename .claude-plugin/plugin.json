@@ -2,7 +2,7 @@
   "name": "versions",
   "displayName": "Versions-Skills",
   "description": "Go version number parsing, comparison, sorting, grouping, constraint checking, visualization, and file operations — accessible via 13 specialized Claude Code skills, Go SDK, CLI, and MCP Server",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "author": {
     "name": "scagogogo",
     "url": "https://github.com/scagogogo"

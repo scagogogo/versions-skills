@@ -77,6 +77,12 @@ jobs:
           fi
           echo "✅ All files are properly formatted."
 
+      - name: Run golangci-lint
+        uses: golangci/golangci-lint-action@v6
+        with:
+          version: latest
+          args: --timeout 5m
+
   examples:
     name: Examples Verification
     needs: unit-test

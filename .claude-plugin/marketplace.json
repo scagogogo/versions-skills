@@ -10,7 +10,7 @@
     {
       "name": "versions",
       "description": "Professional skills for version number parsing, comparison, sorting, grouping, range queries, constraint checking, visualization, and file operations — with Go SDK, CLI, and MCP Server support",
-      "version": "0.1.0",
+      "version": "0.2.0",
       "source": "./",
       "category": "development",
       "author": {

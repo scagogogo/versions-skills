@@ -71,7 +71,7 @@ curl -sLO https://github.com/scagogogo/versions-skills/releases/latest/download/
 sudo apk add versions-mcp_{VERSION}_linux_amd64.apk
 ```
 
-> **Note:** Replace `{VERSION}` with the actual release version (e.g. `0.2.0`). Replace `amd64` with your architecture. Check the [latest release page](https://github.com/scagogogo/versions-skills/releases/latest) for the current version and full asset list.
+> **Note:** Replace `{VERSION}` with the actual release version. Replace `amd64` with your architecture. Check the [latest release page](https://github.com/scagogogo/versions-skills/releases/latest) for the current version and full asset list.
 
 ### Option 2: Install via Go
 
