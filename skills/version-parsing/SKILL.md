@@ -1,185 +1,223 @@
 ---
 name: version-parsing
-description: Parse, validate, and extract structured components from version strings. Use when you need to break a version string into its parts (prefix, numbers, suffix, metadata), validate a version, or check what type of version something is (alpha, beta, RC, stable, etc.).
+description: Parse, validate, and extract structured components from version strings via SDK, CLI, or MCP. Covers NewVersion/MustParse, all Is* type checks, Segments, Core, Clone, SuffixWeight, custom parser options.
 argument-hint: <version-string-or-task>
 ---
 
 # Version Parsing
 
-> **Prerequisite:** See `/installation` skill for SDK/CLI/MCP setup.
+> **Setup:** See `/installation` for one-time SDK/CLI/MCP install.  
+> **Layers:** SDK (Go) → CLI (shell) → MCP (AI tools) — pick your entry point.
 
 ## When to Use
 
-- You have a raw version string (e.g. `"v1.2.3-rc1"`) and need its structured components
-- You need to validate whether a string is a valid version number
-- You need to determine the version type: prerelease, stable, alpha, beta, RC, dev, snapshot, etc.
-- You need to extract segments (major/minor/patch), suffix weight, or core version
-- You need to serialize/deserialize versions for JSON, SQL, or text formats
+- Parse a version string (`"v1.2.3-rc1"`) into structured components (prefix, numbers, suffix)
+- Validate whether a string is a valid version number
+- Determine version type: prerelease, stable, alpha, beta, RC, dev, snapshot, nightly, etc.
+- Extract segments, sub-version, suffix weight, group ID, or core version
+- Use custom delimiters for non-standard formats (e.g. underscore-separated)
 
 ## Decision Tree
 
 ```
-Raw version string in hand?
-├─ Need structured breakdown?         → version_parse / versions parse / NewVersion()
-├─ Need yes/no validity check?        → version_validate / versions validate / IsValid()
-├─ Need all type flags at once?       → version_info / versions info / Is* methods
-├─ Need specific type check?          → Call the specific Is* method or CLI check --<type>
-├─ Need segments (major/minor/patch)? → versions segments / Segments(), Major(), Minor(), Patch()
-├─ Need the core (suffix stripped)?   → versions core / Core()
-└─ Need suffix weight for ordering?   → versions suffix-weight / SuffixWeight()
+Raw version string → what do you need?
+├─ Structured breakdown?          → NewVersion() / version_parse / versions parse
+├─ Yes/no validity?               → IsValid() / version_validate / versions validate
+├─ All type flags at once?        → version_info / versions info
+├─ Specific type check?           → IsBeta(), IsStable(), IsRC() etc.
+├─ Segments (major/minor/patch)?  → Major()/Minor()/Patch()/Segments()
+├─ Core version (no suffix)?      → Core()
+└─ Suffix weight for ordering?    → SuffixWeight()
 ```
 
 ## Task Patterns
 
-### Parse a version string into components
+### Parse & inspect
 
-**Goal:** Break `"v1.2.3-rc1"` into prefix=`"v"`, numbers=`[1,2,3]`, suffix=`"-rc1"`.
+**Goal:** Break `"v1.2.3-rc1"` into prefix `"v"`, numbers `[1,2,3]`, suffix `"-rc1"`.
 
-**SDK approach:**
-```go
-v := versions.NewVersion("v1.2.3-rc1")
-if !v.IsValid() {
-    // handle invalid input
-}
-fmt.Println(v.Prefix, v.VersionNumbers, v.Suffix)
-```
+| Layer | Approach |
+|-------|----------|
+| SDK | `v := versions.NewVersion("v1.2.3-rc1"); v.IsValid()` |
+| CLI | `versions parse v1.2.3-rc1` |
+| MCP | `{"tool": "version_parse", "arguments": {"version_string": "v1.2.3-rc1"}}` |
 
-**CLI approach:**
-```bash
-versions parse v1.2.3-rc1
-```
-
-**MCP approach:**
-```json
-{"tool": "version_parse", "arguments": {"version_string": "v1.2.3-rc1"}}
-```
-
-### Validate a version string
+### Validate
 
 **Goal:** Confirm `"1.2.3"` is valid, `"not-a-version"` is not.
 
-**SDK approach:**
-```go
-v := versions.NewVersion("1.2.3")
-if err := v.Validate(); err != nil {
-    // invalid
-}
-```
+| Layer | Approach |
+|-------|----------|
+| SDK | `v.Validate() != nil` → invalid |
+| CLI | `versions validate 1.2.3` (exit 0 = valid, exit 1 = invalid) |
+| MCP | `{"tool": "version_validate", "arguments": {"version_string": "1.2.3"}}` |
 
-**CLI approach:**
-```bash
-versions validate 1.2.3    # exit 0 = valid
-versions validate notaversion  # exit 1 = invalid
-```
-
-**MCP approach:**
-```json
-{"tool": "version_validate", "arguments": {"version_string": "1.2.3"}}
-```
-
-### Check version type (alpha, beta, RC, stable, etc.)
+### Check type
 
 **Goal:** Determine if `"1.0.0-beta2"` is a beta prerelease.
 
-**SDK approach:**
+| Layer | Approach |
+|-------|----------|
+| SDK | `v.IsBeta()`, `v.IsPrerelease()`, `v.IsStable()`, `v.SubVersion()` |
+| CLI | `versions check --beta 1.0.0-beta2` (exit 0 = match) |
+| MCP | `{"tool": "version_info", ...}` returns all Is* flags |
+
+### Extract segments
+
+**Goal:** Get `[1, 2, 3]` from `"1.2.3"`.
+
+| Layer | Approach |
+|-------|----------|
+| SDK | `v.Major()`, `v.Minor()`, `v.Patch()`, `v.Segments()` |
+| CLI | `versions segments 1.2.3` |
+| MCP | `{"tool": "version_parse", ...}` → `segments` field |
+
+### Get core (strip suffix)
+
+**Goal:** `"v1.2.3-beta1"` → `"v1.2.3"`.
+
+| Layer | Approach |
+|-------|----------|
+| SDK | `v.Core().RawString()` |
+| CLI | `versions core v1.2.3-beta1` |
+| MCP | `{"tool": "version_core", "arguments": {"version_string": "v1.2.3-beta1"}}` |
+
+### Custom delimiters
+
+**Goal:** Parse `"curl-7_85_0"` with `-` and `_` delimiters.
+
+| Layer | Approach |
+|-------|----------|
+| SDK | `versions.NewVersionWithOption(s, versions.ParserOption{Delimiters: ".-_"})` |
+| CLI | `versions parse --delimiters "_-" curl-7_85_0` |
+| MCP | `{"tool": "version_parse", "arguments": {"version_string": "curl-7_85_0", "delimiters": ".-_"}}` |
+
+## API Reference
+
+### SDK — Constructor Functions
+
 ```go
-v := versions.NewVersion("1.0.0-beta2")
-isBeta := v.IsBeta()        // true
-isPrerelease := v.IsPrerelease() // true
-isStable := v.IsStable()    // false
-subVersion := v.SubVersion() // 2
+versions.NewVersion(versionStr string) *Version           // never nil, check IsValid()
+versions.NewVersionE(versionStr string) (*Version, error)  // returns error for invalid
+versions.MustParse(versionStr string) *Version             // panics on invalid — test data only
+versions.NewVersions(strings ...string) []*Version         // batch parse
+versions.NewVersionWithOption(s string, opt ParserOption) *Version  // custom delimiters
+versions.NewVersionStringParser(s string) *VersionStringParser     // low-level parser
 ```
 
-**CLI approach:**
-```bash
-versions check --beta 1.0.0-beta2     # exit 0
-versions check --stable 1.0.0-beta2   # exit 1
-versions info v1.2.3-beta1            # all Is* flags at once
-```
+### SDK — Version Struct Fields
 
-**MCP approach:**
-```json
-{"tool": "version_info", "arguments": {"version_string": "v1.2.3-beta1"}}
-```
-
-### Extract version segments
-
-**Goal:** Get `[1, 2, 3]` from `"1.2.3"`, or just the major version.
-
-**SDK approach:**
 ```go
-v := versions.NewVersion("1.2.3.4")
-major := v.Major()   // 1
-minor := v.Minor()   // 2
-patch := v.Patch()   // 3
-all := v.Segments()  // [1 2 3 4]
+type Version struct {
+    Prefix         string    // e.g. "v"
+    VersionNumbers []int     // e.g. [1, 2, 3]
+    Suffix         string    // e.g. "-rc1"
+    Metadata       string    // semver build metadata (after +)
+    PublicTime     time.Time // optional release timestamp
+    Raw            string    // original input string
+}
 ```
 
-**CLI approach:**
-```bash
-versions segments 1.2.3       # [1, 2, 3]
-versions segments v1.2.3.4    # [1, 2, 3, 4]
-```
+### SDK — Type Checks
 
-**MCP approach:**
-```json
-{"tool": "version_parse", "arguments": {"version_string": "1.2.3"}}
-```
-
-### Get core version (strip suffix)
-
-**Goal:** Convert `"v1.2.3-beta1"` to `"v1.2.3"`.
-
-**SDK approach:**
 ```go
-v := versions.NewVersion("v1.2.3-beta1")
-core := v.Core()
-fmt.Println(core.RawString()) // "v1.2.3"
+v.IsValid() bool       // has VersionNumbers
+v.IsStable() bool      // no suffix
+v.IsPrerelease() bool  // has any suffix
+v.IsAlpha() bool       // suffix contains "alpha"
+v.IsBeta() bool        // suffix contains "beta"
+v.IsRC() bool          // suffix contains "rc"
+v.IsDev() bool         // suffix contains "dev"
+v.IsSnapshot() bool    // suffix contains "snapshot"
+v.IsNightly() bool     // suffix contains "nightly"
+v.IsMilestone() bool   // suffix contains "milestone" or "m"
+v.IsFinal() bool       // suffix contains "final"
+v.IsGA() bool          // suffix contains "ga"
+v.IsPre() bool         // suffix contains "-pre"
+v.IsRelease() bool     // suffix contains "-release"
+v.IsSP() bool          // suffix contains "sp"
+v.IsPost() bool        // suffix contains "post"
 ```
 
-**CLI approach:**
-```bash
-versions core v1.2.3-beta1    # v1.2.3
-```
+### SDK — Segment Accessors
 
-**MCP approach:**
-```json
-{"tool": "version_core", "arguments": {"version_string": "v1.2.3-beta1"}}
-```
-
-### Parse with custom delimiters
-
-**Goal:** Parse underscore-separated versions like `"1_2_3"`.
-
-**SDK approach:**
 ```go
-v := versions.NewVersionWithOption("1_2_3", versions.ParserOption{Delimiters: ".-_"})
-fmt.Println(v.Segments()) // [1 2 3]
+v.Major() int           // VersionNumbers[0] or 0
+v.Minor() int           // VersionNumbers[1] or 0
+v.Patch() int           // VersionNumbers[2] or 0
+v.Segments() []int      // all VersionNumbers
+v.Segments64() []int64  // as int64
+v.SubVersion() int      // numeric from suffix (e.g. "beta2" → 2)
+v.SuffixWeight() SuffixWeight  // semantic ordering weight
 ```
 
-**CLI approach:**
+### SDK — Core, Clone, Serialization
+
+```go
+v.Core() *Version                    // strip suffix
+v.Clone() *Version                   // deep copy
+v.BuildGroupID() string              // e.g. "1.2.3"
+v.WithPrefix(p string) *Version      // immutable — returns new Version
+v.WithSuffix(s string) *Version
+v.WithMajor(n int) *Version
+v.WithMinor(n int) *Version
+v.WithPatch(n int) *Version
+v.WithNumbers(ns []int) *Version
+v.WithPublicTime(t time.Time) *Version
+v.WithMetadata(m string) *Version
+// JSON/Text/SQL serialization via MarshalText/UnmarshalText/MarshalJSON/UnmarshalJSON/Scan/Value
+```
+
+### SDK — Parser Options
+
+```go
+type ParserOption struct {
+    Delimiters string  // custom delimiter set, e.g. ".-_" (default: ".-")
+}
+```
+
+### CLI Commands
+
 ```bash
-versions parse --delimiters "_-" curl-7_85_0
+versions parse <version>              # structured JSON output
+versions parse --delimiters "_-" <v>  # custom delimiters
+versions validate <version>           # exit 0 = valid, 1 = invalid
+versions info <version>               # all Is* flags + segments
+versions segments <version>           # [major, minor, patch, ...]
+versions sub-version <version>        # numeric suffix index
+versions suffix-weight <version>      # semantic weight int
+versions pure-prefix <version>        # prefix without trailing delimiters
+versions group-id <version>           # e.g. "v1.2.3-beta" → "1.2.3"
+versions core <version>               # strip suffix
+versions clone <version>              # deep copy as JSON
+versions check --<type> <version>     # --alpha, --beta, --rc, --stable, etc.
+versions check --prerelease <v>       # exit 0 if prerelease
+versions check --is-valid <v>         # exit 0 if valid
 ```
 
-**MCP approach:**
-```json
-{"tool": "version_parse", "arguments": {"version_string": "1_2_3", "delimiters": ".-_"}}
-```
+### MCP Tools
+
+| Tool | Arguments | Returns |
+|------|-----------|---------|
+| `version_parse` | `version_string`, `delimiters?` | prefix, numbers, suffix, metadata |
+| `version_validate` | `version_string` | `{valid: bool, error: string?}` |
+| `version_info` | `version_string` | all Is* flags, segments, suffix info |
+| `version_core` | `version_string` | core version string |
 
 ## Cross-References
 
-- [[version-check]] — for boolean type checks and comparison predicates
-- [[version-comparison]] — for CompareTo, IsNewerThan, IsOlderThan
-- [[version-sorting]] — for sorting parsed versions
-- [[version-constraints]] — for constraint expression matching
+- [[version-check]] — boolean type checks, comparison predicates
+- [[version-comparison]] — CompareTo, IsNewerThan, IsOlderThan
+- [[version-sorting]] — sorting parsed versions
+- [[version-constraints]] — constraint expression matching
+- [[version-mutation]] — bumping, building, modifying versions
 
 ## Important Notes
 
-- `NewVersion()` never returns nil — always check `IsValid()` for invalid inputs
-- `IsValid()` checks for non-empty VersionNumbers; `Validate()` is stricter (also rejects negative numbers)
-- `IsPrerelease()` means "has any suffix"; `IsPre()` means "has explicit `-pre` suffix" — they are different
-- `IsStable()` means "no suffix"; `IsRelease()` means "has explicit `-release` suffix" — they are different
-- Semver build metadata (after `+`) is stored in the `Metadata` field, not in Suffix
-- All `With*` methods (WithPrefix, WithSuffix, WithMajor, etc.) return new Version objects — the original is never modified
-- `MustParse` panics on invalid input — use only for hardcoded/test data
+- `NewVersion()` **never returns nil** — always check `IsValid()` for invalid input
+- `IsValid()` checks for non-empty VersionNumbers; `Validate()` is stricter (rejects negative numbers)
+- `IsPrerelease()` means "has any suffix"; `IsPre()` means "has explicit `-pre` suffix"
+- `IsStable()` means "no suffix"; `IsRelease()` means "has explicit `-release` suffix"
+- Semver build metadata (`+` part) is in `Metadata` field, **not** Suffix
+- All `With*` methods return **new** Version objects — the original is never modified
+- `MustParse` **panics** on invalid input — use only for hardcoded/test data
