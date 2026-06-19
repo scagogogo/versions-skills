@@ -4,9 +4,10 @@ description: One-time setup for versions-skills SDK, CLI, and MCP server. Run fi
 argument-hint: <sdk|cli|mcp>
 ---
 
-# Installation Skill
+# Installation
 
-> **Run this once** before using any `version-*` skill. All other skills assume the tooling is available.
+> **Run this once** before using any `version-*` skill. All other skills assume the tooling is available.  
+> **Layers:** SDK (Go) → CLI (shell) → MCP (AI tools) — pick your entry point.
 
 ## Decision Tree
 
@@ -84,6 +85,11 @@ Configure in Claude Code `settings.json`:
     }
   }
 }
+```
+
+For SSE mode (network-accessible server):
+```bash
+versions-mcp --transport sse --port 8080
 ```
 
 Available tools: `version_parse`, `version_validate`, `version_info`, `version_compare`, `version_sort`, `version_group`, `version_constraint_check`, `version_range_query`, `version_filter`, `version_min`, `version_max`, `version_latest_stable`, `version_latest_prerelease`, `version_unique`, `version_set_operation`, `version_visualize`, `version_build`, `version_bump`, `version_core`, `version_read_file`, `version_write_file`.

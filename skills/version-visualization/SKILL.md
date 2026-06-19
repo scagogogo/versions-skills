@@ -6,7 +6,8 @@ argument-hint: <version-list or file-path>
 
 # Version Visualization
 
-> **Prerequisite:** See `/installation` skill for SDK/CLI/MCP setup.
+> **Setup:** See `/installation` for one-time SDK/CLI/MCP install.  
+> **Layers:** SDK (Go) → CLI (shell) → MCP (AI tools) — pick your entry point.
 
 ## When to Use
 
@@ -34,103 +35,107 @@ Reading versions from a file?
 
 **Goal:** Show all versions grouped by major version with individual entries.
 
-**SDK approach:**
-```go
-versionList := versions.NewVersions("1.0.0", "1.0.1", "1.1.0", "2.0.0")
-versions.VisualizeVersions(versionList, os.Stdout, 0) // 0 = no truncation
-```
-
-**CLI approach:**
-```bash
-versions visualize 1.0.0 1.0.1 1.1.0 2.0.0 2.0.1
-```
-
-**MCP approach:**
-```json
-{
-  "tool": "version_visualize",
-  "arguments": {
-    "versions": ["1.0.0", "1.0.1", "1.1.0", "2.0.0", "2.0.1"],
-    "max_items_per_group": 0
-  }
-}
-```
+| Layer | Approach |
+|-------|----------|
+| SDK | `versions.VisualizeVersions(versionList, os.Stdout, 0)` — 0 = no truncation |
+| CLI | `versions visualize 1.0.0 1.0.1 1.1.0 2.0.0 2.0.1` |
+| MCP | `{"tool": "version_visualize", "arguments": {"versions": ["1.0.0", "1.0.1", "1.1.0", "2.0.0", "2.0.1"], "max_items_per_group": 0}}` |
 
 ### Render a group-level summary only
 
 **Goal:** Show only the group hierarchy without individual version entries.
 
-**SDK approach:**
-```go
-versions.VisualizeVersionGroups(versionList, os.Stdout)
-```
-
-**CLI approach:**
-```bash
-versions visualize --groups 1.0.0 1.0.1 1.1.0 2.0.0
-```
-
-**MCP approach:**
-```json
-{
-  "tool": "version_visualize",
-  "arguments": {
-    "versions": ["1.0.0", "1.0.1", "1.1.0", "2.0.0"],
-    "groups_only": true
-  }
-}
-```
+| Layer | Approach |
+|-------|----------|
+| SDK | `versions.VisualizeVersionGroups(versionList, os.Stdout)` |
+| CLI | `versions visualize --groups 1.0.0 1.0.1 1.1.0 2.0.0` |
+| MCP | `{"tool": "version_visualize", "arguments": {"versions": ["1.0.0", "1.0.1", "1.1.0", "2.0.0"], "groups_only": true}}` |
 
 ### Visualize with truncation per group
 
 **Goal:** Limit the number of versions shown per group to avoid overwhelming output.
 
-**SDK approach:**
-```go
-versions.VisualizeVersions(versionList, os.Stdout, 3) // max 3 per group
-```
-
-**CLI approach:**
-```bash
-versions visualize --max-items 3 1.0.0 1.0.1 1.1.0 2.0.0 2.0.1 2.1.0
-```
-
-**MCP approach:**
-```json
-{
-  "tool": "version_visualize",
-  "arguments": {
-    "versions": ["1.0.0", "1.0.1", "1.1.0", "2.0.0", "2.0.1", "2.1.0"],
-    "max_items_per_group": 3
-  }
-}
-```
+| Layer | Approach |
+|-------|----------|
+| SDK | `versions.VisualizeVersions(versionList, os.Stdout, 3)` — max 3 per group |
+| CLI | `versions visualize --max-items 3 1.0.0 1.0.1 1.1.0 2.0.0 2.0.1 2.1.0` |
+| MCP | `{"tool": "version_visualize", "arguments": {"versions": [...], "max_items_per_group": 3}}` |
 
 ### Write visualization to a buffer
 
 **Goal:** Capture the tree output as a string for further processing.
 
-**SDK approach:**
-```go
-var buf bytes.Buffer
-versions.VisualizeVersions(versionList, &buf, 0)
-output := buf.String()
-```
-
-**CLI approach:**
-```bash
-versions visualize 1.0.0 1.1.0 2.0.0 > tree.txt
-```
+| Layer | Approach |
+|-------|----------|
+| SDK | `var buf bytes.Buffer; versions.VisualizeVersions(versionList, &buf, 0); output := buf.String()` |
+| CLI | `versions visualize 1.0.0 1.1.0 2.0.0 > tree.txt` |
+| MCP | Response includes `visualization` (string) and `total_versions` / `total_groups` counts |
 
 ### Read versions from a file and visualize
 
 **Goal:** Load versions from a text file and render the tree.
 
-**CLI approach:**
-```bash
-versions visualize --from-file versions.txt
-versions visualize --groups --from-file releases.txt
+| Layer | Approach |
+|-------|----------|
+| SDK | `versionList, _ := versions.ReadVersionsFromFile("versions.txt"); versions.VisualizeVersions(versionList, os.Stdout, 0)` |
+| CLI | `versions visualize --from-file versions.txt` |
+| MCP | Read with `version_read_file` first, then pass result to `version_visualize` |
+
+## API Reference
+
+### SDK Functions
+
+```go
+// Detailed tree: individual versions grouped by major version
+func VisualizeVersions(versions []*Version, w io.Writer, maxItems int)
+
+// Summary tree: group-level hierarchy only (no individual versions)
+func VisualizeVersionGroups(versions []*Version, w io.Writer)
 ```
+
+- `maxItems = 0` means show all versions per group (no truncation)
+- Both functions accept any `io.Writer` — `os.Stdout`, `bytes.Buffer`, or `os.File`
+- Release time is only shown when `PublicTime` is non-zero
+- Output uses Unicode box-drawing characters (├──, └──, ┌─)
+- Labels are in Chinese: "版本总数" (total), "版本组" (group), "发布时间" (release time)
+
+Output structure for `VisualizeVersions`:
+```
+版本总数: 8
+版本组数: 2
+
+┌─ 版本组: 1 (3个版本)
+├── 1.0.0 (发布时间: 2024-01-01)
+├── 1.0.1 (发布时间: 2024-02-01)
+└── ...还有1个版本未显示
+```
+
+Output structure for `VisualizeVersionGroups`:
+```
+版本总数: 8
+版本组数: 5
+
+├─ 1 (3个版本组, 共3个版本)
+│  ├─ 1.0 (1个版本)
+│  └─ 1.1 (2个版本)
+└─ 2 (3个版本组, 共3个版本)
+```
+
+### CLI Commands
+
+```bash
+versions visualize [versions...]              # render tree from positional args
+versions visualize --max-items <n> [v...]     # truncate to n per group
+versions visualize --groups [v...]            # group-level summary only
+versions visualize --from-file <path>         # read versions from file
+versions visualize --groups --from-file <path> # combine flags
+```
+
+### MCP Tools
+
+| Tool | Arguments | Returns |
+|------|-----------|---------|
+| `version_visualize` | `versions` ([]string), `max_items_per_group?` (int, default 0), `groups_only?` (bool, default false) | `visualization` (string), `total_versions` (int), `total_groups` (int) |
 
 ## Cross-References
 

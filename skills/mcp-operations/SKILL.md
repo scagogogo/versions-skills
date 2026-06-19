@@ -6,7 +6,8 @@ argument-hint: <mcp-tool-or-config-task>
 
 # MCP Operations
 
-> **Prerequisite:** See `/installation` skill for MCP server binary setup.
+> **Setup:** See `/installation` for one-time MCP server binary install and configuration.  
+> **Layers:** MCP (AI tools) — this skill covers MCP-specific patterns. For domain logic, see the corresponding version-* skill.
 
 ## When to Use
 
@@ -162,22 +163,87 @@ version_group(versions=["1.0.0-alpha", "1.0.0", "1.0.1", "2.0.0-beta", "2.0.0"])
 version_latest_stable(versions=["1.0.0-alpha", "1.0.0", "1.0.1"])
 ```
 
-## Tool Catalog
+## API Reference
 
-All tools use the `version_` prefix:
+### Server Configuration
 
-| Category | Tools |
-|----------|-------|
-| Parse & Validate | `version_parse`, `version_validate`, `version_info` |
-| Compare | `version_compare` |
-| Sort & Filter | `version_sort`, `version_filter` |
-| Group & Range | `version_group`, `version_range_query` |
-| Constraints | `version_constraint_check` |
-| Min/Max | `version_min`, `version_max`, `version_latest_stable`, `version_latest_prerelease` |
-| Set Operations | `version_unique`, `version_set_operation` |
-| Mutation | `version_build`, `version_bump`, `version_core` |
-| File I/O | `version_read_file`, `version_write_file` |
-| Visualization | `version_visualize` |
+**Transport modes:**
+
+| Mode | Flag | Use Case |
+|------|------|----------|
+| stdio | `--transport stdio` (default) | Local AI agent (Claude Code) |
+| SSE | `--transport sse --port <port>` | Network-accessible server |
+
+**settings.json example:**
+```json
+{
+  "mcpServers": {
+    "versions": {
+      "command": "versions-mcp",
+      "args": ["--transport", "stdio"]
+    }
+  }
+}
+```
+
+### Tool Catalog
+
+All tools use the `version_` prefix. The `versions` parameter is always a JSON array of strings: `["1.0.0", "2.0.0"]`.
+
+| Category | Tool | Key Arguments | Returns |
+|----------|------|---------------|---------|
+| Parse & Validate | `version_parse` | `version_string`, `delimiters?` | prefix, numbers, suffix, metadata |
+| Parse & Validate | `version_validate` | `version_string` | `{valid: bool, error: string?}` |
+| Parse & Validate | `version_info` | `version_string` | all Is* flags, segments, suffix info |
+| Compare | `version_compare` | `version1`, `version2` | -1, 0, or 1 |
+| Sort & Filter | `version_sort` | `versions`, `descending?` | sorted version list |
+| Sort & Filter | `version_filter` | `versions`, `stable?`, `prerelease?`, `major?`, `minor?`, `patch?`, `prefix?`, `suffix?`, `constraint?` | filtered version list |
+| Group & Range | `version_group` | `versions` | grouped versions by group ID |
+| Group & Range | `version_range_query` | `start`, `end`, `versions`, `include_start?`, `include_end?` | versions in range |
+| Constraints | `version_constraint_check` | `expression`, `version`, `type?` (set/union) | `{satisfies: bool}` |
+| Min/Max | `version_min` | `versions` | minimum version |
+| Min/Max | `version_max` | `versions` | maximum version |
+| Min/Max | `version_latest_stable` | `versions` | latest stable version |
+| Min/Max | `version_latest_prerelease` | `versions` | latest prerelease version |
+| Set Operations | `version_unique` | `versions` | deduplicated list |
+| Set Operations | `version_set_operation` | `operation` (difference/intersection/union), `set_a`, `set_b` | result set |
+| Mutation | `version_build` | `prefix?`, `major?`, `minor?`, `patch?`, `suffix?`, `numbers?` | constructed version |
+| Mutation | `version_bump` | `version_string`, `bump_type` (major/minor/patch) | bumped version |
+| Mutation | `version_core` | `version_string` | core version (suffix stripped) |
+| File I/O | `version_read_file` | `filepath`, `parse?` (bool) | parsed versions or raw strings |
+| File I/O | `version_write_file` | `filepath`, `versions` | `{success, filepath, versions_written}` |
+| Visualization | `version_visualize` | `versions`, `max_items_per_group?`, `groups_only?` | tree string + counts |
+
+### Common Patterns
+
+```
+# Parse a version
+version_parse(version_string="v1.2.3-beta1")
+
+# Compare two versions
+version_compare(version1="1.2.3", version2="2.0.0")
+
+# Sort versions
+version_sort(versions=["2.0.0", "1.0.0", "1.5.0"])
+
+# Filter stable versions
+version_filter(versions=["1.0.0-alpha", "1.0.0", "2.0.0"], stable=true)
+
+# Check constraint
+version_constraint_check(expression=">=1.0.0,<2.0.0", version="1.5.0")
+
+# Range query
+version_range_query(start="1.0.0", end="3.0.0", versions=["1.0.0", "1.5.0", "2.0.0", "3.0.0", "4.0.0"])
+
+# Group versions
+version_group(versions=["1.0.0", "1.0.0-alpha", "2.0.0"])
+
+# Bump version
+version_bump(version_string="1.2.3", bump_type="patch")
+
+# Set difference
+version_set_operation(operation="difference", set_a=["1.0.0", "2.0.0"], set_b=["2.0.0", "3.0.0"])
+```
 
 ## Cross-References
 
