@@ -1,6 +1,6 @@
 module github.com/scagogogo/versions-skills
 
-go 1.25
+go 1.25.5
 
 require (
 	github.com/golang-infrastructure/go-compare-anything v0.0.2-0.20230108071748-35501d697475
