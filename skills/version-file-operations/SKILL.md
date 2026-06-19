@@ -1,414 +1,151 @@
 ---
 name: version-file-operations
-description: Use when reading version numbers from files, writing version lists to files, or processing version lists stored in text files. Covers SDK, CLI, and MCP access paths for file-based version operations.
-argument-hint: <file-path-or-task>
+description: Read version lists from files, write sorted versions to files, or stream versions from any io.Reader.
+argument-hint: <file-path>
 ---
 
-# Version File Operations Skill
+# Version File Operations
+
+> **Prerequisite:** See `/installation` skill for SDK/CLI/MCP setup.
 
 ## When to Use
 
-- User needs to read version numbers from a text file
-- User needs to write a sorted version list to a file
-- User needs to process a list of versions stored line-by-line in a file
-- User needs to parse version lists from dependency lock files or release logs
-- User needs to use version data from files as input for sorting, grouping, or other operations
-- User is building CI/CD tools that read or write version files
+- Reading version numbers from a text file (one per line)
+- Writing a sorted version list to a file
+- Processing version lists from dependency lock files or release logs
+- Using file-based version data as input for sorting, grouping, or filtering
+- Building CI/CD tools that read or write version files
 
-## Installation
+## Decision Tree
 
-### SDK (Go library)
-
-```bash
-go get github.com/scagogogo/versions-skills
+```
+Need to read and parse versions from a file?
+  → Use ReadVersionsFromFile / version_read_file
+Need raw strings without parsing overhead?
+  → Use ReadVersionsStringFromFile / version_read_file with parse=false
+Need to read from a non-file source (HTTP, pipe)?
+  → Use ReadVersionsFromReader
+Need to write versions to a file sorted?
+  → Use WriteVersionsToFile / version_write_file
+Need file input for another operation (sort, group, filter)?
+  → Use --from-file flag (CLI) or read-then-operate (SDK)
 ```
 
-### CLI binary
+## Task Patterns
 
-**Option A: Download from GitHub Releases (Recommended)**
+### Read and parse versions from a file
 
-Pre-built binaries for Linux, macOS, Windows, FreeBSD, OpenBSD, and NetBSD on amd64, arm64, arm, 386, mips, mips64, mips64le, ppc64, ppc64le, s390x, and riscv64. Linux packages: deb, rpm, apk.
+**Goal:** Load a file, parse each line as a Version, and filter out invalid entries.
 
-```bash
-# Linux (amd64)
-curl -sL https://github.com/scagogogo/versions-skills/releases/latest/download/versions_{VERSION}_linux_amd64.tar.gz | tar xz
-chmod +x versions && sudo mv versions /usr/local/bin/
-
-# macOS (arm64 / Apple Silicon)
-curl -sL https://github.com/scagogogo/versions-skills/releases/latest/download/versions_{VERSION}_darwin_arm64.tar.gz | tar xz
-chmod +x versions && sudo mv versions /usr/local/bin/
-
-# Or install via package manager (Linux only):
-# Debian/Ubuntu: dpkg -i versions_{VERSION}_linux_amd64.deb
-# RHEL/Fedora:   rpm -i versions_{VERSION}_linux_amd64.rpm
-# Alpine:        apk add versions_{VERSION}_linux_amd64.apk
-```
-
-> Replace `{VERSION}` with the latest release tag. See the [releases page](https://github.com/scagogogo/versions-skills/releases/latest) for all available platforms and the current version.
-
-**Option B: Install via Go**
-
-```bash
-go install github.com/scagogogo/versions-skills/cmd/versions@latest
-```
-
-### MCP server
-
-**Option A: Download from GitHub Releases (Recommended)**
-
-```bash
-# Linux (amd64)
-curl -sL https://github.com/scagogogo/versions-skills/releases/latest/download/versions-mcp_{VERSION}_linux_amd64.tar.gz | tar xz
-chmod +x versions-mcp && sudo mv versions-mcp /usr/local/bin/
-
-# macOS (arm64 / Apple Silicon)
-curl -sL https://github.com/scagogogo/versions-skills/releases/latest/download/versions-mcp_{VERSION}_darwin_arm64.tar.gz | tar xz
-chmod +x versions-mcp && sudo mv versions-mcp /usr/local/bin/
-```
-
-> Replace `{VERSION}` with the latest release tag. See the [releases page](https://github.com/scagogogo/versions-skills/releases/latest) for all platforms.
-
-**Option B: Install via Go**
-
-```bash
-go install github.com/scagogogo/versions-skills/cmd/versions-mcp@latest
-```
-
-## Quick Start
-
-### SDK (Go)
-
+**SDK approach:**
 ```go
-// Read versions from a file
 versionList, err := versions.ReadVersionsFromFile("versions.txt")
-
-// Write sorted versions to a file
-err = versions.WriteVersionsToFile(versionList, "output.txt")
+// Each line parsed via NewVersion; check v.IsValid() to filter
 ```
 
-### CLI
-
+**CLI approach:**
 ```bash
-# Read and display versions from a file
 versions read versions.txt
-
-# Read raw version strings (no parsing)
-versions read-strings versions.txt
-
-# Write sorted versions to a file
-versions write --output output.txt 1.0.0 1.1.0 2.0.0
-
-# Use --from-file as input for other commands
-versions sort --from-file versions.txt
 ```
 
-### MCP
-
+**MCP approach:**
 ```json
 {
   "tool": "version_read_file",
-  "arguments": {
-    "filepath": "versions.txt"
-  }
+  "arguments": { "filepath": "versions.txt", "parse": true }
 }
 ```
 
-## API Reference -- SDK
+### Read raw strings without parsing
 
-### ReadVersionsFromFile
+**Goal:** Get version strings from a file without the overhead of parsing into Version objects.
 
-**func ReadVersionsFromFile(filepath string) ([]*Version, error)**
-
-Reads a file line-by-line, parses each line as a Version object. Ignores empty lines and lines starting with `#`. Uses NewVersion internally, so invalid lines become Version objects with `IsValid() == false`.
-
-### ReadVersionsStringFromFile
-
-**func ReadVersionsStringFromFile(filepath string) ([]string, error)**
-
-Reads a file line-by-line, returns raw strings. Does NOT parse into Version objects. Ignores empty lines and lines starting with `#`. Useful when you only need the raw strings without parsing overhead.
-
-### ReadVersionsFromReader
-
-**func ReadVersionsFromReader(reader io.Reader) ([]*Version, error)**
-
-Reads versions from any io.Reader (network connections, string buffers, etc.). Same parsing rules as ReadVersionsFromFile. Useful for streaming scenarios where file paths are not available.
-
-### WriteVersionsToFile
-
-**func WriteVersionsToFile(versions []*Version, filepath string) error**
-
-Writes a version list to a file. Each version occupies one line. The versions are sorted before writing, ensuring the output file is in ascending order. Uses os.WriteFile with permission mode 0644.
-
-## CLI Commands
-
-### `versions read`
-
-Read and parse versions from a file, displaying each version with its parsed details.
-
-```bash
-versions read <filepath>
+**SDK approach:**
+```go
+rawStrings, err := versions.ReadVersionsStringFromFile("versions.txt")
 ```
 
-**Example:**
-```bash
-versions read versions.txt
-# Output (one version per line with parsed info):
-# 1.0.0
-# 1.0.1
-# 1.1.0-beta
-# 1.1.0
-```
-
-### `versions read-strings`
-
-Read raw version strings from a file without parsing. Useful for inspecting file contents or working with potentially invalid versions.
-
-```bash
-versions read-strings <filepath>
-```
-
-**Example:**
+**CLI approach:**
 ```bash
 versions read-strings versions.txt
-# Output (raw strings, no validation):
-# 1.0.0
-# not-a-version
-# 1.1.0-beta
 ```
 
-### `versions write`
-
-Write version strings to a file. Versions are sorted before writing.
-
-```bash
-versions write --output <filepath> <version1> <version2> ...
-```
-
-**Flags:**
-- `--output <path>` -- Output file path (required)
-
-**Example:**
-```bash
-versions write --output sorted_versions.txt 2.0.0 1.0.0 1.10.0
-# File contents (sorted):
-# 1.0.0
-# 1.10.0
-# 2.0.0
-```
-
-### `--from-file` flag (available on many commands)
-
-Several CLI commands accept a `--from-file` flag to read versions from a file instead of passing them as arguments. This flag is available on:
-
-- `versions sort --from-file <path>` -- Sort versions read from a file
-- `versions sort-strings --from-file <path>` -- Sort raw version strings from a file
-- `versions group --from-file <path>` -- Group versions read from a file
-- `versions range --from-file <path>` -- Range query on versions from a file
-
-**Example:**
-```bash
-# Sort versions stored in a file
-versions sort --from-file releases.txt
-```
-
-## MCP Tools
-
-### `version_read_file`
-
-Read version strings from a file and parse them into structured version objects.
-
-**Parameters:**
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `filepath` | string | Yes | Path to the file containing version strings |
-| `parse` | boolean | No | Whether to parse into Version objects (default: true). If false, returns raw strings. |
-
-**Example request:**
+**MCP approach:**
 ```json
 {
   "tool": "version_read_file",
-  "arguments": {
-    "filepath": "versions.txt",
-    "parse": true
-  }
+  "arguments": { "filepath": "versions.txt", "parse": false }
 }
 ```
 
-**Example response:**
-```json
-{
-  "versions": [
-    {"raw": "1.0.0", "valid": true, "major": 1, "minor": 0, "patch": 0},
-    {"raw": "1.1.0-beta", "valid": true, "prerelease": true},
-    {"raw": "not-a-version", "valid": false}
-  ]
-}
+### Write sorted versions to a file
+
+**Goal:** Take a list of versions, sort them, and write to a file.
+
+**SDK approach:**
+```go
+versionList := versions.NewVersions("2.0.0", "1.0.0", "1.1.0")
+err := versions.WriteVersionsToFile(versionList, "sorted.txt")
+// File is automatically sorted before writing
 ```
 
-### `version_write_file`
+**CLI approach:**
+```bash
+versions write --output sorted.txt 2.0.0 1.0.0 1.1.0
+```
 
-Write a list of version strings to a file. Versions are sorted before writing.
-
-**Parameters:**
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `filepath` | string | Yes | Output file path |
-| `versions` | array of strings | Yes | List of version strings to write |
-
-**Example request:**
+**MCP approach:**
 ```json
 {
   "tool": "version_write_file",
   "arguments": {
-    "filepath": "sorted_versions.txt",
-    "versions": ["2.0.0", "1.0.0", "1.10.0"]
+    "filepath": "sorted.txt",
+    "versions": ["2.0.0", "1.0.0", "1.1.0"]
   }
 }
 ```
 
-**Example response:**
-```json
-{
-  "success": true,
-  "filepath": "sorted_versions.txt",
-  "versions_written": 3
-}
+### Read from any io.Reader (streaming)
+
+**Goal:** Parse versions from a non-file source like an HTTP response or string buffer.
+
+**SDK approach:**
+```go
+data := strings.NewReader("1.0.0\n1.1.0\n2.0.0\n")
+versionList, err := versions.ReadVersionsFromReader(data)
 ```
 
-## Code Examples (SDK)
+### Use file input for other operations
 
-### Read and Filter Versions from File
+**Goal:** Feed a file's contents directly into sort, group, or range commands.
 
-```go
-package main
-
-import (
-    "fmt"
-    "log"
-    "github.com/scagogogo/versions-skills"
-)
-
-func main() {
-    // Read and parse versions from file
-    versionList, err := versions.ReadVersionsFromFile("versions.txt")
-    if err != nil {
-        log.Fatalf("Failed to read: %v", err)
-    }
-    fmt.Printf("Read %d versions\n", len(versionList))
-
-    // Filter valid versions
-    validVersions := make([]*versions.Version, 0)
-    for _, v := range versionList {
-        if v.IsValid() {
-            validVersions = append(validVersions, v)
-        }
-    }
-    fmt.Printf("Valid versions: %d\n", len(validVersions))
-}
+**CLI approach:**
+```bash
+versions sort --from-file versions.txt
+versions group --from-file versions.txt
+versions range 1.0.0 3.0.0 --from-file versions.txt
 ```
 
-### Read Raw Strings from File
+### Full read-filter-write pipeline
 
+**Goal:** Read versions from a file, filter out invalid ones, and write back sorted.
+
+**SDK approach:**
 ```go
-package main
-
-import (
-    "fmt"
-    "log"
-    "github.com/scagogogo/versions-skills"
-)
-
-func main() {
-    // Read raw version strings (no parsing)
-    rawStrings, err := versions.ReadVersionsStringFromFile("versions.txt")
-    if err != nil {
-        log.Fatalf("Failed to read: %v", err)
-    }
-    for _, s := range rawStrings {
-        fmt.Println(s)
+versionList, _ := versions.ReadVersionsFromFile("input.txt")
+var valid []*versions.Version
+for _, v := range versionList {
+    if v.IsValid() {
+        valid = append(valid, v)
     }
 }
-```
-
-### Write Sorted Versions to File
-
-```go
-package main
-
-import (
-    "log"
-    "github.com/scagogogo/versions-skills"
-)
-
-func main() {
-    versionList := versions.NewVersions("2.0.0", "1.0.0", "1.1.0", "3.0.0")
-
-    // WriteVersionsToFile sorts before writing
-    err := versions.WriteVersionsToFile(versionList, "sorted_versions.txt")
-    if err != nil {
-        log.Fatalf("Failed to write: %v", err)
-    }
-    // File contents:
-    // 1.0.0
-    // 1.1.0
-    // 2.0.0
-    // 3.0.0
-}
-```
-
-### Read from io.Reader (Non-file Sources)
-
-```go
-package main
-
-import (
-    "fmt"
-    "strings"
-    "github.com/scagogogo/versions-skills"
-)
-
-func main() {
-    // Read versions from a string (e.g., HTTP response body)
-    data := strings.NewReader("1.0.0\n1.1.0\n2.0.0\n")
-    versionList, err := versions.ReadVersionsFromReader(data)
-    if err != nil {
-        panic(err)
-    }
-    fmt.Printf("Read %d versions from reader\n", len(versionList))
-}
-```
-
-### Read, Sort, and Write Pipeline
-
-```go
-package main
-
-import (
-    "log"
-    "github.com/scagogogo/versions-skills"
-)
-
-func main() {
-    // Full pipeline: read -> sort -> write
-    versionList, err := versions.ReadVersionsFromFile("unsorted.txt")
-    if err != nil {
-        log.Fatalf("Read failed: %v", err)
-    }
-
-    // Filter out invalid versions before writing
-    valid := versions.SortVersionSlice(versionList)
-
-    err = versions.WriteVersionsToFile(valid, "sorted.txt")
-    if err != nil {
-        log.Fatalf("Write failed: %v", err)
-    }
-}
+versions.WriteVersionsToFile(valid, "output.txt")
 ```
 
 ## File Format
 
 ```
-# This is a comment -- lines starting with # are ignored
+# Comments start with # and are ignored
 1.0.0
 1.0.1
 
@@ -417,17 +154,19 @@ func main() {
 1.1.0
 ```
 
+## Cross-References
+
+- [[version-sorting]] — sort versions after reading from a file
+- [[version-grouping]] — group versions loaded from a file
+- [[version-filtering]] — filter versions read from a file
+- [[version-visualization]] — visualize versions loaded from a file
+
 ## Important Notes
 
-- **All paths**: File format is one version per line; `#` for comments; blank lines ignored
-- **SDK**: Leading/trailing whitespace on each line is trimmed
-- **SDK**: ReadVersionsFromFile uses NewVersion (not NewVersionE), so invalid lines become Version objects with `IsValid() == false`
-- **SDK**: ReadVersionsStringFromFile returns raw strings without any parsing or validation
-- **SDK**: ReadVersionsFromReader supports any io.Reader -- useful for HTTP responses, strings, pipes
-- **SDK**: WriteVersionsToFile sorts versions before writing -- the output file is always in ascending order
-- **SDK**: WriteVersionsToFile uses os.WriteFile with permission mode 0644
-- **SDK**: For very large files, consider streaming instead of ReadVersionsFromFile (which reads the entire file into memory)
-- **CLI**: The `--from-file` flag is available on sort, sort-strings, group, and range commands, allowing file-based input for these operations
-- **CLI**: `versions read` parses and validates; `versions read-strings` does not parse
-- **MCP**: `version_read_file` supports both parsed and raw string output via the `parse` parameter
-- **MCP**: `version_write_file` automatically sorts versions before writing, consistent with the SDK behavior
+- **File format**: one version per line; `#` comments; blank lines ignored; leading/trailing whitespace trimmed.
+- **ReadVersionsFromFile uses NewVersion** (not NewVersionE) — invalid lines become Version objects with `IsValid() == false`. Always check validity after reading.
+- **WriteVersionsToFile sorts before writing** — the output file is always in ascending order.
+- **WriteVersionsToFile uses os.WriteFile with permission 0644**.
+- **For very large files**, consider streaming with ReadVersionsFromReader instead of ReadVersionsFromFile (which reads the entire file into memory).
+- **CLI `--from-file` flag** is available on `sort`, `sort-strings`, `group`, and `range` commands.
+- **MCP `version_read_file`** supports both parsed and raw output via the `parse` boolean parameter.

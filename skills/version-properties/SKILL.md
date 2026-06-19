@@ -1,252 +1,171 @@
 ---
 name: version-properties
-description: Use when extracting specific properties from a version number — segments, sub-version, suffix weight, pure prefix, group ID. Covers Segments, SubVersion, SuffixWeight, PurePrefix, BuildGroupID, Clone via SDK, CLI, and MCP.
-argument-hint: <version-property-task>
+description: Extract segments, sub-version, suffix weight, pure prefix, or group ID from a parsed version.
+argument-hint: <property-to-extract>
 ---
 
-# Version Properties Skill
+# Version Properties
+
+> **Prerequisite:** See `/installation` skill for SDK/CLI/MCP setup.
 
 ## When to Use
 
-- User needs to extract numeric segments from a version string
-- User needs the sub-version number from a prerelease suffix (e.g. "beta2" → 2)
-- User needs the semantic weight of a suffix for sorting/comparison
-- User needs the prefix without trailing delimiters (e.g. "curl-" → "curl")
-- User needs the group ID for version grouping (e.g. "v1.2.3-beta1" → "1.2.3")
-- User needs to deep-copy a version for independent modification
+- Extracting numeric segments from a version string (`[1, 2, 3]`)
+- Getting the sub-version number embedded in a prerelease suffix (`beta2` -> `2`)
+- Determining the semantic weight of a suffix for ordering (`rc` = 400)
+- Getting the clean prefix without trailing delimiters (`"curl-"` -> `"curl"`)
+- Getting the group ID used by `Group()` for version grouping
 
-## Installation
+## Decision Tree
 
-### SDK (Go library)
-
-```bash
-go get github.com/scagogogo/versions-skills
+```
+Need all components at once?
+  → Use version_info (MCP) or version info (CLI)
+Need numeric segments only?
+  → Use Segments() / Segments64()
+Need suffix semantic weight?
+  → Use SuffixWeight() or GetSuffixWeight()
+Need the group key for Group()?
+  → Use BuildGroupID()
+Need a clean prefix string?
+  → Use Prefix.PurePrefix()
 ```
 
-### CLI binary
+## Task Patterns
 
-**Option A: Download from GitHub Releases (Recommended)**
+### Get all numeric segments
 
-Pre-built binaries for Linux, macOS, Windows, FreeBSD, OpenBSD, and NetBSD on amd64, arm64, arm, 386, mips, mips64, mips64le, ppc64, ppc64le, s390x, and riscv64. Linux packages: deb, rpm, apk.
+**Goal:** Extract the version number components as a slice.
 
-```bash
-# Linux (amd64)
-curl -sL https://github.com/scagogogo/versions-skills/releases/latest/download/versions_{VERSION}_linux_amd64.tar.gz | tar xz
-chmod +x versions && sudo mv versions /usr/local/bin/
-
-# macOS (arm64 / Apple Silicon)
-curl -sL https://github.com/scagogogo/versions-skills/releases/latest/download/versions_{VERSION}_darwin_arm64.tar.gz | tar xz
-chmod +x versions && sudo mv versions /usr/local/bin/
-
-# Or install via package manager (Linux only):
-# Debian/Ubuntu: dpkg -i versions_{VERSION}_linux_amd64.deb
-# RHEL/Fedora:   rpm -i versions_{VERSION}_linux_amd64.rpm
-# Alpine:        apk add versions_{VERSION}_linux_amd64.apk
-```
-
-> Replace `{VERSION}` with the latest release tag. See the [releases page](https://github.com/scagogogo/versions-skills/releases/latest) for all available platforms and the current version.
-
-**Option B: Install via Go**
-
-```bash
-go install github.com/scagogogo/versions-skills/cmd/versions@latest
-```
-
-### MCP server
-
-**Option A: Download from GitHub Releases (Recommended)**
-
-```bash
-# Linux (amd64)
-curl -sL https://github.com/scagogogo/versions-skills/releases/latest/download/versions-mcp_{VERSION}_linux_amd64.tar.gz | tar xz
-chmod +x versions-mcp && sudo mv versions-mcp /usr/local/bin/
-
-# macOS (arm64 / Apple Silicon)
-curl -sL https://github.com/scagogogo/versions-skills/releases/latest/download/versions-mcp_{VERSION}_darwin_arm64.tar.gz | tar xz
-chmod +x versions-mcp && sudo mv versions-mcp /usr/local/bin/
-```
-
-> Replace `{VERSION}` with the latest release tag. See the [releases page](https://github.com/scagogogo/versions-skills/releases/latest) for all platforms.
-
-**Option B: Install via Go**
-
-```bash
-go install github.com/scagogogo/versions-skills/cmd/versions-mcp@latest
-```
-
-**SDK:**
+**SDK approach:**
 ```go
 v := versions.NewVersion("v1.2.3-rc2")
-v.Segments()       // [1, 2, 3]
-v.SubVersion()     // 2
-v.SuffixWeight()   // rc (400)
-v.BuildGroupID()   // "1.2.3"
+segs := v.Segments()    // []int{1, 2, 3}
+major := v.Major()      // 1
+minor := v.Minor()      // 2
+patch := v.Patch()      // 3
 ```
 
-**CLI:**
+**CLI approach:**
 ```bash
-versions segments v1.2.3-rc2        # [1, 2, 3]
-versions sub-version v1.2.3-rc2     # 2
-versions suffix-weight v1.2.3-rc2   # rc (400)
-versions pure-prefix curl-7.85.0    # curl
-versions group-id v1.2.3-beta1      # 1.2.3
+versions segments v1.2.3-rc2   # {"segments": [1, 2, 3]}
 ```
 
-**MCP:**
+**MCP approach:**
 ```
-version_info(version_string="v1.2.3-rc2")  # returns all properties
-```
-
-## API Reference — SDK
-
-### Segments
-
-**func (v *Version) Segments() []int**
-
-Returns the version number segments as `[]int`. E.g. `"1.2.3"` → `[1, 2, 3]`.
-
-**func (v *Version) Segments64() []int64**
-
-Same as `Segments()` but returns `[]int64` for large version numbers.
-
-### Individual Numbers
-
-| Method | Returns |
-|--------|---------|
-| `Major() int` | First segment (0 if missing) |
-| `Minor() int` | Second segment (0 if missing) |
-| `Patch() int` | Third segment (0 if missing) |
-
-### SubVersion
-
-**func (v *Version) SubVersion() int**
-
-Extracts the numeric part from the suffix. E.g. `"-beta2"` → `2`, `"-rc1"` → `1`. Returns `0` if no numeric suffix.
-
-### SuffixWeight
-
-**func (v *Version) SuffixWeight() SuffixWeight**
-
-Returns the semantic weight of the version's suffix, used for comparison ordering:
-
-| Weight | Suffix Type | Value |
-|--------|------------|-------|
-| 0 | unknown (no suffix / unclassified) | 0 |
-| 50 | dev | 50 |
-| 60 | snapshot | 60 |
-| 70 | nightly | 70 |
-| 100 | alpha | 100 |
-| 200 | beta | 200 |
-| 300 | milestone | 300 |
-| 400 | rc | 400 |
-| 500 | final / release / ga | 500 |
-| 600 | sp | 600 |
-| 700 | patch | 700 |
-| 800 | post | 800 |
-
-**func GetSuffixWeight(suffix string) SuffixWeight**
-
-Package-level function to get the weight of any suffix string.
-
-### PurePrefix
-
-**func (p VersionPrefix) PurePrefix() string**
-
-Returns the prefix without trailing delimiter characters. E.g. `"curl-"` → `"curl"`, `"v"` → `"v"`.
-
-### BuildGroupID
-
-**func (v *Version) BuildGroupID() string**
-
-Returns the group ID by joining VersionNumbers with `.`. E.g. `"v1.2.3-beta1"` → `"1.2.3"`.
-
-### Clone
-
-**func (v *Version) Clone() *Version**
-
-Returns a deep copy of the version. The clone is completely independent — modifying it does not affect the original.
-
-### RawString
-
-**func (v *Version) RawString() string**
-
-Returns the original version string as parsed. Unlike `String()` which returns JSON, this returns the human-readable form.
-
-## CLI Commands
-
-| Command | Example | Output |
-|---------|---------|--------|
-| `segments` | `versions segments v1.2.3` | `{"segments": [1, 2, 3]}` |
-| `sub-version` | `versions sub-version 1.2.3-beta2` | `{"sub_version": 2}` |
-| `suffix-weight` | `versions suffix-weight 1.2.3-rc1` | `{"suffix_weight": "rc", "weight_value": 400}` |
-| `pure-prefix` | `versions pure-prefix curl-7.85.0` | `{"prefix": "curl-", "pure_prefix": "curl"}` |
-| `group-id` | `versions group-id v1.2.3-beta1` | `{"group_id": "1.2.3"}` |
-| `clone` | `versions clone v1.2.3` | Full version object |
-
-## MCP Tools
-
-Use `version_info` to get all properties in one call:
-
-```
-version_info(version_string="v1.2.3-rc1")
+version_info(version_string="v1.2.3-rc2")
+# Response includes: major, minor, patch, version_numbers
 ```
 
-Returns: raw, valid, major, minor, patch, version_numbers, prefix, suffix, suffix_weight, group_id, and all Is* flags.
+### Determine suffix type and weight
 
-## Code Examples
+**Goal:** Classify the prerelease suffix and get its ordering weight.
 
+**SDK approach:**
 ```go
-package main
-
-import (
-    "fmt"
-    "github.com/scagogogo/versions-skills"
-)
-
-func main() {
-    v := versions.NewVersion("v1.2.3-rc2")
-
-    // Segments
-    fmt.Println(v.Segments())        // [1 2 3]
-    fmt.Println(v.Major())           // 1
-    fmt.Println(v.Minor())           // 2
-    fmt.Println(v.Patch())           // 3
-
-    // Sub-version from suffix
-    fmt.Println(v.SubVersion())      // 2
-
-    // Suffix weight for ordering
-    w := v.SuffixWeight()
-    fmt.Println(w.String())          // "rc"
-    fmt.Println(int(w))              // 400
-
-    // Get suffix weight without a version
-    w2 := versions.GetSuffixWeight("-beta3")
-    fmt.Println(w2.String())         // "beta"
-
-    // Group ID
-    fmt.Println(v.BuildGroupID())    // "1.2.3"
-
-    // Pure prefix
-    v2 := versions.NewVersion("curl-7.85.0")
-    fmt.Println(v2.Prefix.String())       // "curl-"
-    fmt.Println(v2.Prefix.PurePrefix())   // "curl"
-
-    // Clone for independent modification
-    cloned := v.Clone()
-    _ = cloned.WithSuffix("-final")  // cloned modified, v unchanged
-
-    // RawString vs String
-    fmt.Println(v.RawString())       // "v1.2.3-rc2"
-}
+v := versions.NewVersion("1.2.3-rc1")
+weight := v.SuffixWeight()  // SuffixWeight(400)
+name := weight.String()     // "rc"
+// Package-level: versions.GetSuffixWeight("-beta3") -> beta (200)
 ```
+
+**CLI approach:**
+```bash
+versions suffix-weight 1.2.3-rc1
+# {"suffix_weight": "rc", "weight_value": 400}
+```
+
+**MCP approach:**
+```
+version_info(version_string="1.2.3-rc1")
+# Response includes: suffix_weight
+```
+
+### Extract sub-version number from suffix
+
+**Goal:** Get the numeric part of a prerelease suffix (e.g., `beta2` -> `2`).
+
+**SDK approach:**
+```go
+v := versions.NewVersion("1.2.3-beta2")
+sub := v.SubVersion()  // 2
+// Returns 0 if suffix has no number (e.g., "-beta")
+```
+
+**CLI approach:**
+```bash
+versions sub-version 1.2.3-beta2   # {"sub_version": 2}
+```
+
+**MCP approach:**
+```
+version_info(version_string="1.2.3-beta2")
+```
+
+### Get the group ID for grouping
+
+**Goal:** Obtain the key used by `Group()` to cluster versions.
+
+**SDK approach:**
+```go
+v := versions.NewVersion("v1.2.3-beta1")
+gid := v.BuildGroupID()  // "1.2.3" — prefix + suffix stripped
+// Versions "1.2.3" and "1.2.3-alpha" both have group ID "1.2.3"
+```
+
+**CLI approach:**
+```bash
+versions group-id v1.2.3-beta1   # {"group_id": "1.2.3"}
+```
+
+**MCP approach:**
+```
+version_info(version_string="v1.2.3-beta1")
+# Response includes: group_id
+```
+
+### Clean a prefix string
+
+**Goal:** Strip trailing delimiter characters from a prefix.
+
+**SDK approach:**
+```go
+v := versions.NewVersion("curl-7.85.0")
+pure := v.Prefix.PurePrefix()  // "curl" (strips trailing "-")
+```
+
+**CLI approach:**
+```bash
+versions pure-prefix curl-7.85.0
+# {"prefix": "curl-", "pure_prefix": "curl"}
+```
+
+### Deep-copy a version
+
+**Goal:** Create an independent copy safe for mutation.
+
+**SDK approach:**
+```go
+cloned := v.Clone()  // deep copy — modifying cloned does not affect v
+```
+
+**CLI approach:**
+```bash
+versions clone v1.2.3
+```
+
+## Cross-References
+
+- [[version-check]] — boolean checks on version type (IsBeta, IsStable, etc.)
+- [[version-grouping]] — Group() uses BuildGroupID() for clustering
+- [[version-comparison]] — CompareTo uses SuffixWeight for ordering
+- [[version-mutation]] — modify version components after inspecting them
 
 ## Important Notes
 
-- `Segments()` returns `[]int` while `Segments64()` returns `[]int64` — use the latter for very large version numbers
-- `SubVersion()` returns `0` if the suffix has no numeric part (e.g. `"-beta"` → `0`, `"-beta2"` → `2`)
-- `SuffixWeight` determines suffix comparison order in `CompareTo`: `dev < snapshot < nightly < alpha < beta < milestone < rc < final/release/ga < sp < patch < post`
-- `PurePrefix()` strips trailing `-`, `.`, and `_` from the prefix — useful for package name extraction
-- `BuildGroupID()` is the key used by `Group()` to group versions — versions `1.2.3` and `1.2.3-alpha` share group ID `"1.2.3"`
-- `Clone()` creates a fully independent deep copy — safe for concurrent modification
-- `RawString()` preserves the original string; `String()` returns a different format
+- **Suffix weight order**: dev(50) < snapshot(60) < nightly(70) < alpha(100) < beta(200) < milestone(300) < rc(400) < final/release/ga(500) < sp(600) < patch(700) < post(800)
+- **SubVersion() returns 0** if the suffix has no numeric part (`"-beta"` -> `0`, `"-beta2"` -> `2`).
+- **PurePrefix() strips trailing `-`, `.`, `_`** — use it to extract a clean package name.
+- **BuildGroupID()** is the key for `Group()` — versions differing only by suffix share the same group.
+- **Clone() creates a fully independent deep copy** — safe for concurrent modification.
+- **RawString()** returns the original parsed string; **String()** returns a different (JSON) format.

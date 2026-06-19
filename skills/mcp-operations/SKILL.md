@@ -1,86 +1,43 @@
 ---
 name: mcp-operations
-description: Use when invoking version operations via the versions MCP server for AI tool use. Provides expert guidance on using MCP tools for version parsing, comparison, sorting, grouping, constraint checking, and more.
-argument-hint: <mcp-tool-or-task>
+description: Invoke version operations via the versions MCP server — tool naming, parameter conventions, server configuration, and batch patterns.
+argument-hint: <mcp-tool-or-config-task>
 ---
 
-# MCP Operations Skill
+# MCP Operations
+
+> **Prerequisite:** See `/installation` skill for MCP server binary setup.
 
 ## When to Use
 
-- AI agent needs to perform version operations as tools via MCP protocol
-- User wants to integrate version capabilities into an AI workflow
-- User is building an AI-powered dependency analysis or version management system
-- User needs programmatic version operations without direct Go SDK usage
+- Invoking version operations as MCP tools from an AI agent
+- Configuring the versions MCP server (stdio vs SSE transport)
+- Understanding MCP tool naming conventions and parameter formats
+- Composing multiple MCP tool calls to accomplish a multi-step task
+- Working with the structured JSON responses from MCP tools
 
-## Server Setup
+## Decision Tree
 
-Install the MCP server binary:
-
-### Option 1: Download from GitHub Releases (Recommended)
-
-Pre-built binaries for **versions-mcp** are available for **Linux**, **macOS**, **Windows**, **FreeBSD**, **OpenBSD**, and **NetBSD** on **amd64**, **arm64**, **arm**, **386**, **mips**, **mipsle**, **mips64**, **mips64le**, **ppc64**, **ppc64le**, **s390x**, and **riscv64** architectures. Linux packages: **deb**, **rpm**, **apk**.
-
-Replace `{VERSION}` with the latest release tag (e.g. `0.1.0`) or use `/latest/download/` for the most recent release.
-
-```bash
-# Linux (amd64)
-curl -sL https://github.com/scagogogo/versions-skills/releases/latest/download/versions-mcp_{VERSION}_linux_amd64.tar.gz | tar xz
-chmod +x versions-mcp && sudo mv versions-mcp /usr/local/bin/
-
-# Linux (arm64)
-curl -sL https://github.com/scagogogo/versions-skills/releases/latest/download/versions-mcp_{VERSION}_linux_arm64.tar.gz | tar xz
-chmod +x versions-mcp && sudo mv versions-mcp /usr/local/bin/
-
-# macOS (amd64 / Intel)
-curl -sL https://github.com/scagogogo/versions-skills/releases/latest/download/versions-mcp_{VERSION}_darwin_amd64.tar.gz | tar xz
-chmod +x versions-mcp && sudo mv versions-mcp /usr/local/bin/
-
-# macOS (arm64 / Apple Silicon)
-curl -sL https://github.com/scagogogo/versions-skills/releases/latest/download/versions-mcp_{VERSION}_darwin_arm64.tar.gz | tar xz
-chmod +x versions-mcp && sudo mv versions-mcp /usr/local/bin/
-
-# Windows (amd64) — download from releases page
-# https://github.com/scagogogo/versions-skills/releases/latest
-# Extract versions-mcp_{VERSION}_windows_amd64.zip
-
-# FreeBSD (amd64)
-curl -sL https://github.com/scagogogo/versions-skills/releases/latest/download/versions-mcp_{VERSION}_freebsd_amd64.tar.gz | tar xz
-chmod +x versions-mcp && sudo mv versions-mcp /usr/local/bin/
-
-# OpenBSD (amd64)
-curl -sL https://github.com/scagogogo/versions-skills/releases/latest/download/versions-mcp_{VERSION}_openbsd_amd64.tar.gz | tar xz
-
-# NetBSD (amd64)
-curl -sL https://github.com/scagogogo/versions-skills/releases/latest/download/versions-mcp_{VERSION}_netbsd_amd64.tar.gz | tar xz
+```
+Need to configure the MCP server?
+  → Add to settings.json mcpServers block
+Need to run the server over network (not local)?
+  → Use --transport sse --port <port>
+Need to find the right tool for a task?
+  → All tools are prefixed version_ — see Tool Catalog below
+Need to batch multiple operations?
+  → Make sequential tool calls, passing results between them
+Need file access from MCP?
+  → Use version_read_file / version_write_file (operates on server's filesystem)
 ```
 
-**Linux package install:**
+## Task Patterns
 
-```bash
-# Debian/Ubuntu (.deb):
-curl -sLO https://github.com/scagogogo/versions-skills/releases/latest/download/versions-mcp_{VERSION}_linux_amd64.deb
-sudo dpkg -i versions-mcp_{VERSION}_linux_amd64.deb
+### Configure the MCP server
 
-# RHEL/CentOS/Fedora (.rpm):
-curl -sLO https://github.com/scagogogo/versions-skills/releases/latest/download/versions-mcp_{VERSION}_linux_amd64.rpm
-sudo rpm -i versions-mcp_{VERSION}_linux_amd64.rpm
+**Goal:** Register the versions MCP server in Claude Code.
 
-# Alpine (.apk):
-curl -sLO https://github.com/scagogogo/versions-skills/releases/latest/download/versions-mcp_{VERSION}_linux_amd64.apk
-sudo apk add versions-mcp_{VERSION}_linux_amd64.apk
-```
-
-> **Note:** Replace `{VERSION}` with the actual release version. Replace `amd64` with your architecture. Check the [latest release page](https://github.com/scagogogo/versions-skills/releases/latest) for the current version and full asset list.
-
-### Option 2: Install via Go
-
-```bash
-go install github.com/scagogogo/versions-skills/cmd/versions-mcp@latest
-```
-
-Configure in Claude Code `settings.json`:
-
+Add to `.claude/settings.json` or `~/.claude/settings.json`:
 ```json
 {
   "mcpServers": {
@@ -92,122 +49,156 @@ Configure in Claude Code `settings.json`:
 }
 ```
 
-For SSE mode (network access):
-
+For SSE mode (network-accessible server):
 ```bash
 versions-mcp --transport sse --port 8080
 ```
 
-## Tool Reference
+### Parse and inspect a version
 
-### Parsing & Validation
-
-| Tool | Key Parameters | Description |
-|------|---------------|-------------|
-| `version_parse` | `version_string` | Parse version into components |
-| `version_validate` | `version_string` | Validate version string |
-| `version_info` | `version_string` | Full info with all Is* checks |
-
-### Comparison
-
-| Tool | Key Parameters | Description |
-|------|---------------|-------------|
-| `version_compare` | `version1`, `version2` | Compare two versions |
-
-### Sorting & Filtering
-
-| Tool | Key Parameters | Description |
-|------|---------------|-------------|
-| `version_sort` | `versions`, `descending` | Sort version list |
-| `version_filter` | `versions`, `stable`, `prerelease`, `major`, `minor`, `patch`, `prefix`, `suffix`, `constraint` | Filter by conditions |
-
-### Grouping & Range Queries
-
-| Tool | Key Parameters | Description |
-|------|---------------|-------------|
-| `version_group` | `versions` | Group by VersionNumbers |
-| `version_range_query` | `start`, `end`, `versions`, `include_start`, `include_end` | Query versions in range |
-
-### Constraints
-
-| Tool | Key Parameters | Description |
-|------|---------------|-------------|
-| `version_constraint_check` | `expression`, `version`, `type` | Check constraint satisfaction |
-
-### Min/Max
-
-| Tool | Key Parameters | Description |
-|------|---------------|-------------|
-| `version_min` | `versions` | Find minimum version |
-| `version_max` | `versions` | Find maximum version |
-| `version_latest_stable` | `versions` | Find latest stable version |
-| `version_latest_prerelease` | `versions` | Find latest prerelease version |
-
-### Set Operations
-
-| Tool | Key Parameters | Description |
-|------|---------------|-------------|
-| `version_unique` | `versions` | Remove duplicates |
-| `version_set_operation` | `operation`, `set_a`, `set_b` | Difference/intersection/union |
-
-### Construction
-
-| Tool | Key Parameters | Description |
-|------|---------------|-------------|
-| `version_build` | `prefix`, `major`, `minor`, `patch`, `suffix` | Build version string |
-| `version_bump` | `version_string`, `bump_type` | Bump version (major/minor/patch) |
-| `version_core` | `version_string` | Strip suffix |
-
-### File I/O
-
-| Tool | Key Parameters | Description |
-|------|---------------|-------------|
-| `version_read_file` | `filepath` | Read versions from file |
-| `version_write_file` | `filepath`, `versions` | Write sorted versions to file |
-
-### Visualization
-
-| Tool | Key Parameters | Description |
-|------|---------------|-------------|
-| `version_visualize` | `versions`, `max_items_per_group`, `groups_only` | Text tree visualization |
-
-## Common Patterns
+**Goal:** Get all properties of a version in one call.
 
 ```
-# Parse a version
 version_parse(version_string="v1.2.3-beta1")
+version_info(version_string="v1.2.3-beta1")
+version_validate(version_string="v1.2.3-beta1")
+```
 
-# Compare two versions
+Use `version_info` when you need all `Is*` flags at once. Use `version_parse` when you only need structural components. Use `version_validate` for a simple valid/invalid check.
+
+### Compare and sort versions
+
+**Goal:** Compare two versions or sort a list.
+
+```
 version_compare(version1="1.2.3", version2="2.0.0")
+version_sort(versions=["2.0.0", "1.0.0", "1.5.0"], descending=false)
+```
 
-# Sort versions
-version_sort(versions=["2.0.0", "1.0.0", "1.5.0"])
+### Filter versions by criteria
 
-# Filter stable versions
-version_filter(versions=["1.0.0-alpha", "1.0.0", "2.0.0"], stable=true)
+**Goal:** Filter a list to only stable, prerelease, or constraint-matching versions.
 
-# Check constraint
-version_constraint_check(expression=">=1.0.0,<2.0.0", version="1.5.0")
+```
+version_filter(versions=["1.0.0-alpha", "1.0.0", "2.0.0-beta", "2.0.0"], stable=true)
+version_filter(versions=["1.0.0", "1.5.0", "2.0.0"], constraint=">=1.0.0,<2.0.0")
+```
 
-# Range query
+### Find min, max, or latest
+
+**Goal:** Find the extreme version in a list.
+
+```
+version_min(versions=["1.0.0", "2.0.0", "1.5.0"])
+version_max(versions=["1.0.0", "2.0.0", "1.5.0"])
+version_latest_stable(versions=["1.0.0-alpha", "1.0.0", "2.0.0-beta", "2.0.0"])
+version_latest_prerelease(versions=["1.0.0-alpha", "1.0.0", "2.0.0-beta", "2.0.0"])
+```
+
+### Group versions
+
+**Goal:** Cluster versions by their group ID.
+
+```
+version_group(versions=["1.0.0", "1.0.0-alpha", "1.0.1", "2.0.0", "2.0.0-beta"])
+```
+
+### Check constraints and ranges
+
+**Goal:** Test if a version satisfies a constraint expression or falls in a range.
+
+```
+version_constraint_check(expression=">=1.0.0,<2.0.0", version="1.5.0", type="set")
 version_range_query(start="1.0.0", end="3.0.0", versions=["1.0.0", "1.5.0", "2.0.0", "3.0.0", "4.0.0"])
+```
 
-# Group versions
-version_group(versions=["1.0.0", "1.0.0-alpha", "2.0.0"])
+### Mutate versions
 
-# Bump version
+**Goal:** Bump, build, or strip versions.
+
+```
 version_bump(version_string="1.2.3", bump_type="patch")
+version_build(prefix="v", major=1, minor=2, patch=3, suffix="-alpha1")
+version_core(version_string="v1.2.3-beta1")
+```
 
-# Set difference
+### Set operations
+
+**Goal:** Remove duplicates or compute set difference/intersection/union.
+
+```
+version_unique(versions=["1.0.0", "2.0.0", "1.0.0", "2.0.0"])
 version_set_operation(operation="difference", set_a=["1.0.0", "2.0.0"], set_b=["2.0.0", "3.0.0"])
 ```
 
+### Read and write version files
+
+**Goal:** Read versions from or write versions to files on the MCP server's filesystem.
+
+```
+version_read_file(filepath="versions.txt", parse=true)
+version_write_file(filepath="sorted.txt", versions=["2.0.0", "1.0.0", "1.1.0"])
+```
+
+### Visualize versions
+
+**Goal:** Generate a text tree of version hierarchy.
+
+```
+version_visualize(versions=["1.0.0", "1.0.1", "1.1.0", "2.0.0"], max_items_per_group=5)
+version_visualize(versions=["1.0.0", "1.0.1", "2.0.0"], groups_only=true)
+```
+
+### Batch multiple operations
+
+**Goal:** Compose a multi-step workflow across MCP tool calls.
+
+Example workflow — find the latest stable version in a group:
+```
+# Step 1: Group versions
+version_group(versions=["1.0.0-alpha", "1.0.0", "1.0.1", "2.0.0-beta", "2.0.0"])
+
+# Step 2: From the "1" group, find latest stable
+version_latest_stable(versions=["1.0.0-alpha", "1.0.0", "1.0.1"])
+```
+
+## Tool Catalog
+
+All tools use the `version_` prefix:
+
+| Category | Tools |
+|----------|-------|
+| Parse & Validate | `version_parse`, `version_validate`, `version_info` |
+| Compare | `version_compare` |
+| Sort & Filter | `version_sort`, `version_filter` |
+| Group & Range | `version_group`, `version_range_query` |
+| Constraints | `version_constraint_check` |
+| Min/Max | `version_min`, `version_max`, `version_latest_stable`, `version_latest_prerelease` |
+| Set Operations | `version_unique`, `version_set_operation` |
+| Mutation | `version_build`, `version_bump`, `version_core` |
+| File I/O | `version_read_file`, `version_write_file` |
+| Visualization | `version_visualize` |
+
+## Cross-References
+
+- [[cli-operations]] — equivalent operations via the CLI binary
+- [[version-check]] — `version_info` returns all Is* flags
+- [[version-sorting]] — `version_sort` and `version_latest_*`
+- [[version-mutation]] — `version_bump`, `version_build`, `version_core`
+- [[version-file-operations]] — `version_read_file`, `version_write_file`
+- [[version-visualization]] — `version_visualize`
+- [[version-grouping]] — `version_group`
+- [[version-constraints]] — `version_constraint_check`
+- [[version-range-query]] — `version_range_query`
+- [[version-comparison]] — `version_compare`
+
 ## Important Notes
 
-- All tool names are prefixed with `version_` to avoid collision with other MCP servers
-- The `versions` parameter is always a JSON array of strings, e.g. `["1.0.0", "2.0.0"]`
-- The `type` parameter in `version_constraint_check` accepts `set` (default, comma-separated AND) or `union` (||-separated OR)
-- The `operation` parameter in `version_set_operation` accepts `difference`, `intersection`, or `union`
-- The `bump_type` parameter in `version_bump` accepts `major`, `minor`, or `patch`
-- All tools return JSON-formatted results with structured data
-- `version_read_file` and `version_write_file` operate on the server's local filesystem
+- **All tool names are prefixed with `version_`** to avoid collision with other MCP servers.
+- **The `versions` parameter is always a JSON array of strings**: `["1.0.0", "2.0.0"]`.
+- **`version_constraint_check` type parameter**: `set` (default, comma-separated AND) or `union` (||-separated OR).
+- **`version_set_operation` operation parameter**: `difference`, `intersection`, or `union`.
+- **`version_bump` bump_type parameter**: `major`, `minor`, or `patch`.
+- **`version_read_file` and `version_write_file`** operate on the server's local filesystem, not the client's.
+- **All tools return JSON-formatted results** with structured data.
+- **For SSE transport**, the server listens on the specified port and accepts HTTP connections.
