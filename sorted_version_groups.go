@@ -28,9 +28,9 @@ import "github.com/golang-infrastructure/go-tuple"
 //	rangeResult := sortedGroups.QueryRange(startTuple, endTuple)
 type SortedVersionGroups struct {
 
-	// groupIdToIndexMap 用于根据组的ID快速定位到这个组在排好序的切片中的位置
+	// groupIDToIndexMap 用于根据组的ID快速定位到这个组在排好序的切片中的位置
 	// 键为版本组ID，值为该组在groupSlice中的索引位置
-	groupIdToIndexMap map[string]int
+	groupIDToIndexMap map[string]int
 
 	// groupSlice 排好序的版本组切片
 	// 按照版本组的大小顺序排列
@@ -68,11 +68,11 @@ func NewSortedVersionGroups(versions []*Version) *SortedVersionGroups {
 
 	// 然后构造有序Group
 	groups := &SortedVersionGroups{
-		groupIdToIndexMap: make(map[string]int),
+		groupIDToIndexMap: make(map[string]int),
 		groupSlice:        groupSlice,
 	}
 	for i, g := range groupSlice {
-		groups.groupIdToIndexMap[g.ID()] = i
+		groups.groupIDToIndexMap[g.ID()] = i
 	}
 	return groups
 }
@@ -133,7 +133,7 @@ func (x *SortedVersionGroups) QueryRange(start, end *tuple.Tuple2[*Version, Cont
 	if start.V1.Raw != "0" {
 		// 仅当开始的版本不为0的时候才进行跳，否则认为是从最开始遍历
 		var exists bool
-		i, exists = x.groupIdToIndexMap[start.V1.BuildGroupID()]
+		i, exists = x.groupIDToIndexMap[start.V1.BuildGroupID()]
 		if !exists {
 			return nil
 		}
@@ -164,7 +164,7 @@ func (x *SortedVersionGroups) Len() int {
 // 返回:
 //   - *VersionGroup: 对应的版本组，不存在则返回 nil
 func (x *SortedVersionGroups) Get(groupID string) *VersionGroup {
-	idx, exists := x.groupIdToIndexMap[groupID]
+	idx, exists := x.groupIDToIndexMap[groupID]
 	if !exists {
 		return nil
 	}
@@ -195,7 +195,7 @@ func (x *SortedVersionGroups) At(index int) *VersionGroup {
 // 返回:
 //   - bool: 如果存在则返回 true
 func (x *SortedVersionGroups) Contains(groupID string) bool {
-	_, exists := x.groupIdToIndexMap[groupID]
+	_, exists := x.groupIDToIndexMap[groupID]
 	return exists
 }
 

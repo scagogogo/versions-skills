@@ -4,7 +4,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// 版本号，在构建时通过 -ldflags 注入
+// Version is the build-time version string, injected via -ldflags.
 var Version = "0.0.0-dev"
 
 // 全局 flag 变量
