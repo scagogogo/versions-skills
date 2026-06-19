@@ -48,6 +48,9 @@ linters:
       checks:
         - all
         - -QF1003  # tagged switch suggestion — style preference
+        - -ST1000  # package comments — nice-to-have, not blockers (also disabled in revive)
+        - -ST1016  # receiver naming — existing codebase uses mixed v/x (also disabled in revive)
+        - -ST1020  # exported comment format — existing code, not changing
 
 formatters:
   enable:
