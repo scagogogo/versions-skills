@@ -1,241 +1,204 @@
 ---
 name: version-check
-description: Use when checking boolean properties of version numbers — IsBeta? IsStable? IsNewerThan? IsBetween? Covers all Is* type checks and comparison predicates via SDK, CLI, and MCP.
-argument-hint: <version-check-task>
+description: Check boolean properties of version numbers — type checks (IsBeta, IsStable, IsRC, etc.) and comparison predicates (IsNewerThan, IsOlderThan, IsBetween). Use for CI/CD conditionals, shell script exit-code checks, and programmatic version filtering.
+argument-hint: <version-string> --<flag>
 ---
 
-# Version Check Skill
+# Version Check
+
+> **Prerequisite:** See `/installation` skill for SDK/CLI/MCP setup.
 
 ## When to Use
 
-- User needs to check if a version is a specific type (alpha, beta, RC, stable, etc.)
-- User needs boolean comparison results (is newer? is older? is between?)
-- User is building CI/CD conditionals based on version properties
-- User needs exit-code-based checks for shell scripts
+- You need to check if a version is a specific type (alpha, beta, RC, stable, dev, snapshot, etc.)
+- You need boolean comparison results (is newer? is older? is between?)
+- You are building CI/CD conditionals based on version properties
+- You need exit-code-based checks for shell scripts (`if versions check --stable $V; then ...`)
+- You need to filter versions by type or comparison predicates
 
-## Installation
+## Decision Tree
 
-### SDK (Go library)
-
-```bash
-go get github.com/scagogogo/versions-skills
+```
+Need a yes/no answer about a version?
+├─ Type check (what kind of version)?
+│   ├─ Has any suffix?                → IsPrerelease() / versions check --prerelease
+│   ├─ No suffix (release)?           → IsStable() / versions check --stable
+│   ├─ Specific suffix type?          → IsAlpha/IsBeta/IsRC/IsDev/etc. / versions check --<type>
+│   ├─ All type flags at once?        → version_info (MCP) / versions info (CLI)
+│   └─ All numbers are zero?          → IsZero() / versions check --zero
+├─ Comparison check (relative to another version)?
+│   ├─ Is v1 newer than v2?           → IsNewerThan() / versions check --newer v2 v1
+│   ├─ Is v1 older than v2?           → IsOlderThan() / versions check --older v2 v1
+│   ├─ Are they equal?                → Equals() / versions check --equal v1 v2
+│   └─ Is v between low and high?     → IsBetween() / versions check --between-low L --between-high H V
+└─ Need suffix weight for ordering?   → SuffixWeight() / versions suffix-weight
 ```
 
-### CLI binary
+## Task Patterns
 
-**Option A: Download from GitHub Releases (Recommended)**
+### Check version type in CI/CD pipeline
 
-Pre-built binaries for Linux, macOS, Windows, FreeBSD, OpenBSD, and NetBSD on amd64, arm64, arm, 386, mips, mips64, mips64le, ppc64, ppc64le, s390x, and riscv64. Linux packages: deb, rpm, apk.
+**Goal:** Only deploy if the version is stable (no prerelease suffix).
 
-```bash
-# Linux (amd64)
-curl -sL https://github.com/scagogogo/versions-skills/releases/latest/download/versions_{VERSION}_linux_amd64.tar.gz | tar xz
-chmod +x versions && sudo mv versions /usr/local/bin/
-
-# macOS (arm64 / Apple Silicon)
-curl -sL https://github.com/scagogogo/versions-skills/releases/latest/download/versions_{VERSION}_darwin_arm64.tar.gz | tar xz
-chmod +x versions && sudo mv versions /usr/local/bin/
-
-# Or install via package manager (Linux only):
-# Debian/Ubuntu: dpkg -i versions_{VERSION}_linux_amd64.deb
-# RHEL/Fedora:   rpm -i versions_{VERSION}_linux_amd64.rpm
-# Alpine:        apk add versions_{VERSION}_linux_amd64.apk
-```
-
-> Replace `{VERSION}` with the latest release tag. See the [releases page](https://github.com/scagogogo/versions-skills/releases/latest) for all available platforms and the current version.
-
-**Option B: Install via Go**
-
-```bash
-go install github.com/scagogogo/versions-skills/cmd/versions@latest
-```
-
-### MCP server
-
-**Option A: Download from GitHub Releases (Recommended)**
-
-```bash
-# Linux (amd64)
-curl -sL https://github.com/scagogogo/versions-skills/releases/latest/download/versions-mcp_{VERSION}_linux_amd64.tar.gz | tar xz
-chmod +x versions-mcp && sudo mv versions-mcp /usr/local/bin/
-
-# macOS (arm64 / Apple Silicon)
-curl -sL https://github.com/scagogogo/versions-skills/releases/latest/download/versions-mcp_{VERSION}_darwin_arm64.tar.gz | tar xz
-chmod +x versions-mcp && sudo mv versions-mcp /usr/local/bin/
-```
-
-> Replace `{VERSION}` with the latest release tag. See the [releases page](https://github.com/scagogogo/versions-skills/releases/latest) for all platforms.
-
-**Option B: Install via Go**
-
-```bash
-go install github.com/scagogogo/versions-skills/cmd/versions-mcp@latest
-```
-
-**SDK:**
+**SDK approach:**
 ```go
-v := versions.NewVersion("1.2.3-beta1")
-v.IsBeta()       // true
-v.IsPrerelease() // true
-v.IsStable()     // false
-```
-
-**CLI:**
-```bash
-versions check --beta 1.2.3-beta1     # exit 0 (true)
-versions check --stable 1.2.3-beta1   # exit 1 (false)
-versions check --newer 1.0.0 2.0.0    # exit 0 (true)
-```
-
-**MCP:**
-```
-version_info(version_string="1.2.3-beta1")  # returns all Is* flags
-```
-
-## API Reference — SDK
-
-### Type Check Methods
-
-All return `bool`. A version is exactly one of these types based on its suffix:
-
-| Method | Suffix Pattern | Weight |
-|--------|---------------|--------|
-| `IsDev()` | `-dev*` | 50 |
-| `IsSnapshot()` | `-snapshot*` | 60 |
-| `IsNightly()` | `-nightly*` | 70 |
-| `IsAlpha()` | `-alpha*` | 100 |
-| `IsBeta()` | `-beta*` | 200 |
-| `IsMilestone()` | `-milestone*` | 300 |
-| `IsRC()` | `-rc*` | 400 |
-| `IsFinal()` | `-final*` | 500 |
-| `IsGA()` | `-ga*` | 500 |
-| `IsRelease()` | `-release*` | 500 |
-| `IsPre()` | `-pre*` | — |
-| `IsSP()` | `-sp*` | 600 |
-| `IsPost()` | `-post*` | 800 |
-
-### Composite Checks
-
-| Method | Returns true when |
-|--------|-------------------|
-| `IsPrerelease()` | Suffix is non-empty (any suffix = prerelease) |
-| `IsStable()` | Suffix is empty (no suffix = stable) |
-| `IsZero()` | All version numbers are zero |
-
-### Comparison Predicates
-
-| Method | Signature | Description |
-|--------|-----------|-------------|
-| `IsNewerThan` | `(target *Version) bool` | Is this version newer than target? |
-| `IsOlderThan` | `(target *Version) bool` | Is this version older than target? |
-| `Equals` | `(target *Version) bool` | Is this version equal to target? |
-| `IsBetween` | `(low, high *Version) bool` | Is this version in [low, high) range? |
-
-### Comparison Order
-
-`CompareTo` compares in this order: **VersionNumbers → Suffix → PublicTime → Raw string**
-
-## CLI Commands
-
-### `versions check <version-string>`
-
-Returns JSON result and uses exit code (0=true, 1=false):
-
-```bash
-# Type checks
-versions check --prerelease 1.2.3-alpha
-versions check --stable 1.2.3
-versions check --dev 1.2.3-dev
-versions check --alpha 1.2.3-alpha1
-versions check --beta 1.2.3-beta2
-versions check --rc 1.2.3-rc1
-versions check --snapshot 1.2.3-snapshot
-versions check --milestone 1.2.3-m1
-versions check --nightly 1.2.3-nightly
-versions check --final 1.2.3-final
-versions check --ga 1.2.3-ga
-versions check --pre 1.2.3-pre
-versions check --release 1.2.3-release
-versions check --sp 1.2.3-sp1
-versions check --post 1.2.3-post
-versions check --zero 0.0.0
-
-# Comparison checks
-versions check --newer 1.0.0 2.0.0
-versions check --older 2.0.0 1.0.0
-versions check --equal 1.0.0 1.0.0
-versions check --between-low 1.0.0 --between-high 3.0.0 2.0.0
-```
-
-### CI/CD Pattern
-
-```bash
-# Only deploy if version is stable
-if versions check --stable $VERSION; then
-  deploy
-fi
-
-# Only deploy to production if version is GA
-if versions check --ga $VERSION; then
-  deploy-production
-fi
-```
-
-## MCP Tools
-
-Use `version_info` to get all boolean properties at once:
-
-```
-version_info(version_string="1.2.3-beta1")
-```
-
-Returns a JSON object with all `Is*` flags.
-
-## Code Examples
-
-```go
-package main
-
-import (
-    "fmt"
-    "github.com/scagogogo/versions-skills"
-)
-
-func main() {
-    // Type checks
-    v := versions.NewVersion("1.2.3-rc1")
-    fmt.Println(v.IsRC())         // true
-    fmt.Println(v.IsPrerelease()) // true
-    fmt.Println(v.IsStable())     // false
-    fmt.Println(v.IsBeta())       // false (RC ≠ Beta)
-
-    // Suffix weight for ordering
-    fmt.Println(v.SuffixWeight()) // rc (400)
-
-    // Comparison predicates
-    v1 := versions.NewVersion("1.2.3")
-    v2 := versions.NewVersion("2.0.0")
-    fmt.Println(v2.IsNewerThan(v1))  // true
-    fmt.Println(v1.IsOlderThan(v2))  // true
-    fmt.Println(v1.Equals(v1))       // true
-
-    // Range check
-    v3 := versions.NewVersion("1.5.0")
-    low := versions.NewVersion("1.0.0")
-    high := versions.NewVersion("2.0.0")
-    fmt.Println(v3.IsBetween(low, high)) // true
-
-    // Zero check
-    zero := versions.NewVersion("0.0.0")
-    fmt.Println(zero.IsZero())  // false (0.0.0 has valid numbers)
+v := versions.NewVersion(os.Getenv("VERSION"))
+if v.IsStable() {
+    deploy()
 }
 ```
+
+**CLI approach:**
+```bash
+if versions check --stable "$VERSION"; then
+    deploy
+fi
+```
+
+**MCP approach:**
+```json
+{"tool": "version_info", "arguments": {"version_string": "1.2.3"}}
+```
+Check `IsStable` in the response.
+
+### Check if a version is a specific prerelease type
+
+**Goal:** Determine if `"1.0.0-beta2"` is a beta (not just any prerelease).
+
+**SDK approach:**
+```go
+v := versions.NewVersion("1.0.0-beta2")
+isBeta := v.IsBeta()         // true
+isAlpha := v.IsAlpha()       // false (beta != alpha)
+isRC := v.IsRC()             // false
+isPrerelease := v.IsPrerelease() // true (any suffix)
+subVersion := v.SubVersion() // 2
+```
+
+**CLI approach:**
+```bash
+versions check --beta 1.0.0-beta2      # exit 0
+versions check --alpha 1.0.0-beta2     # exit 1
+versions check --rc 1.0.0-beta2        # exit 1
+```
+
+**MCP approach:**
+```json
+{"tool": "version_info", "arguments": {"version_string": "1.0.0-beta2"}}
+```
+
+### Check comparison predicates
+
+**Goal:** Determine if `"2.0.0"` is newer than `"1.0.0"`.
+
+**SDK approach:**
+```go
+v1 := versions.NewVersion("1.0.0")
+v2 := versions.NewVersion("2.0.0")
+v2.IsNewerThan(v1)  // true
+v1.IsOlderThan(v2)  // true
+v1.Equals(v2)       // false
+```
+
+**CLI approach:**
+```bash
+versions check --newer 1.0.0 2.0.0     # exit 0 (2.0.0 > 1.0.0)
+versions check --older 2.0.0 1.0.0     # exit 0 (1.0.0 < 2.0.0)
+versions check --equal 1.0.0 1.0.0     # exit 0
+```
+
+**MCP approach:**
+```json
+{"tool": "version_compare", "arguments": {"version1": "2.0.0", "version2": "1.0.0"}}
+```
+Check `result == 1` in the response.
+
+### Check if a version is in a range
+
+**Goal:** Determine if `"1.5.0"` is between `"1.0.0"` and `"2.0.0"`.
+
+**SDK approach:**
+```go
+v := versions.NewVersion("1.5.0")
+low := versions.NewVersion("1.0.0")
+high := versions.NewVersion("2.0.0")
+inRange := v.IsBetween(low, high) // true (inclusive both ends)
+```
+
+**CLI approach:**
+```bash
+versions check --between-low 1.0.0 --between-high 2.0.0 1.5.0  # exit 0
+```
+
+**MCP approach:**
+```json
+{
+  "tool": "version_range_query",
+  "arguments": {"check_version": "1.5.0", "low": "1.0.0", "high": "2.0.0"}
+}
+```
+
+### Check suffix weight for ordering
+
+**Goal:** Get the semantic weight of `"1.0.0-alpha1"` to compare with other suffixes.
+
+**SDK approach:**
+```go
+v := versions.NewVersion("1.0.0-alpha1")
+weight := v.SuffixWeight()                    // 100
+isAlpha := weight == versions.SuffixWeightAlpha // true
+name := weight.String()                       // "alpha"
+```
+
+**CLI approach:**
+```bash
+versions suffix-weight 1.0.0-alpha1   # alpha (100)
+versions suffix-weight 1.0.0           # unknown (0)
+```
+
+**MCP approach:**
+```json
+{"tool": "version_parse", "arguments": {"version_string": "1.0.0-alpha1"}}
+```
+Check `suffix_weight` in the response.
+
+### Check all type flags at once (for comprehensive filtering)
+
+**Goal:** Get every Is* flag for a version in a single call.
+
+**SDK approach:**
+```go
+v := versions.NewVersion("v1.2.3-beta1")
+// Call each Is* method as needed:
+// v.IsPrerelease(), v.IsStable(), v.IsDev(), v.IsAlpha(),
+// v.IsBeta(), v.IsRC(), v.IsSnapshot(), v.IsMilestone(),
+// v.IsNightly(), v.IsFinal(), v.IsGA(), v.IsPre(),
+// v.IsRelease(), v.IsSP(), v.IsPost(), v.IsZero()
+```
+
+**CLI approach:**
+```bash
+versions info v1.2.3-beta1
+```
+
+**MCP approach:**
+```json
+{"tool": "version_info", "arguments": {"version_string": "v1.2.3-beta1"}}
+```
+
+## Cross-References
+
+- [[version-parsing]] — for parsing version strings before checking
+- [[version-comparison]] — for the underlying CompareTo logic behind IsNewerThan/IsOlderThan
+- [[version-constraints]] — for constraint-based matching (more expressive than simple checks)
+- [[version-range-query]] — for range-based queries on version collections
 
 ## Important Notes
 
 - `IsStable()` and `IsPrerelease()` are exact opposites: a version is either stable (no suffix) or prerelease (has suffix)
-- Type checks are suffix-based: `1.2.3-beta1` is `IsBeta()` but not `IsAlpha()`, even though both are prerelease
-- `IsZero()` checks if all version numbers are zero — `0.0.0` has valid numbers, so `IsValid()` is true but `IsZero()` depends on the implementation
-- `IsBetween(low, high)` uses half-open interval: includes `low`, excludes `high` (matches SDK behavior)
-- CLI `check` exit codes make it ideal for shell conditionals in CI/CD pipelines
-- `IsPre()` and `IsPrerelease()` are different: `IsPre()` matches the `-pre*` suffix type, while `IsPrerelease()` matches any non-empty suffix
+- Type checks are suffix-based: `"1.2.3-beta1"` is `IsBeta()` but NOT `IsAlpha()` — they are mutually exclusive
+- `IsPre()` and `IsPrerelease()` are different: `IsPre()` matches the specific `-pre*` suffix type, while `IsPrerelease()` matches ANY non-empty suffix
+- `IsStable()` and `IsRelease()` are different: `IsStable()` means "no suffix", `IsRelease()` means "has explicit `-release` suffix"
+- `IsZero()` checks if all version numbers are zero — `"0.0.0"` has valid numbers so `IsValid()` is true
+- CLI `check` exit codes: 0 = true, 1 = false — ideal for shell conditionals
+- `IsBetween(low, high)` is inclusive on both bounds; pass `nil` for open-ended checks
