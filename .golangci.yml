@@ -3,9 +3,6 @@ version: "2"
 run:
   timeout: 5m
 
-# Bug-catching linters only. gocritic is intentionally omitted — its findings
-# here are style nits (spacing in commented-out test code, if-else→switch) that
-# don't justify the churn for a release.
 linters:
   enable:
     - govet
@@ -17,11 +14,11 @@ linters:
     - revive
     - misspell
 
-linters-settings:
-  govet:
-    enable-all: false
-  revive:
-    severity: warning
+  settings:
+    govet:
+      enable-all: false
+    revive:
+      severity: warning
 
 issues:
   max-issues-per-linter: 0
