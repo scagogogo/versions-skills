@@ -176,6 +176,39 @@ Then point your client at `http://localhost:8080/sse`.
 
 ---
 
+## AI Agent Integration Architecture
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                    AI Agent / IDE                        │
+│  (Claude Code · Cursor · Windsurf · VS Code Copilot)    │
+├──────────────────────┬──────────────────────────────────┤
+│                      │                                  │
+│   🤖 Skills Plugin   │   🔌 MCP Server                  │
+│   (Claude Code only) │   (any MCP client)               │
+│                      │                                  │
+│   13 SKILL.md files  │   21 version_* tools             │
+│   → slash commands   │   → AI-callable functions         │
+│   → domain knowledge │   → structured JSON responses     │
+│                      │                                  │
+├──────────────────────┴──────────────────────────────────┤
+│                                                         │
+│   💻 CLI binary          📦 Go SDK                      │
+│   (shell/CI/CD)          (Go programs)                  │
+│                                                         │
+├─────────────────────────────────────────────────────────┤
+│              Core Library (Go · zero dependencies)       │
+└─────────────────────────────────────────────────────────┘
+```
+
+**Two paths for AI agents:**
+1. **Skills Plugin** — Claude Code reads `SKILL.md` files as domain knowledge, then calls CLI/MCP/SDK under the hood. Best for guided workflows and one-off tasks.
+2. **MCP Server** — Any MCP-compatible client calls `version_*` tools directly. Best for programmatic use, batch operations, and non-Claude agents.
+
+**Use both together** for the best experience — Skills provide the "how-to" knowledge, MCP provides the execution engine.
+
+---
+
 ## Features
 
 - 🔄 **Comprehensive version support** — Standard semver (`1.2.3`), prefixed (`v1.2.3`), pre-release (`1.2.3-beta1`), and custom formats
