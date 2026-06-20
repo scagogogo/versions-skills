@@ -485,6 +485,8 @@ go install github.com/scagogogo/versions-skills/cmd/versions@latest
 
 通过 🤖 **Skills** · 📦 **Go SDK** · 💻 **CLI** · 🔌 **MCP Server** 接入
 
+兼容 **Claude Code**、**Cursor**、**Windsurf**、**VS Code Copilot** 及所有 MCP 兼容的 AI Agent
+
 </div>
 
 - 🔄 **全面的版本号支持** — 标准语义化版本（`1.2.3`）、带前缀（`v1.2.3`）、预发布（`1.2.3-beta1`）及自定义格式
@@ -499,6 +501,37 @@ go install github.com/scagogogo/versions-skills/cmd/versions@latest
 - 🔧 **不可变操作** — `With*` 和 `Bump*` 方法永不修改原始对象
 - 🔗 **序列化** — 内置 JSON、Text、SQL Scanner/Valuer 支持
 - 🚀 **零依赖** — 核心库无外部依赖
+
+### AI Agent 集成架构
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                    AI Agent / IDE                        │
+│  (Claude Code · Cursor · Windsurf · VS Code Copilot)    │
+├──────────────────────┬──────────────────────────────────┤
+│                      │                                  │
+│   🤖 Skills 插件      │   🔌 MCP Server                  │
+│   (仅 Claude Code)   │   (任何 MCP 客户端)               │
+│                      │                                  │
+│   13 个 SKILL.md     │   21 个 version_* 工具            │
+│   → 斜杠命令         │   → AI 可调用函数                  │
+│   → 领域知识注入     │   → 结构化 JSON 响应               │
+│                      │                                  │
+├──────────────────────┴──────────────────────────────────┤
+│                                                         │
+│   💻 CLI 二进制          📦 Go SDK                      │
+│   (Shell/CI/CD)          (Go 程序)                      │
+│                                                         │
+├─────────────────────────────────────────────────────────┤
+│              核心库 (Go · 零依赖)                        │
+└─────────────────────────────────────────────────────────┘
+```
+
+**AI Agent 的两条路径：**
+1. **Skills 插件** — Claude Code 读取 `SKILL.md` 文件作为领域知识，然后通过 CLI/MCP/SDK 执行。适合引导式工作流和一次性任务。
+2. **MCP Server** — 任何 MCP 兼容客户端直接调用 `version_*` 工具。适合编程式调用、批量操作和非 Claude Agent。
+
+**两者配合使用效果最佳** — Skills 提供"如何做"的知识，MCP 提供执行引擎。
 
 ### 接入方式
 
