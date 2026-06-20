@@ -12,6 +12,8 @@
 
 Accessible via 🤖 **Skills** · 📦 **Go SDK** · 💻 **CLI** · 🔌 **MCP Server**
 
+Works with **Claude Code**, **Cursor**, **Windsurf**, **VS Code Copilot**, and any MCP-compatible AI agent
+
 [English](#features) · [简体中文](#功能特性)
 
 </div>
