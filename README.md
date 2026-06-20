@@ -22,13 +22,48 @@ Accessible via 🤖 **Skills** · 📦 **Go SDK** · 💻 **CLI** · 🔌 **MCP 
 
 ### 🤖 Skills (Claude Code) — Recommended for AI-powered workflows
 
-One-click install for [Claude Code](https://claude.ai/code):
+**One command to install all 13 version skills as slash commands in Claude Code:**
 
 ```bash
-claude marketplace add versions https://github.com/scagogogo/versions-skills
+# Step 1: Add the marketplace (one-time)
+claude plugin marketplace add https://github.com/scagogogo/versions-skills
+
+# Step 2: Install the plugin
+claude plugin install versions
 ```
 
-Then use slash commands in Claude Code: `/version-parsing`, `/version-comparison`, `/version-sorting`, `/version-grouping`, `/version-constraints`, `/version-range-query`, `/version-visualization`, `/version-file-operations`, `/version-check`, `/version-mutation`, `/version-properties`, `/cli-operations`, `/mcp-operations`
+After installation, 13 slash commands are available in any Claude Code session:
+
+| Command | What it does |
+|:--------|:-------------|
+| `/version-parsing` | Parse, validate, extract version components |
+| `/version-comparison` | Compare versions, check ordering |
+| `/version-sorting` | Sort version lists ascending/descending |
+| `/version-grouping` | Group versions by major/minor numbers |
+| `/version-constraints` | Parse and check constraint expressions |
+| `/version-range-query` | Query versions within ranges |
+| `/version-visualization` | Tree-based version hierarchy display |
+| `/version-file-operations` | Read/write version lists from files |
+| `/version-check` | Boolean type checks (IsBeta, IsStable, etc.) |
+| `/version-mutation` | Bump versions, immutable modifications |
+| `/version-properties` | Access segments, suffix weight, prefix |
+| `/cli-operations` | Full CLI command reference |
+| `/mcp-operations` | MCP server setup and tool reference |
+
+> **How it works:** The plugin ships 13 `SKILL.md` files under `skills/`. Claude Code reads these as domain knowledge — when you type `/version-parsing`, Claude loads the skill's API reference, code examples, and decision tree, then uses the SDK/CLI/MCP to execute your request. No API key or runtime dependency needed; the skill tells Claude how to call the tools you already have installed.
+
+<details>
+<summary>📖 Plugin vs MCP Server — which should I use?</summary>
+
+| | **Plugin (Skills)** | **MCP Server** |
+|:--|:--|:--|
+| **Install** | `claude plugin install versions` | `go install .../versions-mcp@latest` + config |
+| **How it works** | Injects domain knowledge as slash commands | Exposes 21 tools as AI-callable functions |
+| **Best for** | Guided workflows, learning the API, one-off tasks | Programmatic tool calls, batch operations, other AI agents |
+| **Requires** | Claude Code | Any MCP-compatible client |
+| **Use both?** | ✅ Yes — they complement each other | ✅ Yes — they complement each other |
+
+</details>
 
 ### 📦 Go SDK — Recommended for Go developers
 
@@ -64,11 +99,16 @@ versions sort 3.0.0 1.0.0 2.0.0
 
 ### 🔌 MCP Server — Recommended for AI tool integration
 
+The MCP server exposes all SDK capabilities as 21 AI-callable tools, compatible with **Claude Code**, **Cursor**, **Windsurf**, **VS Code Copilot**, and any MCP-compatible client.
+
 ```bash
 go install github.com/scagogogo/versions-skills/cmd/versions-mcp@latest
 ```
 
-Configure in Claude Code `settings.json`:
+<details>
+<summary>⚙️ Configuration for each AI client</summary>
+
+**Claude Code** — add to `~/.claude/settings.json` (user scope) or `.claude/settings.json` (project scope):
 
 ```json
 {
@@ -80,6 +120,57 @@ Configure in Claude Code `settings.json`:
   }
 }
 ```
+
+**Cursor** — add to `.cursor/mcp.json` in your project root:
+
+```json
+{
+  "mcpServers": {
+    "versions": {
+      "command": "versions-mcp",
+      "args": ["--transport", "stdio"]
+    }
+  }
+}
+```
+
+**Windsurf** — add to `.windsurf/mcp.json` in your project root:
+
+```json
+{
+  "mcpServers": {
+    "versions": {
+      "command": "versions-mcp",
+      "args": ["--transport", "stdio"]
+    }
+  }
+}
+```
+
+**VS Code (Copilot)** — add to `.vscode/mcp.json` in your project root:
+
+```json
+{
+  "servers": {
+    "versions": {
+      "command": "versions-mcp",
+      "args": ["--transport", "stdio"]
+    }
+  }
+}
+```
+
+**Network mode (SSE)** — for shared/team deployments:
+
+```bash
+versions-mcp --transport sse --port 8080
+```
+
+Then point your client at `http://localhost:8080/sse`.
+
+</details>
+
+**Available tools:** `version_parse`, `version_validate`, `version_info`, `version_compare`, `version_sort`, `version_filter`, `version_group`, `version_range_query`, `version_constraint_check`, `version_min`, `version_max`, `version_latest_stable`, `version_latest_prerelease`, `version_unique`, `version_set_operation`, `version_build`, `version_bump`, `version_core`, `version_read_file`, `version_write_file`, `version_visualize`
 
 ---
 
@@ -267,49 +358,34 @@ versions visualize 1.0.0 1.1.0 2.0.0 --groups
 
 ---
 
-## MCP Server
-
-The MCP server provides all SDK capabilities as AI-callable tools:
-
-```bash
-# Start MCP server
-versions-mcp --transport stdio     # for Claude Code integration
-versions-mcp --transport sse --port 8080  # for network access
-```
-
-**Available tools:** `version_parse`, `version_validate`, `version_info`, `version_compare`, `version_sort`, `version_filter`, `version_group`, `version_range_query`, `version_constraint_check`, `version_min`, `version_max`, `version_latest_stable`, `version_latest_prerelease`, `version_unique`, `version_set_operation`, `version_build`, `version_bump`, `version_core`, `version_read_file`, `version_write_file`, `version_visualize`
-
----
-
-## Claude Code Skills
-
-13 specialized skills for version operations in Claude Code:
-
-| Skill | Command | Description |
-|:------|:--------|:------------|
-| Version Parsing | `/version-parsing` | Parse, validate, extract version components |
-| Version Comparison | `/version-comparison` | Compare versions, check ordering |
-| Version Sorting | `/version-sorting` | Sort version lists ascending/descending |
-| Version Grouping | `/version-grouping` | Group versions by major/minor numbers |
-| Version Constraints | `/version-constraints` | Parse and check constraint expressions |
-| Version Range Query | `/version-range-query` | Query versions within ranges |
-| Version Visualization | `/version-visualization` | Tree-based version hierarchy display |
-| Version File Operations | `/version-file-operations` | Read/write version lists from files |
-| Version Check | `/version-check` | Boolean type checks (IsBeta, IsStable, etc.) |
-| Version Mutation | `/version-mutation` | Bump versions, immutable modifications |
-| Version Properties | `/version-properties` | Access segments, suffix weight, prefix |
-| CLI Operations | `/cli-operations` | Full CLI command reference |
-| MCP Operations | `/mcp-operations` | MCP server setup and tool reference |
-
----
-
 ## Installation
 
-### Skills (Claude Code)
+### Skills (Claude Code Plugin)
 
 ```bash
-claude marketplace add versions https://github.com/scagogogo/versions-skills
+# Add marketplace (one-time)
+claude plugin marketplace add https://github.com/scagogogo/versions-skills
+
+# Install the plugin
+claude plugin install versions
 ```
+
+> After installation, 13 slash commands are available in Claude Code. See [🤖 Skills](#-skills-claude-code--recommended-for-ai-powered-workflows) above for the full list.
+
+### MCP Server (for AI Agents)
+
+The MCP server works with **Claude Code**, **Cursor**, **Windsurf**, **VS Code Copilot**, and any MCP-compatible client. See [🔌 MCP Server](#-mcp-server--recommended-for-ai-tool-integration) above for per-client configuration.
+
+```bash
+# Download binary from GitHub Releases
+curl -sL https://github.com/scagogogo/versions-skills/releases/latest/download/versions-mcp_{VERSION}_linux_amd64.tar.gz | tar xz
+chmod +x versions-mcp && sudo mv versions-mcp /usr/local/bin/
+
+# Or install via Go
+go install github.com/scagogogo/versions-skills/cmd/versions-mcp@latest
+```
+
+> `{VERSION}` is the release tag shown at the top of the [releases page](https://github.com/scagogogo/versions-skills/releases/latest).
 
 ### Go SDK
 
@@ -348,19 +424,6 @@ go install github.com/scagogogo/versions-skills/cmd/versions@latest
 ```
 
 > Prefer the one-line `install.sh` above, which resolves `{VERSION}` for you. For manual download, `{VERSION}` is the release tag shown at the top of the [releases page](https://github.com/scagogogo/versions-skills/releases/latest).
-
-### MCP Server
-
-```bash
-# Download binary from GitHub Releases
-curl -sL https://github.com/scagogogo/versions-skills/releases/latest/download/versions-mcp_{VERSION}_linux_amd64.tar.gz | tar xz
-chmod +x versions-mcp && sudo mv versions-mcp /usr/local/bin/
-
-# Or install via Go
-go install github.com/scagogogo/versions-skills/cmd/versions-mcp@latest
-```
-
-> `{VERSION}` is the release tag shown at the top of the [releases page](https://github.com/scagogogo/versions-skills/releases/latest).
 
 ---
 
@@ -406,13 +469,77 @@ go install github.com/scagogogo/versions-skills/cmd/versions-mcp@latest
 
 #### 🤖 Skills（Claude Code）— AI 工作流推荐
 
-一键安装：
+两步安装，获得 13 个版本操作斜杠命令：
 
 ```bash
-claude marketplace add versions https://github.com/scagogogo/versions-skills
+# 第一步：添加 Marketplace（一次性）
+claude plugin marketplace add https://github.com/scagogogo/versions-skills
+
+# 第二步：安装插件
+claude plugin install versions
 ```
 
 安装后在 Claude Code 中使用斜杠命令：`/version-parsing`、`/version-comparison`、`/version-sorting` 等
+
+> **原理：** 插件包含 13 个 `SKILL.md` 技能文件，Claude Code 将其加载为领域知识。输入 `/version-parsing` 时，Claude 会读取对应的 API 参考、代码示例和决策树，然后通过 SDK/CLI/MCP 执行你的请求。
+
+#### 🔌 MCP Server（AI Agent 通用）— 支持 Claude Code / Cursor / Windsurf / VS Code Copilot
+
+```bash
+go install github.com/scagogogo/versions-skills/cmd/versions-mcp@latest
+```
+
+**Claude Code** — 添加到 `~/.claude/settings.json`：
+
+```json
+{
+  "mcpServers": {
+    "versions": {
+      "command": "versions-mcp",
+      "args": ["--transport", "stdio"]
+    }
+  }
+}
+```
+
+**Cursor** — 添加到项目根目录 `.cursor/mcp.json`：
+
+```json
+{
+  "mcpServers": {
+    "versions": {
+      "command": "versions-mcp",
+      "args": ["--transport", "stdio"]
+    }
+  }
+}
+```
+
+**Windsurf** — 添加到项目根目录 `.windsurf/mcp.json`：
+
+```json
+{
+  "mcpServers": {
+    "versions": {
+      "command": "versions-mcp",
+      "args": ["--transport", "stdio"]
+    }
+  }
+}
+```
+
+**VS Code (Copilot)** — 添加到项目根目录 `.vscode/mcp.json`：
+
+```json
+{
+  "servers": {
+    "versions": {
+      "command": "versions-mcp",
+      "args": ["--transport", "stdio"]
+    }
+  }
+}
+```
 
 #### 📦 Go SDK — Go 开发者推荐
 
@@ -426,10 +553,4 @@ go get github.com/scagogogo/versions-skills
 
 ```bash
 go install github.com/scagogogo/versions-skills/cmd/versions@latest
-```
-
-#### 🔌 MCP Server — AI 工具集成推荐
-
-```bash
-go install github.com/scagogogo/versions-skills/cmd/versions-mcp@latest
 ```
