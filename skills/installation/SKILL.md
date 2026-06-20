@@ -1,22 +1,41 @@
 ---
 name: installation
-description: One-time setup for versions-skills SDK, CLI, and MCP server. Run first before using any version-* skill.
-argument-hint: <sdk|cli|mcp>
+description: One-time setup for versions-skills plugin, SDK, CLI, and MCP server. Run first before using any version-* skill.
+argument-hint: <plugin|sdk|cli|mcp>
 ---
 
 # Installation
 
-> **Run this once** before using any `version-*` skill. All other skills assume the tooling is available.  
-> **Layers:** SDK (Go) → CLI (shell) → MCP (AI tools) — pick your entry point.
+> **Run this once** before using any `version-*` skill. All other skills assume the tooling is available.
+> **Layers:** Plugin (Claude Code Skills) → SDK (Go) → CLI (shell) → MCP (AI tools) — pick your entry point.
 
 ## Decision Tree
 
 ```
 Which access path does the task need?
-├─ SDK (Go code)        → Step 1
-├─ CLI (shell/scripts)  → Step 2
-└─ MCP (AI tool calls)  → Step 3
+├─ Plugin (Claude Code slash commands)  → Step 0
+├─ SDK (Go code)                       → Step 1
+├─ CLI (shell/scripts)                 → Step 2
+└─ MCP (AI tool calls)                 → Step 3
 ```
+
+---
+
+## Step 0: Claude Code Plugin (Skills)
+
+Install 13 version operation slash commands in Claude Code:
+
+```bash
+# Add the marketplace (one-time)
+claude plugin marketplace add https://github.com/scagogogo/versions-skills
+
+# Install the plugin
+claude plugin install versions
+```
+
+After installation, slash commands like `/version-parsing`, `/version-comparison`, `/version-sorting` are available in any Claude Code session.
+
+> **How it works:** The plugin ships 13 `SKILL.md` files. Claude Code loads these as domain knowledge — when you type `/version-parsing`, Claude loads the skill's API reference, code examples, and decision tree, then uses the SDK/CLI/MCP to execute your request.
 
 ---
 
@@ -75,10 +94,48 @@ versions parse 1.2.3
 go install github.com/scagogogo/versions-skills/cmd/versions-mcp@latest
 ```
 
-Configure in Claude Code `settings.json`:
+Configure in your AI client:
+
+**Claude Code** — add to `~/.claude/settings.json` (user scope) or `.claude/settings.json` (project scope):
 ```json
 {
   "mcpServers": {
+    "versions": {
+      "command": "versions-mcp",
+      "args": ["--transport", "stdio"]
+    }
+  }
+}
+```
+
+**Cursor** — add to `.cursor/mcp.json` in your project root:
+```json
+{
+  "mcpServers": {
+    "versions": {
+      "command": "versions-mcp",
+      "args": ["--transport", "stdio"]
+    }
+  }
+}
+```
+
+**Windsurf** — add to `.windsurf/mcp.json` in your project root:
+```json
+{
+  "mcpServers": {
+    "versions": {
+      "command": "versions-mcp",
+      "args": ["--transport", "stdio"]
+    }
+  }
+}
+```
+
+**VS Code (Copilot)** — add to `.vscode/mcp.json` in your project root:
+```json
+{
+  "servers": {
     "versions": {
       "command": "versions-mcp",
       "args": ["--transport", "stdio"]
@@ -98,6 +155,7 @@ Available tools: `version_parse`, `version_validate`, `version_info`, `version_c
 
 ## Important Notes
 
+- **Plugin (Skills) and MCP Server complement each other** — Skills inject domain knowledge as slash commands; MCP exposes 21 tools as AI-callable functions. Use both for the best experience.
 - **CLI default output is JSON** — use `-f table` or `-f text` for human-readable output.
 - **CLI quiet mode** (`-q`) outputs raw data without the envelope — ideal for shell pipelines.
 - **MCP tools return JSON** — parse the `content[0].text` field.

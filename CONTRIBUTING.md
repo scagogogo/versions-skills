@@ -5,7 +5,7 @@ MCP server + Claude Code Skills bundle for version number operations.
 
 ## Development setup
 
-Requires Go 1.23+.
+Requires Go 1.25+.
 
 ```bash
 git clone https://github.com/scagogogo/versions-skills.git

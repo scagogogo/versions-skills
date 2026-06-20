@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- README: improved AI Agent integration docs — correct Claude Code plugin install commands
+  (two-step marketplace add → plugin install), added multi-client MCP configuration
+  (Claude Code, Cursor, Windsurf, VS Code Copilot), added Plugin vs MCP comparison,
+  added "How it works" explanation for Skills, removed duplicate sections.
+- README: updated Chinese section with matching AI Agent docs improvements.
+- Skills: updated `installation/SKILL.md` to include Claude Code plugin install as Step 0
+  and multi-client MCP configuration.
+- Skills: updated `mcp-operations/SKILL.md` to cover multi-client configuration
+  (Claude Code, Cursor, Windsurf, VS Code Copilot) with per-client config table.
+- CONTRIBUTING: updated Go version requirement from 1.23+ to 1.25+.
+
 ## [0.2.0] - 2026-06-19
 
 ### Added

@@ -36,12 +36,48 @@ Need file access from MCP?
 
 ### Configure the MCP server
 
-**Goal:** Register the versions MCP server in Claude Code.
+**Goal:** Register the versions MCP server in your AI client.
 
-Add to `.claude/settings.json` or `~/.claude/settings.json`:
+**Claude Code** — add to `~/.claude/settings.json` (user scope) or `.claude/settings.json` (project scope):
 ```json
 {
   "mcpServers": {
+    "versions": {
+      "command": "versions-mcp",
+      "args": ["--transport", "stdio"]
+    }
+  }
+}
+```
+
+**Cursor** — add to `.cursor/mcp.json` in your project root:
+```json
+{
+  "mcpServers": {
+    "versions": {
+      "command": "versions-mcp",
+      "args": ["--transport", "stdio"]
+    }
+  }
+}
+```
+
+**Windsurf** — add to `.windsurf/mcp.json` in your project root:
+```json
+{
+  "mcpServers": {
+    "versions": {
+      "command": "versions-mcp",
+      "args": ["--transport", "stdio"]
+    }
+  }
+}
+```
+
+**VS Code (Copilot)** — add to `.vscode/mcp.json` in your project root:
+```json
+{
+  "servers": {
     "versions": {
       "command": "versions-mcp",
       "args": ["--transport", "stdio"]
@@ -171,20 +207,17 @@ version_latest_stable(versions=["1.0.0-alpha", "1.0.0", "1.0.1"])
 
 | Mode | Flag | Use Case |
 |------|------|----------|
-| stdio | `--transport stdio` (default) | Local AI agent (Claude Code) |
-| SSE | `--transport sse --port <port>` | Network-accessible server |
+| stdio | `--transport stdio` (default) | Local AI agent (Claude Code, Cursor, Windsurf, VS Code Copilot) |
+| SSE | `--transport sse --port <port>` | Network-accessible server, shared/team deployments |
 
-**settings.json example:**
-```json
-{
-  "mcpServers": {
-    "versions": {
-      "command": "versions-mcp",
-      "args": ["--transport", "stdio"]
-    }
-  }
-}
-```
+**Per-client configuration:**
+
+| Client | Config file | Key format |
+|--------|------------|------------|
+| Claude Code | `~/.claude/settings.json` or `.claude/settings.json` | `mcpServers.versions` |
+| Cursor | `.cursor/mcp.json` (project root) | `mcpServers.versions` |
+| Windsurf | `.windsurf/mcp.json` (project root) | `mcpServers.versions` |
+| VS Code Copilot | `.vscode/mcp.json` (project root) | `servers.versions` |
 
 ### Tool Catalog
 
