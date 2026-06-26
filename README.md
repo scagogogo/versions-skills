@@ -20,7 +20,59 @@ Works with **Claude Code**, **Cursor**, **Windsurf**, **VS Code Copilot**, and a
 
 ---
 
+## Capability Map
+
+<div align="center">
+
+![Capability Map](docs/images/capability-tree.png)
+
+*All capabilities of versions-skills — 12 functional domains, 3-level hierarchy from category to specific API*
+
+</div>
+
+---
+
+## Architecture
+
+<div align="center">
+
+![Architecture](docs/images/architecture.png)
+
+*Four-layer architecture: AI Agent → Interface → Feature → Core Library*
+
+</div>
+
+The original ASCII architecture diagram is also available in [中文版架构图](#ai-agent-集成架构) below.
+
+**Two paths for AI agents:**
+1. **Skills Plugin** — Claude Code reads `SKILL.md` files as domain knowledge, then calls CLI/MCP/SDK under the hood. Best for guided workflows and one-off tasks.
+2. **MCP Server** — Any MCP-compatible client calls `version_*` tools directly. Best for programmatic use, batch operations, and non-Claude agents.
+
+**Use both together** for the best experience — Skills provide the "how-to" knowledge, MCP provides the execution engine.
+
+---
+
+## Data Flow
+
+<div align="center">
+
+![Data Flow](docs/images/data-flow.png)
+
+*Version strings flow through Input → Parse → Process → Transform → Output pipeline*
+
+</div>
+
+---
+
 ## Access Methods
+
+<div align="center">
+
+![Access Methods](docs/images/access-methods.png)
+
+*Four access methods connecting to 14 core capabilities*
+
+</div>
 
 ### 🤖 Skills (Claude Code) — Recommended for AI-powered workflows
 
@@ -224,6 +276,14 @@ Then point your client at `http://localhost:8080/sse`.
 - 🔗 **Serialization** — JSON, Text, SQL Scanner/Valuer out of the box
 - 🚀 **Zero dependencies** — Core library has no external dependencies
 
+<div align="center">
+
+![Suffix Weight Ordering](docs/images/suffix-weight.png)
+
+*Semantic comparison priority: suffix weight determines pre-release ordering*
+
+</div>
+
 ---
 
 ## Quick Start
@@ -269,6 +329,14 @@ ok, _ := v.Matches(">=1.0.0,<2.0.0")  // true
 // Negate a constraint
 neg := versions.NegateConstraint(c)  // <1.0.0
 ```
+
+<div align="center">
+
+![Constraint System](docs/images/constraint-system.png)
+
+*Three-level grammar: Union (OR) → Set (AND) → Single Constraint → Operator + Version*
+
+</div>
 
 ### Range Queries
 
@@ -481,6 +549,14 @@ go install github.com/scagogogo/versions-skills/cmd/versions@latest
 
 <div align="center">
 
+![功能地图](docs/images/capability-tree.png)
+
+*versions-skills 全部能力 — 12 个功能域，3 级层次从类别到具体 API*
+
+</div>
+
+<div align="center">
+
 **一个强大的 Go 语言版本号解析、比较、排序、分组和约束检查库**
 
 通过 🤖 **Skills** · 📦 **Go SDK** · 💻 **CLI** · 🔌 **MCP Server** 接入
@@ -502,30 +578,23 @@ go install github.com/scagogogo/versions-skills/cmd/versions@latest
 - 🔗 **序列化** — 内置 JSON、Text、SQL Scanner/Valuer 支持
 - 🚀 **零依赖** — 核心库无外部依赖
 
+<div align="center">
+
+![后缀权重排序](docs/images/suffix-weight.png)
+
+*语义比较优先级：后缀权重决定预发布版本排序*
+
+</div>
+
 ### AI Agent 集成架构
 
-```
-┌─────────────────────────────────────────────────────────┐
-│                    AI Agent / IDE                        │
-│  (Claude Code · Cursor · Windsurf · VS Code Copilot)    │
-├──────────────────────┬──────────────────────────────────┤
-│                      │                                  │
-│   🤖 Skills 插件      │   🔌 MCP Server                  │
-│   (仅 Claude Code)   │   (任何 MCP 客户端)               │
-│                      │                                  │
-│   13 个 SKILL.md     │   21 个 version_* 工具            │
-│   → 斜杠命令         │   → AI 可调用函数                  │
-│   → 领域知识注入     │   → 结构化 JSON 响应               │
-│                      │                                  │
-├──────────────────────┴──────────────────────────────────┤
-│                                                         │
-│   💻 CLI 二进制          📦 Go SDK                      │
-│   (Shell/CI/CD)          (Go 程序)                      │
-│                                                         │
-├─────────────────────────────────────────────────────────┤
-│              核心库 (Go · 零依赖)                        │
-└─────────────────────────────────────────────────────────┘
-```
+<div align="center">
+
+![架构图](docs/images/architecture.png)
+
+*四层架构：AI Agent → 接口层 → 功能层 → 核心库*
+
+</div>
 
 **AI Agent 的两条路径：**
 1. **Skills 插件** — Claude Code 读取 `SKILL.md` 文件作为领域知识，然后通过 CLI/MCP/SDK 执行。适合引导式工作流和一次性任务。
@@ -533,7 +602,31 @@ go install github.com/scagogogo/versions-skills/cmd/versions@latest
 
 **两者配合使用效果最佳** — Skills 提供"如何做"的知识，MCP 提供执行引擎。
 
+<div align="center">
+
+![数据流](docs/images/data-flow.png)
+
+*版本号字符串通过 Input → Parse → Process → Transform → Output 管道流转*
+
+</div>
+
+<div align="center">
+
+![约束系统](docs/images/constraint-system.png)
+
+*三层语法：Union (OR) → Set (AND) → Single Constraint → Operator + Version*
+
+</div>
+
 ### 接入方式
+
+<div align="center">
+
+![接入方式](docs/images/access-methods.png)
+
+*四种接入方式连接 14 个核心能力*
+
+</div>
 
 #### 🤖 Skills（Claude Code）— AI 工作流推荐
 
