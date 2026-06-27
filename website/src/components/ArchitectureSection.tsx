@@ -1,4 +1,4 @@
-import { Typography, Card, Row, Col, Tag, Divider } from 'antd'
+import { Typography, Card, Row, Col, Tag } from 'antd'
 import {
   RobotOutlined,
   ApiOutlined,
@@ -6,98 +6,101 @@ import {
   CodeOutlined,
 } from '@ant-design/icons'
 
-const { Title, Paragraph, Text } = Typography
+const { Text } = Typography
 
 const skills = [
-  { name: '/version-parsing', desc: '解析、验证、提取版本号组件' },
-  { name: '/version-comparison', desc: '比较版本号，检查排序关系' },
-  { name: '/version-sorting', desc: '升序/降序排序版本号列表' },
-  { name: '/version-grouping', desc: '按主/次版本号分组' },
-  { name: '/version-constraints', desc: '解析和检查约束表达式' },
-  { name: '/version-range-query', desc: '查询范围内的版本号' },
-  { name: '/version-visualization', desc: '树形版本层次结构展示' },
-  { name: '/version-file-operations', desc: '读写版本号列表文件' },
-  { name: '/version-check', desc: '布尔类型检查（IsBeta、IsStable 等）' },
-  { name: '/version-mutation', desc: '版本号 Bump，不可变修改' },
-  { name: '/version-properties', desc: '访问版本号段落、后缀权重、前缀' },
-  { name: '/cli-operations', desc: '完整 CLI 命令参考' },
-  { name: '/mcp-operations', desc: 'MCP 服务器设置与工具参考' },
+  { name: '/version-parsing', desc: '解析、验证、提取版本号组件', color: '#4f46e5' },
+  { name: '/version-comparison', desc: '比较版本号，检查排序关系', color: '#7c3aed' },
+  { name: '/version-sorting', desc: '升序/降序排序版本号列表', color: '#0891b2' },
+  { name: '/version-grouping', desc: '按主/次版本号分组', color: '#db2777' },
+  { name: '/version-constraints', desc: '解析和检查约束表达式', color: '#d97706' },
+  { name: '/version-range-query', desc: '查询范围内的版本号', color: '#059669' },
+  { name: '/version-visualization', desc: '树形版本层次结构展示', color: '#dc2626' },
+  { name: '/version-file-operations', desc: '读写版本号列表文件', color: '#ca8a04' },
+  { name: '/version-check', desc: '布尔类型检查（IsBeta、IsStable 等）', color: '#2563eb' },
+  { name: '/version-mutation', desc: '版本号 Bump，不可变修改', color: '#9333ea' },
+  { name: '/version-properties', desc: '访问版本号段落、后缀权重、前缀', color: '#4f46e5' },
+  { name: '/cli-operations', desc: '完整 CLI 命令参考', color: '#0d9488' },
+  { name: '/mcp-operations', desc: 'MCP 服务器设置与工具参考', color: '#06b6d4' },
 ]
 
 const ArchitectureSection: React.FC = () => {
   return (
-    <div id="architecture" style={{ padding: '80px 48px', background: '#fff' }}>
+    <div id="architecture" style={{ padding: '80px 32px', background: '#ffffff' }}>
       <div style={{ maxWidth: 1200, margin: '0 auto' }}>
-        <Title level={2} style={{ textAlign: 'center', marginBottom: 8 }}>
-          架构设计
-        </Title>
-        <Paragraph
-          style={{ textAlign: 'center', color: '#666', fontSize: 16, marginBottom: 48 }}
-        >
-          四层架构：AI Agent → 接口层 → 功能层 → 核心库
-        </Paragraph>
+        <div style={{ textAlign: 'center' }}>
+          <div className="section-title">架构设计</div>
+          <p className="section-subtitle">四层架构：AI Agent → 接口层 → 功能层 → 核心库</p>
+        </div>
 
         {/* Architecture Diagram */}
         <Card
           style={{
             maxWidth: 800,
             margin: '0 auto 48px',
-            background: '#fafafa',
+            borderRadius: 20,
+            border: '1px solid #e2e8f0',
+            overflow: 'hidden',
           }}
+          styles={{ body: { padding: 0 } }}
         >
           <div style={{ textAlign: 'center' }}>
             {/* Layer 1: AI Agent */}
             <div
               style={{
-                background: 'linear-gradient(135deg, #722ed1 0%, #1677ff 100%)',
+                background: 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)',
                 color: '#fff',
-                padding: '16px 24px',
-                borderRadius: '8px 8px 0 0',
-                fontSize: 16,
-                fontWeight: 600,
+                padding: '20px 24px',
+                fontSize: 17,
+                fontWeight: 700,
+                letterSpacing: '-0.01em',
               }}
             >
               🤖 AI Agent / IDE
               <br />
-              <Text style={{ color: 'rgba(255,255,255,0.8)', fontSize: 13 }}>
+              <Text style={{ color: 'rgba(255,255,255,0.75)', fontSize: 13, fontWeight: 400 }}>
                 Claude Code · Cursor · Windsurf · VS Code Copilot
               </Text>
             </div>
 
             {/* Layer 2: Interface */}
-            <Row style={{ background: '#e6f7ff' }}>
+            <Row>
               <Col span={12}
                 style={{
-                  padding: '20px 16px',
-                  borderRight: '1px solid #91d5ff',
+                  padding: '24px 16px',
+                  borderRight: '1px solid #e2e8f0',
+                  borderBottom: '1px solid #e2e8f0',
+                  background: '#faf5ff',
                 }}
               >
-                <RobotOutlined style={{ fontSize: 24, color: '#722ed1' }} />
-                <div style={{ fontWeight: 600, marginTop: 4 }}>Skills Plugin</div>
+                <RobotOutlined style={{ fontSize: 24, color: '#7c3aed' }} />
+                <div style={{ fontWeight: 700, marginTop: 6, color: '#7c3aed' }}>Skills Plugin</div>
                 <Text type="secondary" style={{ fontSize: 12 }}>13 SKILL.md → 斜杠命令</Text>
               </Col>
-              <Col span={12} style={{ padding: '20px 16px' }}>
-                <ApiOutlined style={{ fontSize: 24, color: '#1677ff' }} />
-                <div style={{ fontWeight: 600, marginTop: 4 }}>MCP Server</div>
+              <Col span={12} style={{ padding: '24px 16px', borderBottom: '1px solid #e2e8f0', background: '#eff6ff' }}>
+                <ApiOutlined style={{ fontSize: 24, color: '#2563eb' }} />
+                <div style={{ fontWeight: 700, marginTop: 6, color: '#2563eb' }}>MCP Server</div>
                 <Text type="secondary" style={{ fontSize: 12 }}>21 version_* 工具</Text>
               </Col>
             </Row>
 
             {/* Layer 3: Feature */}
-            <Row style={{ background: '#f6ffed' }}>
+            <Row>
               <Col span={12}
                 style={{
-                  padding: '16px',
-                  borderRight: '1px solid #b7eb8f',
+                  padding: '20px 16px',
+                  borderRight: '1px solid #e2e8f0',
+                  borderBottom: '1px solid #e2e8f0',
+                  background: '#fffbeb',
                 }}
               >
-                <CodeOutlined style={{ fontSize: 20, color: '#fa8c16' }} />
-                <div style={{ fontWeight: 600 }}>CLI Binary</div>
+                <CodeOutlined style={{ fontSize: 20, color: '#d97706' }} />
+                <div style={{ fontWeight: 700, color: '#d97706' }}>CLI Binary</div>
                 <Text type="secondary" style={{ fontSize: 12 }}>Shell / CI/CD</Text>
               </Col>
-              <Col span={12} style={{ padding: '16px' }}>
-                <CodeSandboxOutlined style={{ fontSize: 20, color: '#52c41a' }} />
-                <div style={{ fontWeight: 600 }}>Go SDK</div>
+              <Col span={12} style={{ padding: '20px 16px', borderBottom: '1px solid #e2e8f0', background: '#ecfdf5' }}>
+                <CodeSandboxOutlined style={{ fontSize: 20, color: '#059669' }} />
+                <div style={{ fontWeight: 700, color: '#059669' }}>Go SDK</div>
                 <Text type="secondary" style={{ fontSize: 12 }}>Go 程序</Text>
               </Col>
             </Row>
@@ -105,10 +108,10 @@ const ArchitectureSection: React.FC = () => {
             {/* Layer 4: Core */}
             <div
               style={{
-                background: '#fff7e6',
+                background: '#f0fdfa',
                 padding: '16px',
-                borderRadius: '0 0 8px 8px',
-                fontWeight: 600,
+                fontWeight: 700,
+                color: '#0d9488',
               }}
             >
               🏗️ Core Library (Go · Zero Dependencies)
@@ -117,21 +120,22 @@ const ArchitectureSection: React.FC = () => {
         </Card>
 
         {/* Skills Grid */}
-        <Divider>
-          <Tag color="purple" style={{ fontSize: 14, padding: '4px 16px' }}>
+        <div style={{ textAlign: 'center', marginBottom: 32 }}>
+          <Tag color="purple" style={{ fontSize: 15, padding: '6px 20px', borderRadius: 10, fontWeight: 600 }}>
             🤖 13 Skills 斜杠命令
           </Tag>
-        </Divider>
+        </div>
 
-        <Row gutter={[16, 16]} style={{ marginTop: 24 }}>
+        <Row gutter={[16, 16]}>
           {skills.map((skill, index) => (
             <Col xs={24} sm={12} md={8} lg={6} key={index}>
               <Card
                 size="small"
                 hoverable
-                style={{ height: '100%' }}
+                className="hover-card"
+                style={{ height: '100%', borderRadius: 12, border: '1px solid #e2e8f0' }}
               >
-                <Text code style={{ fontSize: 13, color: '#722ed1' }}>
+                <Text code style={{ fontSize: 13, color: skill.color, fontWeight: 600 }}>
                   {skill.name}
                 </Text>
                 <div style={{ marginTop: 6 }}>

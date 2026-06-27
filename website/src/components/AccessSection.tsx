@@ -11,7 +11,7 @@ const { Title, Paragraph, Text } = Typography
 
 const accessMethods = [
   {
-    icon: <RobotOutlined style={{ fontSize: 36, color: '#722ed1' }} />,
+    icon: <RobotOutlined style={{ fontSize: 36, color: '#7c3aed' }} />,
     tag: '推荐',
     tagColor: 'purple',
     title: '🤖 Skills（Claude Code）',
@@ -20,7 +20,7 @@ const accessMethods = [
     detail: '安装后获得 13 个斜杠命令：/version-parsing、/version-comparison 等',
   },
   {
-    icon: <ApiOutlined style={{ fontSize: 36, color: '#1677ff' }} />,
+    icon: <ApiOutlined style={{ fontSize: 36, color: '#2563eb' }} />,
     tag: '通用',
     tagColor: 'blue',
     title: '🔌 MCP Server',
@@ -29,7 +29,7 @@ const accessMethods = [
     detail: '暴露 21 个 AI 可调用工具，兼容 Claude Code / Cursor / Windsurf / VS Code Copilot',
   },
   {
-    icon: <CodeSandboxOutlined style={{ fontSize: 36, color: '#52c41a' }} />,
+    icon: <CodeSandboxOutlined style={{ fontSize: 36, color: '#059669' }} />,
     tag: 'Go 开发者',
     tagColor: 'green',
     title: '📦 Go SDK',
@@ -38,7 +38,7 @@ const accessMethods = [
     detail: '零依赖核心库，完整的 Version 类型和方法链',
   },
   {
-    icon: <CodeOutlined style={{ fontSize: 36, color: '#fa8c16' }} />,
+    icon: <CodeOutlined style={{ fontSize: 36, color: '#d97706' }} />,
     tag: '脚本/CI',
     tagColor: 'orange',
     title: '💻 CLI',
@@ -50,23 +50,20 @@ const accessMethods = [
 
 const AccessSection: React.FC = () => {
   return (
-    <div id="access" style={{ padding: '80px 48px', background: '#fff' }}>
+    <div id="access" style={{ padding: '80px 32px', background: '#f8fafc' }}>
       <div style={{ maxWidth: 1200, margin: '0 auto' }}>
-        <Title level={2} style={{ textAlign: 'center', marginBottom: 8 }}>
-          四种接入方式
-        </Title>
-        <Paragraph
-          style={{ textAlign: 'center', color: '#666', fontSize: 16, marginBottom: 48 }}
-        >
-          根据你的场景选择最合适的接入方式，也可以组合使用获得最佳体验
-        </Paragraph>
+        <div style={{ textAlign: 'center' }}>
+          <div className="section-title">四种接入方式</div>
+          <p className="section-subtitle">根据你的场景选择最合适的接入方式，也可以组合使用获得最佳体验</p>
+        </div>
 
-        <Row gutter={[24, 24]}>
+        <Row gutter={[20, 20]}>
           {accessMethods.map((method, index) => (
             <Col xs={24} sm={12} key={index}>
               <Card
                 hoverable
-                style={{ height: '100%' }}
+                className="hover-card"
+                style={{ height: '100%', borderRadius: 16, border: '1px solid #e2e8f0' }}
                 styles={{
                   body: { padding: 28 },
                 }}
@@ -75,29 +72,30 @@ const AccessSection: React.FC = () => {
                   {method.icon}
                   <Tag
                     color={method.tagColor}
-                    style={{ marginLeft: 12, fontSize: 13, padding: '2px 10px' }}
+                    style={{ marginLeft: 12, fontSize: 12, padding: '2px 10px', borderRadius: 6, fontWeight: 600 }}
                   >
                     {method.tag}
                   </Tag>
                 </div>
-                <Title level={4} style={{ marginBottom: 8 }}>
+                <Title level={4} style={{ marginBottom: 8, fontWeight: 700 }}>
                   {method.title}
                 </Title>
-                <Paragraph style={{ color: '#555', marginBottom: 16 }}>
+                <Paragraph style={{ color: '#64748b', marginBottom: 16, fontSize: 14 }}>
                   {method.description}
                 </Paragraph>
                 <div
                   style={{
-                    background: '#f6f8fa',
-                    borderRadius: 6,
-                    padding: '10px 14px',
-                    fontFamily: 'monospace',
+                    background: '#f1f5f9',
+                    borderRadius: 10,
+                    padding: '12px 16px',
+                    fontFamily: "'JetBrains Mono', 'SF Mono', monospace",
                     fontSize: 13,
                     marginBottom: 12,
                     overflow: 'auto',
+                    border: '1px solid #e2e8f0',
                   }}
                 >
-                  <Text code style={{ border: 'none', background: 'transparent' }}>
+                  <Text code style={{ border: 'none', background: 'transparent', color: '#4f46e5' }}>
                     {method.install}
                   </Text>
                 </div>
@@ -109,14 +107,16 @@ const AccessSection: React.FC = () => {
           ))}
         </Row>
 
-        <div style={{ marginTop: 48 }}>
+        <div style={{ marginTop: 40 }}>
           <Card
             style={{
-              background: 'linear-gradient(135deg, #f0f5ff 0%, #f9f0ff 100%)',
-              border: '1px solid #d6e4ff',
+              background: 'linear-gradient(135deg, #eef2ff 0%, #faf5ff 50%, #ecfeff 100%)',
+              border: '1px solid #c7d2fe',
+              borderRadius: 16,
             }}
+            styles={{ body: { padding: 32 } }}
           >
-            <Title level={4} style={{ marginBottom: 16 }}>
+            <Title level={4} style={{ marginBottom: 24, fontWeight: 700 }}>
               💡 Skills + MCP 组合使用效果最佳
             </Title>
             <Steps
@@ -126,17 +126,17 @@ const AccessSection: React.FC = () => {
                 {
                   title: 'Skills 提供知识',
                   description: '告诉 AI "如何做"：API 参考、代码示例、决策树',
-                  icon: <CheckCircleOutlined style={{ color: '#722ed1' }} />,
+                  icon: <CheckCircleOutlined style={{ color: '#7c3aed', fontSize: 20 }} />,
                 },
                 {
                   title: 'MCP 提供引擎',
                   description: '让 AI "执行"：21 个结构化 JSON 工具调用',
-                  icon: <CheckCircleOutlined style={{ color: '#1677ff' }} />,
+                  icon: <CheckCircleOutlined style={{ color: '#2563eb', fontSize: 20 }} />,
                 },
                 {
                   title: '两者配合',
                   description: '知识 + 执行 = 最佳 AI 版本操作体验',
-                  icon: <CheckCircleOutlined style={{ color: '#52c41a' }} />,
+                  icon: <CheckCircleOutlined style={{ color: '#059669', fontSize: 20 }} />,
                 },
               ]}
             />

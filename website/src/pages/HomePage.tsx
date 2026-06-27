@@ -5,6 +5,9 @@ import HeroSection from '../components/HeroSection'
 import FeaturesSection from '../components/FeaturesSection'
 import ArchitectureSection from '../components/ArchitectureSection'
 import AccessSection from '../components/AccessSection'
+import CasesSection from '../components/CasesSection'
+import TutorialsSection from '../components/TutorialsSection'
+import AiIntegrationSection from '../components/AiIntegrationSection'
 import QuickStartSection from '../components/QuickStartSection'
 
 const { Content } = Layout
@@ -18,6 +21,9 @@ const HomePage: React.FC = () => {
         <FeaturesSection />
         <ArchitectureSection />
         <AccessSection />
+        <CasesSection />
+        <TutorialsSection />
+        <AiIntegrationSection />
         <QuickStartSection />
       </Content>
       <SiteFooter />

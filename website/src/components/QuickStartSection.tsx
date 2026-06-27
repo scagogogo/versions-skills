@@ -1,7 +1,7 @@
 import { Typography, Tabs, Card, Row, Col } from 'antd'
 import { CodeOutlined, CodeSandboxOutlined } from '@ant-design/icons'
 
-const { Title, Paragraph, Text } = Typography
+const { Text } = Typography
 
 const sdkExamples = [
   {
@@ -88,11 +88,12 @@ const CodeBlock: React.FC<{ code: string }> = ({ code }) => (
       background: '#1e1e2e',
       color: '#cdd6f4',
       padding: 20,
-      borderRadius: 8,
+      borderRadius: 12,
       fontSize: 13,
-      lineHeight: 1.6,
+      lineHeight: 1.65,
       overflow: 'auto',
       margin: 0,
+      border: '1px solid #313244',
     }}
   >
     <code>{code}</code>
@@ -101,16 +102,12 @@ const CodeBlock: React.FC<{ code: string }> = ({ code }) => (
 
 const QuickStartSection: React.FC = () => {
   return (
-    <div id="quickstart" style={{ padding: '80px 48px', background: '#fafafa' }}>
+    <div id="quickstart" style={{ padding: '80px 32px', background: '#ffffff' }}>
       <div style={{ maxWidth: 1200, margin: '0 auto' }}>
-        <Title level={2} style={{ textAlign: 'center', marginBottom: 8 }}>
-          快速开始
-        </Title>
-        <Paragraph
-          style={{ textAlign: 'center', color: '#666', fontSize: 16, marginBottom: 48 }}
-        >
-          几行代码即可上手，覆盖版本号操作全场景
-        </Paragraph>
+        <div style={{ textAlign: 'center' }}>
+          <div className="section-title">快速开始</div>
+          <p className="section-subtitle">几行代码即可上手，覆盖版本号操作全场景</p>
+        </div>
 
         <Tabs
           defaultActiveKey="sdk"
@@ -120,18 +117,19 @@ const QuickStartSection: React.FC = () => {
             {
               key: 'sdk',
               label: (
-                <span>
+                <span style={{ fontWeight: 600 }}>
                   <CodeOutlined /> Go SDK
                 </span>
               ),
               children: (
-                <Row gutter={[24, 24]}>
+                <Row gutter={[20, 20]}>
                   {sdkExamples.map((example, index) => (
                     <Col xs={24} md={12} key={index}>
                       <Card
                         title={example.title}
                         size="small"
-                        styles={{ header: { fontWeight: 600 } }}
+                        style={{ borderRadius: 12, border: '1px solid #e2e8f0' }}
+                        styles={{ header: { fontWeight: 700, fontSize: 15 } }}
                       >
                         <CodeBlock code={example.code} />
                       </Card>
@@ -143,18 +141,19 @@ const QuickStartSection: React.FC = () => {
             {
               key: 'cli',
               label: (
-                <span>
+                <span style={{ fontWeight: 600 }}>
                   <CodeSandboxOutlined /> CLI
                 </span>
               ),
               children: (
-                <Row gutter={[24, 24]}>
+                <Row gutter={[20, 20]}>
                   {cliExamples.map((example, index) => (
                     <Col xs={24} md={12} key={index}>
                       <Card
                         title={example.title}
                         size="small"
-                        styles={{ header: { fontWeight: 600 } }}
+                        style={{ borderRadius: 12, border: '1px solid #e2e8f0' }}
+                        styles={{ header: { fontWeight: 700, fontSize: 15 } }}
                       >
                         <CodeBlock code={example.code} />
                       </Card>
@@ -173,7 +172,7 @@ const QuickStartSection: React.FC = () => {
               href="https://github.com/scagogogo/versions-skills#readme"
               target="_blank"
               rel="noopener noreferrer"
-              style={{ color: '#1677ff' }}
+              style={{ color: '#4f46e5', fontWeight: 600 }}
             >
               GitHub README
             </a>{' '}
@@ -182,7 +181,7 @@ const QuickStartSection: React.FC = () => {
               href="https://pkg.go.dev/github.com/scagogogo/versions-skills"
               target="_blank"
               rel="noopener noreferrer"
-              style={{ color: '#1677ff' }}
+              style={{ color: '#4f46e5', fontWeight: 600 }}
             >
               Go Doc
             </a>

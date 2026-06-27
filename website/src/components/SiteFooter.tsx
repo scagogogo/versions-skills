@@ -1,5 +1,5 @@
 import { Layout } from 'antd'
-import { GithubOutlined } from '@ant-design/icons'
+import { GithubOutlined, BookOutlined, SendOutlined } from '@ant-design/icons'
 
 const { Footer } = Layout
 
@@ -8,46 +8,50 @@ const SiteFooter: React.FC = () => {
     <Footer
       style={{
         textAlign: 'center',
-        background: '#001529',
-        color: 'rgba(255,255,255,0.65)',
-        padding: '24px 48px',
+        background: '#0f172a',
+        color: 'rgba(255,255,255,0.6)',
+        padding: '32px 48px',
       }}
     >
-      <div style={{ marginBottom: 8 }}>
+      <div style={{ display: 'flex', justifyContent: 'center', gap: 32, marginBottom: 20, flexWrap: 'wrap' }}>
         <a
           href="https://github.com/scagogogo/versions-skills"
           target="_blank"
           rel="noopener noreferrer"
-          style={{ color: 'rgba(255,255,255,0.65)', marginRight: 16 }}
+          style={{ color: 'rgba(255,255,255,0.7)', display: 'flex', alignItems: 'center', gap: 8, transition: 'color 0.2s' }}
+          onMouseEnter={(e) => (e.currentTarget.style.color = '#818cf8')}
+          onMouseLeave={(e) => (e.currentTarget.style.color = 'rgba(255,255,255,0.7)')}
         >
           <GithubOutlined style={{ fontSize: 18 }} /> GitHub
         </a>
-        <span style={{ margin: '0 8px' }}>|</span>
         <a
           href="https://pkg.go.dev/github.com/scagogogo/versions-skills"
           target="_blank"
           rel="noopener noreferrer"
-          style={{ color: 'rgba(255,255,255,0.65)', marginRight: 16 }}
+          style={{ color: 'rgba(255,255,255,0.7)', display: 'flex', alignItems: 'center', gap: 8, transition: 'color 0.2s' }}
+          onMouseEnter={(e) => (e.currentTarget.style.color = '#818cf8')}
+          onMouseLeave={(e) => (e.currentTarget.style.color = 'rgba(255,255,255,0.7)')}
         >
-          Go Doc
+          <BookOutlined style={{ fontSize: 18 }} /> Go Doc
         </a>
-        <span style={{ margin: '0 8px' }}>|</span>
         <a
           href="https://github.com/scagogogo/versions-skills/releases/latest"
           target="_blank"
           rel="noopener noreferrer"
-          style={{ color: 'rgba(255,255,255,0.65)' }}
+          style={{ color: 'rgba(255,255,255,0.7)', display: 'flex', alignItems: 'center', gap: 8, transition: 'color 0.2s' }}
+          onMouseEnter={(e) => (e.currentTarget.style.color = '#818cf8')}
+          onMouseLeave={(e) => (e.currentTarget.style.color = 'rgba(255,255,255,0.7)')}
         >
-          Releases
+          <SendOutlined style={{ fontSize: 18 }} /> Releases
         </a>
       </div>
-      <div>
+      <div style={{ fontSize: 14 }}>
         Versions-Skills ©{new Date().getFullYear()} — MIT License — Built with ❤️ by{' '}
         <a
           href="https://github.com/scagogogo"
           target="_blank"
           rel="noopener noreferrer"
-          style={{ color: '#1677ff' }}
+          style={{ color: '#818cf8', transition: 'color 0.2s' }}
         >
           scagogogo
         </a>
