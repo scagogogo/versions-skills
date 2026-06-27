@@ -20,11 +20,9 @@ v1.Diff(v2).IsUpgrade() // true`,
     title: '排序与分组',
     code: `list := versions.NewVersions("2.0.0", "1.0.0", "1.10.0", "1.5.0-beta")
 
-// Sort
 sorted := versions.SortVersionSlice(list)
 // → [1.0.0, 1.5.0-beta, 1.10.0, 2.0.0]
 
-// Group by major version
 groups := versions.GroupByMajor(list)
 // → {1: [1.0.0, 1.5.0-beta, 1.10.0], 2: [2.0.0]}`,
   },
@@ -32,14 +30,11 @@ groups := versions.GroupByMajor(list)
     title: '约束检查',
     code: `v := versions.NewVersion("1.5.0")
 
-// Check single constraint
 c, _ := versions.ParseConstraint(">=1.0.0")
 v.Satisfies(c)  // true
 
-// Check constraint expression
 ok, _ := v.Matches(">=1.0.0,<2.0.0")  // true
 
-// Negate a constraint
 neg := versions.NegateConstraint(c)  // <1.0.0`,
   },
   {
@@ -85,15 +80,14 @@ versions satisfies 1.5.0 ">=1.0.0,<2.0.0"`,
 const CodeBlock: React.FC<{ code: string }> = ({ code }) => (
   <pre
     style={{
-      background: '#1e1e2e',
-      color: '#cdd6f4',
-      padding: 20,
-      borderRadius: 12,
-      fontSize: 13,
-      lineHeight: 1.65,
+      background: '#1e293b',
+      color: '#e2e8f0',
+      padding: 14,
+      borderRadius: 4,
+      fontSize: 12,
+      lineHeight: 1.55,
       overflow: 'auto',
       margin: 0,
-      border: '1px solid #313244',
     }}
   >
     <code>{code}</code>
@@ -102,8 +96,8 @@ const CodeBlock: React.FC<{ code: string }> = ({ code }) => (
 
 const QuickStartSection: React.FC = () => {
   return (
-    <div id="quickstart" style={{ padding: '80px 32px', background: '#ffffff' }}>
-      <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+    <div id="quickstart" style={{ padding: '64px 24px', background: '#f8fafc' }}>
+      <div style={{ maxWidth: 1120, margin: '0 auto' }}>
         <div style={{ textAlign: 'center' }}>
           <div className="section-title">快速开始</div>
           <p className="section-subtitle">几行代码即可上手，覆盖版本号操作全场景</p>
@@ -116,20 +110,16 @@ const QuickStartSection: React.FC = () => {
           items={[
             {
               key: 'sdk',
-              label: (
-                <span style={{ fontWeight: 600 }}>
-                  <CodeOutlined /> Go SDK
-                </span>
-              ),
+              label: <span style={{ fontWeight: 600 }}><CodeOutlined /> Go SDK</span>,
               children: (
-                <Row gutter={[20, 20]}>
+                <Row gutter={[16, 16]}>
                   {sdkExamples.map((example, index) => (
                     <Col xs={24} md={12} key={index}>
                       <Card
                         title={example.title}
                         size="small"
-                        style={{ borderRadius: 12, border: '1px solid #e2e8f0' }}
-                        styles={{ header: { fontWeight: 700, fontSize: 15 } }}
+                        style={{ borderRadius: 4, border: '1px solid #e2e8f0' }}
+                        styles={{ header: { fontWeight: 600, fontSize: 14 } }}
                       >
                         <CodeBlock code={example.code} />
                       </Card>
@@ -140,20 +130,16 @@ const QuickStartSection: React.FC = () => {
             },
             {
               key: 'cli',
-              label: (
-                <span style={{ fontWeight: 600 }}>
-                  <CodeSandboxOutlined /> CLI
-                </span>
-              ),
+              label: <span style={{ fontWeight: 600 }}><CodeSandboxOutlined /> CLI</span>,
               children: (
-                <Row gutter={[20, 20]}>
+                <Row gutter={[16, 16]}>
                   {cliExamples.map((example, index) => (
                     <Col xs={24} md={12} key={index}>
                       <Card
                         title={example.title}
                         size="small"
-                        style={{ borderRadius: 12, border: '1px solid #e2e8f0' }}
-                        styles={{ header: { fontWeight: 700, fontSize: 15 } }}
+                        style={{ borderRadius: 4, border: '1px solid #e2e8f0' }}
+                        styles={{ header: { fontWeight: 600, fontSize: 14 } }}
                       >
                         <CodeBlock code={example.code} />
                       </Card>
@@ -165,24 +151,14 @@ const QuickStartSection: React.FC = () => {
           ]}
         />
 
-        <div style={{ textAlign: 'center', marginTop: 32 }}>
-          <Text type="secondary" style={{ fontSize: 15 }}>
-            更多用法请参考{' '}
-            <a
-              href="https://github.com/scagogogo/versions-skills#readme"
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{ color: '#4f46e5', fontWeight: 600 }}
-            >
+        <div style={{ textAlign: 'center', marginTop: 24 }}>
+          <Text type="secondary" style={{ fontSize: 14 }}>
+            更多用法参考{' '}
+            <a href="https://github.com/scagogogo/versions-skills#readme" target="_blank" rel="noopener noreferrer" style={{ color: '#2563eb', fontWeight: 600 }}>
               GitHub README
             </a>{' '}
             和{' '}
-            <a
-              href="https://pkg.go.dev/github.com/scagogogo/versions-skills"
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{ color: '#4f46e5', fontWeight: 600 }}
-            >
+            <a href="https://pkg.go.dev/github.com/scagogogo/versions-skills" target="_blank" rel="noopener noreferrer" style={{ color: '#2563eb', fontWeight: 600 }}>
               Go Doc
             </a>
           </Text>

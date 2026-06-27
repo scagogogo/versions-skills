@@ -11,10 +11,10 @@ createRoot(document.getElementById('root')!).render(
       locale={zhCN}
       theme={{
         token: {
-          colorPrimary: '#4f46e5',
-          borderRadius: 12,
+          colorPrimary: '#2563eb',
+          borderRadius: 4,
           fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-          fontSize: 15,
+          fontSize: 14,
         },
       }}
     >

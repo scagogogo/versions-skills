@@ -1,4 +1,4 @@
-import { Layout, Menu, Button, Space, Drawer } from 'antd'
+import { Layout, Menu, Button, Drawer } from 'antd'
 import { GithubOutlined, MenuOutlined } from '@ant-design/icons'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useState } from 'react'
@@ -7,10 +7,9 @@ const { Header } = Layout
 
 const navItems = [
   { key: '/', label: '首页' },
-  { key: '/#features', label: '功能特性' },
-  { key: '/#architecture', label: '架构' },
+  { key: '/#features', label: '功能' },
   { key: '/#access', label: '接入方式' },
-  { key: '/#cases', label: '使用案例' },
+  { key: '/#cases', label: '案例' },
   { key: '/#tutorials', label: '教程' },
   { key: '/#ai-integration', label: 'AI 集成' },
   { key: '/#quickstart', label: '快速开始' },
@@ -28,9 +27,7 @@ const SiteHeader: React.FC = () => {
       const id = key.slice(2)
       if (location.pathname !== '/') {
         navigate('/')
-        setTimeout(() => {
-          document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
-        }, 100)
+        setTimeout(() => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' }), 100)
       } else {
         document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
       }
@@ -46,67 +43,55 @@ const SiteHeader: React.FC = () => {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          background: 'rgba(255,255,255,0.92)',
-          backdropFilter: 'blur(12px)',
+          background: '#fff',
           borderBottom: '1px solid #e2e8f0',
-          padding: '0 32px',
+          padding: '0 24px',
           position: 'sticky',
           top: 0,
           zIndex: 100,
-          height: 64,
+          height: 56,
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center' }}>
+        <div style={{ display: 'flex', alignItems: 'center', flex: 1, minWidth: 0 }}>
           <div
             style={{
-              fontSize: 20,
-              fontWeight: 800,
-              marginRight: 32,
+              fontSize: 17,
+              fontWeight: 700,
+              marginRight: 24,
               cursor: 'pointer',
-              color: '#4f46e5',
+              color: '#2563eb',
               letterSpacing: '-0.02em',
               flexShrink: 0,
             }}
             onClick={() => navigate('/')}
           >
-            🔄 Versions
+            Versions-Skills
           </div>
           <Menu
             mode="horizontal"
             selectedKeys={[location.pathname]}
             items={navItems}
             onClick={handleMenuClick}
-            style={{
-              border: 'none',
-              flex: 1,
-              fontWeight: 500,
-              display: 'none',
-            }}
-            className="desktop-menu"
+            style={{ border: 'none', fontWeight: 500, fontSize: 14 }}
+            className="desktop-nav"
           />
         </div>
-        <Space>
-          <Button
-            type="primary"
-            href="https://github.com/scagogogo/versions-skills"
-            target="_blank"
-            icon={<GithubOutlined />}
-            style={{
-              fontWeight: 600,
-              borderRadius: 10,
-              height: 40,
-            }}
-          >
-            GitHub
-          </Button>
-          <Button
-            type="text"
-            icon={<MenuOutlined />}
-            onClick={() => setDrawerOpen(true)}
-            className="mobile-menu-btn"
-            style={{ display: 'none' }}
-          />
-        </Space>
+        <Button
+          type="default"
+          href="https://github.com/scagogogo/versions-skills"
+          target="_blank"
+          icon={<GithubOutlined />}
+          style={{ fontWeight: 600, fontSize: 14, borderRadius: 4 }}
+        >
+          GitHub
+        </Button>
+        <Button
+          type="text"
+          icon={<MenuOutlined />}
+          onClick={() => setDrawerOpen(true)}
+          style={{ display: 'none', marginLeft: 8 }}
+          className="mobile-nav-btn"
+        />
       </Header>
 
       <Drawer
@@ -116,22 +101,12 @@ const SiteHeader: React.FC = () => {
         open={drawerOpen}
         width={260}
       >
-        <Menu
-          mode="vertical"
-          selectedKeys={[location.pathname]}
-          items={navItems}
-          onClick={handleMenuClick}
-          style={{ border: 'none' }}
-        />
+        <Menu mode="vertical" selectedKeys={[location.pathname]} items={navItems} onClick={handleMenuClick} style={{ border: 'none' }} />
       </Drawer>
 
       <style>{`
-        @media (min-width: 900px) {
-          .desktop-menu { display: flex !important; }
-        }
-        @media (max-width: 899px) {
-          .mobile-menu-btn { display: inline-flex !important; }
-        }
+        @media (min-width: 900px) { .desktop-nav { display: flex !important; } }
+        @media (max-width: 899px) { .mobile-nav-btn { display: inline-flex !important; } .desktop-nav { display: none !important; } }
       `}</style>
     </>
   )
