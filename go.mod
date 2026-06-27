@@ -6,7 +6,7 @@ require (
 	github.com/golang-infrastructure/go-compare-anything v0.0.2-0.20230108071748-35501d697475
 	github.com/golang-infrastructure/go-shuffle v0.0.2
 	github.com/golang-infrastructure/go-tuple v0.0.0-20221215155811-4ed54fe7d579
-	github.com/mark3labs/mcp-go v0.55.0
+	github.com/mark3labs/mcp-go v0.55.1
 	github.com/spf13/cobra v1.10.2
 	github.com/stretchr/testify v1.11.1
 )
