@@ -27,3 +27,7 @@ go.work.sum
 # Legacy local dirs
 test
 test2
+
+# Website
+website/node_modules/
+website/dist/
