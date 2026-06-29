@@ -1,99 +1,81 @@
 #!/usr/bin/env python3
 """
-Generate a data flow diagram showing how version strings flow through
-the library's processing pipeline.
+Generate a flat-style data flow diagram.
+Color palette: blue-gray, no purple, square corners.
 """
 
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from matplotlib.patches import FancyBboxPatch
-import numpy as np
 
-fig, ax = plt.subplots(figsize=(20, 7))
-ax.set_xlim(0, 20)
-ax.set_ylim(0, 7)
+# ─── Data ───
+stages = [
+    ("INPUT",   ["Raw String", "File", "Reader", "Constraint Expr"], "#0f172a"),
+    ("PARSE",   ["NewVersion()", "MustParse()", "Coerce()", "ParseConstraint()"], "#2563eb"),
+    ("PROCESS", ["CompareTo", "Sort", "Group", "Filter", "Satisfies"], "#16a34a"),
+    ("QUERY",   ["Range Search", "Set Ops", "Type Check", "Latest Stable"], "#0891b2"),
+    ("OUTPUT",  ["Version Obj", "Sorted Slice", "Group Map", "Bool / Int"], "#ea580c"),
+]
+
+# ─── Drawing ───
+fig, ax = plt.subplots(figsize=(22, 8))
+ax.set_xlim(0, 22)
+ax.set_ylim(0, 8)
 ax.axis("off")
 fig.patch.set_facecolor("white")
 
-stages = [
-    {
-        "x": 2.0, "y": 3.5, "w": 2.6, "h": 2.0,
-        "color": "#3b82f6", "title": "INPUT",
-        "items": ["Version String", "File", "CLI Args", "MCP Request"],
-    },
-    {
-        "x": 5.6, "y": 3.5, "w": 2.6, "h": 2.0,
-        "color": "#8b5cf6", "title": "PARSE",
-        "items": ["NewVersion()", "Coerce()", "MustParse()", "Validate()"],
-    },
-    {
-        "x": 9.2, "y": 3.5, "w": 2.6, "h": 2.0,
-        "color": "#10b981", "title": "PROCESS",
-        "items": ["Compare / Sort", "Group / Filter", "Constraint Check", "Range Query"],
-    },
-    {
-        "x": 12.8, "y": 3.5, "w": 2.6, "h": 2.0,
-        "color": "#f59e0b", "title": "TRANSFORM",
-        "items": ["Bump / With*", "Build", "Negate", "Set Operations"],
-    },
-    {
-        "x": 16.4, "y": 3.5, "w": 2.6, "h": 2.0,
-        "color": "#ef4444", "title": "OUTPUT",
-        "items": ["Structured Result", "Visualization", "File Write", "JSON Response"],
-    },
-]
-
-for stage in stages:
-    box = FancyBboxPatch(
-        (stage["x"] - stage["w"]/2, stage["y"] - stage["h"]/2),
-        stage["w"], stage["h"],
-        boxstyle="round,pad=0.12", facecolor=stage["color"],
-        edgecolor="white", lw=2, alpha=0.9, zorder=4
-    )
-    ax.add_patch(box)
-
-    ax.text(stage["x"], stage["y"] + stage["h"]/2 - 0.3, stage["title"],
-            ha="center", va="center", fontsize=11, fontweight="bold",
-            color="white", zorder=5, family="monospace")
-
-    for i, item in enumerate(stage["items"]):
-        ax.text(stage["x"], stage["y"] + 0.3 - i * 0.38, item,
-                ha="center", va="center", fontsize=8.5, color="white",
-                alpha=0.9, zorder=5, family="monospace")
-
-# Arrows between stages
-for i in range(len(stages) - 1):
-    x_from = stages[i]["x"] + stages[i]["w"]/2
-    x_to = stages[i+1]["x"] - stages[i+1]["w"]/2
-    ax.annotate(
-        "", xy=(x_to, stages[i]["y"]), xytext=(x_from, stages[i]["y"]),
-        arrowprops=dict(arrowstyle="-|>", color="#94a3b8", lw=2.5),
-        zorder=3
-    )
-
-# Version object description
-ax.text(10, 1.2, "Version{Raw, Prefix, VersionNumbers, Suffix, Metadata, PublicTime}",
-        ha="center", va="center", fontsize=9, color="#64748b",
-        style="italic", family="monospace",
-        bbox=dict(boxstyle="round,pad=0.3", facecolor="#f1f5f9", edgecolor="#cbd5e1"))
-
-ax.annotate("", xy=(5.6, 2.5), xytext=(4.5, 2.5),
-            arrowprops=dict(arrowstyle="-|>", color="#8b5cf6", lw=1.5, ls="--"))
-ax.annotate("", xy=(14.5, 2.5), xytext=(13.5, 2.5),
-            arrowprops=dict(arrowstyle="-|>", color="#f59e0b", lw=1.5, ls="--"))
-
-ax.text(5.0, 2.1, "Version Object", ha="center", va="center", fontsize=7.5,
-        color="#8b5cf6", style="italic")
-ax.text(14.0, 2.1, "Version Object", ha="center", va="center", fontsize=7.5,
-        color="#f59e0b", style="italic")
-
 # Title
-ax.text(10, 6.3, "versions-skills  --  Data Flow Pipeline", ha="center", va="center",
-        fontsize=18, fontweight="bold", color="#1e293b", family="monospace")
+ax.text(11, 7.5, "Data Flow", ha="center", va="center", fontsize=20, fontweight="bold", color="#0f172a")
+ax.text(11, 7.0, "5-stage pipeline: Input → Parse → Process → Query → Output", ha="center", va="center", fontsize=10, color="#64748b")
+
+stage_w = 3.6
+stage_h = 5.0
+gap = 0.45
+start_x = 0.6
+start_y = 1.2
+
+for idx, (stage_name, items, color) in enumerate(stages):
+    x = start_x + idx * (stage_w + gap)
+    y = start_y
+
+    # Stage background
+    bg = FancyBboxPatch((x, y), stage_w, stage_h,
+        boxstyle="square,pad=0.04", facecolor=color, edgecolor=color, lw=1.5, alpha=0.06, zorder=1)
+    ax.add_patch(bg)
+
+    # Stage header
+    header = FancyBboxPatch((x, y + stage_h - 0.65), stage_w, 0.65,
+        boxstyle="square,pad=0", facecolor=color, edgecolor="none", lw=0, alpha=0.92, zorder=2)
+    ax.add_patch(header)
+    ax.text(x + stage_w / 2, y + stage_h - 0.325, stage_name, ha="center", va="center",
+        fontsize=11, fontweight="bold", color="white", zorder=3)
+
+    # Items
+    n = len(items)
+    item_h = 0.42
+    item_gap = 0.12
+    item_start_y = y + stage_h - 0.65 - 0.25 - item_h
+
+    for i, item in enumerate(items):
+        iy = item_start_y - i * (item_h + item_gap)
+        ix = x + 0.2
+        iw = stage_w - 0.4
+        item_box = FancyBboxPatch((ix, iy), iw, item_h,
+            boxstyle="square,pad=0.02", facecolor="white", edgecolor=color, lw=1, zorder=4)
+        ax.add_patch(item_box)
+        ax.text(ix + iw / 2, iy + item_h / 2, item, ha="center", va="center",
+            fontsize=8.5, color="#334155", zorder=5, family="monospace")
+
+    # Arrow to next stage
+    if idx < len(stages) - 1:
+        arrow_x_start = x + stage_w + 0.02
+        arrow_x_end = x + stage_w + gap - 0.02
+        arrow_y = y + stage_h / 2
+        ax.annotate("", xy=(arrow_x_end, arrow_y), xytext=(arrow_x_start, arrow_y),
+            arrowprops=dict(arrowstyle="->", color="#94a3b8", lw=2), zorder=6)
 
 plt.tight_layout()
-plt.savefig("/home/cc11001100/github/scagogogo/versions-skills/docs/images/data-flow.png",
-            dpi=150, bbox_inches="tight", facecolor="white")
+plt.savefig("/home/cc11001100/github/scagogogo/versions-skills/docs/images/data-flow.png", dpi=150, bbox_inches="tight", facecolor="white")
 plt.close()
 print("data-flow.png saved")

@@ -1,110 +1,96 @@
 #!/usr/bin/env python3
 """
-Generate a diagram showing the 4 access methods (Skills, CLI, SDK, MCP)
-and their relationship to the core capabilities.
+Generate a flat-style access methods hub-spoke diagram — refined.
+Color palette: blue-gray, no purple, square corners, generous card spacing.
 """
 
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from matplotlib.patches import FancyBboxPatch
-import numpy as np
+import math
 
-fig, ax = plt.subplots(figsize=(16, 12))
-ax.set_xlim(0, 16)
-ax.set_ylim(0, 12)
+# ─── Data ───
+center_label = "versions-skills"
+methods = [
+    ("Skills", "13 Claude Code Skills", "SKILL.md files", "Auto-discovered by AI", "#2563eb"),
+    ("MCP Server", "Model Context Protocol", "SSE transport layer", "Tool-based access", "#0ea5e9"),
+    ("Go SDK", "Go package import", "Type-safe full API", "Composable functions", "#16a34a"),
+    ("CLI", "Cobra binary", "Shell / CI/CD ready", "Pipe-friendly I/O", "#ea580c"),
+]
+
+# ─── Drawing ───
+fig, ax = plt.subplots(figsize=(16, 14))
+ax.set_xlim(-8, 8)
+ax.set_ylim(-9, 9)
 ax.axis("off")
 fig.patch.set_facecolor("white")
-
-# Central hub
-cx, cy = 8, 6
-hub = plt.Circle((cx, cy), 1.8, facecolor="#1e293b", edgecolor="#0f172a", lw=3, zorder=5)
-ax.add_patch(hub)
-ax.text(cx, cy + 0.4, "versions-skills", ha="center", va="center",
-        fontsize=13, fontweight="bold", color="white", zorder=6, family="monospace")
-ax.text(cx, cy - 0.3, "Core Library", ha="center", va="center",
-        fontsize=10, color="#94a3b8", zorder=6)
-
-# 4 Access methods
-access_methods = [
-    {
-        "x": 3.5, "y": 10, "color": "#8b5cf6", "edge": "#6d28d9",
-        "title": "SKILLS",
-        "desc": "Claude Code Plugin",
-        "detail": "13 SKILL.md files\nslash commands\ndomain knowledge",
-    },
-    {
-        "x": 12.5, "y": 10, "color": "#3b82f6", "edge": "#1d4ed8",
-        "title": "MCP SERVER",
-        "desc": "AI Agent Protocol",
-        "detail": "21 version_* tools\nJSON responses\nany MCP client",
-    },
-    {
-        "x": 3.5, "y": 2, "color": "#10b981", "edge": "#059669",
-        "title": "CLI",
-        "desc": "Shell & CI/CD",
-        "detail": "25+ commands\npipeline friendly\ncross-platform",
-    },
-    {
-        "x": 12.5, "y": 2, "color": "#f59e0b", "edge": "#d97706",
-        "title": "Go SDK",
-        "desc": "Go Programs",
-        "detail": "Full API\ntype-safe\nzero dependencies",
-    },
-]
-
-for am in access_methods:
-    w, h = 4.0, 2.8
-    card = FancyBboxPatch(
-        (am["x"] - w/2, am["y"] - h/2), w, h,
-        boxstyle="round,pad=0.15", facecolor=am["color"],
-        edgecolor=am["edge"], lw=2, alpha=0.9, zorder=4
-    )
-    ax.add_patch(card)
-
-    ax.text(am["x"], am["y"] + 0.85, am["title"], ha="center", va="center",
-            fontsize=14, fontweight="bold", color="white", zorder=5, family="monospace")
-    ax.text(am["x"], am["y"] + 0.3, am["desc"], ha="center", va="center",
-            fontsize=9, color="white", alpha=0.8, zorder=5)
-    ax.text(am["x"], am["y"] - 0.55, am["detail"], ha="center", va="center",
-            fontsize=8, color="white", alpha=0.75, zorder=5, linespacing=1.3)
-
-    # Connection line to center
-    ax.annotate(
-        "", xy=(cx, cy), xytext=(am["x"], am["y"]),
-        arrowprops=dict(arrowstyle="-|>", color=am["color"], lw=2.5,
-                        alpha=0.5, connectionstyle="arc3,rad=0"),
-        zorder=2
-    )
-
-# Capabilities ring
-capabilities = [
-    "Parse", "Compare", "Sort", "Filter", "Group",
-    "Constraint", "Range", "Check", "Mutate", "Build",
-    "File I/O", "Visualize", "Serialize", "Set Ops",
-]
-
-n = len(capabilities)
-radius = 3.5
-for i, cap in enumerate(capabilities):
-    angle = 2 * np.pi * i / n - np.pi / 2
-    x = cx + radius * np.cos(angle)
-    y = cy + radius * np.sin(angle)
-
-    dot = plt.Circle((x, y), 0.35, facecolor="#f1f5f9", edgecolor="#94a3b8",
-                      lw=1.5, zorder=3)
-    ax.add_patch(dot)
-    ax.text(x, y, cap, ha="center", va="center", fontsize=7,
-            fontweight="bold", color="#475569", zorder=4)
-
-    ax.plot([cx, x], [cy, y], color="#e2e8f0", lw=1, zorder=1)
+ax.set_aspect("equal")
 
 # Title
-ax.text(8, 11.5, "versions-skills  --  Access Methods & Capabilities", ha="center",
-        va="center", fontsize=18, fontweight="bold", color="#1e293b", family="monospace")
+ax.text(0, 8.3, "Access Methods", ha="center", va="center", fontsize=22, fontweight="bold", color="#0f172a")
+ax.text(0, 7.6, "4 ways to integrate versions-skills into your workflow", ha="center", va="center", fontsize=11, color="#64748b")
+
+# Center hub
+center_w, center_h = 3.4, 1.1
+hub = FancyBboxPatch((-center_w / 2, -center_h / 2), center_w, center_h,
+    boxstyle="square,pad=0.04", facecolor="#0f172a", edgecolor="#0f172a", lw=1.5, zorder=5)
+ax.add_patch(hub)
+ax.text(0, 0, center_label, ha="center", va="center", fontsize=13, fontweight="bold", color="white", zorder=6, family="monospace")
+
+# Spoke cards — spread with more space
+radius = 5.2
+card_w = 4.0
+card_h = 3.2
+angles = [90, 0, 270, 180]  # top, right, bottom, left
+
+for i, (label, line1, line2, line3, color) in enumerate(methods):
+    angle_rad = math.radians(angles[i])
+    cx = radius * math.cos(angle_rad)
+    cy = radius * math.sin(angle_rad)
+
+    # Connection line (Manhattan style)
+    if angles[i] == 90:  # top
+        ax.plot([0, 0], [0.55, cy - card_h / 2 + 0.05], color=color, lw=2.5, alpha=0.35, zorder=2)
+    elif angles[i] == 0:  # right
+        ax.plot([0.0, cx - card_w / 2 + 0.05], [0, 0], color=color, lw=2.5, alpha=0.35, zorder=2)
+    elif angles[i] == 270:  # bottom
+        ax.plot([0, 0], [-0.55, cy + card_h / 2 - 0.05], color=color, lw=2.5, alpha=0.35, zorder=2)
+    elif angles[i] == 180:  # left
+        ax.plot([0.0, cx + card_w / 2 - 0.05], [0, 0], color=color, lw=2.5, alpha=0.35, zorder=2)
+
+    # Card background
+    card_bg = FancyBboxPatch((cx - card_w / 2, cy - card_h / 2), card_w, card_h,
+        boxstyle="square,pad=0.05", facecolor=color, edgecolor=color, lw=1.5, alpha=0.06, zorder=3)
+    ax.add_patch(card_bg)
+
+    # Card border
+    card_border = FancyBboxPatch((cx - card_w / 2, cy - card_h / 2), card_w, card_h,
+        boxstyle="square,pad=0.05", facecolor="none", edgecolor=color, lw=1.5, zorder=4)
+    ax.add_patch(card_border)
+
+    # Card header
+    header_h = 0.6
+    header = FancyBboxPatch((cx - card_w / 2, cy + card_h / 2 - header_h), card_w, header_h,
+        boxstyle="square,pad=0", facecolor=color, edgecolor="none", lw=0, alpha=0.92, zorder=5)
+    ax.add_patch(header)
+    ax.text(cx, cy + card_h / 2 - header_h / 2, label, ha="center", va="center",
+        fontsize=12, fontweight="bold", color="white", zorder=6)
+
+    # Card description — one line per feature
+    desc_lines = [line1, line2, line3]
+    for j, line in enumerate(desc_lines):
+        ly = cy + card_h / 2 - header_h - 0.45 - j * 0.55
+        ax.text(cx, ly, line, ha="center", va="center", fontsize=10, color="#334155", zorder=6)
+
+# Combo note
+combo_box = FancyBboxPatch((-3.5, -8.2), 7.0, 0.6,
+    boxstyle="square,pad=0.04", facecolor="#2563eb", edgecolor="#2563eb", lw=0, alpha=0.08, zorder=3)
+ax.add_patch(combo_box)
+ax.text(0, -7.9, "Recommended: Skills + MCP = maximum AI agent integration", ha="center", va="center",
+    fontsize=10, fontweight="bold", color="#2563eb", zorder=4)
 
 plt.tight_layout()
-plt.savefig("/home/cc11001100/github/scagogogo/versions-skills/docs/images/access-methods.png",
-            dpi=150, bbox_inches="tight", facecolor="white")
+plt.savefig("/home/cc11001100/github/scagogogo/versions-skills/docs/images/access-methods.png", dpi=150, bbox_inches="tight", facecolor="white")
 plt.close()
 print("access-methods.png saved")
