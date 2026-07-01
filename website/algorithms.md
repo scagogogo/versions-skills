@@ -2,19 +2,41 @@
 
 本页记录 AI Agent（或人类）在不读源码的情况下预测库行为所需的精确语义。每条规则都可在对应源文件中验证。
 
+## 本页导览
+
+| # | 主题 | 核心问题 |
+|:--:|:--|:--|
+| 1 | [解析](#_1-解析-——-三段式-元数据) | 字符串如何拆成 Prefix / Numbers / Suffix / Metadata |
+| 2 | [比较](#_2-比较-——-四级优先级) | 两个版本谁更大，按什么顺序判定 |
+| 3 | [后缀权重](#_3-后缀权重排序) | alpha / beta / rc / 正式版如何排序 |
+| 4 | [约束语法](#_4-约束语法-——-三层) | `^` `~` `1.x` `\|\|` 如何展开成范围 |
+| 5 | [范围查询](#_5-范围查询-——-开-闭区间) | `[1.0.0, 2.0.0)` 这类区间如何判定 |
+| 6 | [排序与分组](#_6-排序与分组-——-两阶段、组感知) | 为何 `1.10.0` 能正确排在 `1.2.0` 后 |
+| 7 | [有序索引范围查询](#_7-有序索引上的范围查询) | 大列表反复查询如何加速 |
+| 8 | [不可变变更](#_8-不可变变更-——-builder-重建) | Bump / With 为何返回新对象 |
+| 9 | [文件 I/O](#_9-文件-i-o-——-行式格式) | 版本列表文件的格式与坑 |
+| 10 | [可视化](#_10-可视化-——-组感知文本树) | 文本树如何绘制版本层次 |
+| 11 | [ContainsPolicy](#_11-containspolicy-——-边界纳入策略) | 边界版本是否纳入结果 |
+
 ## 1. 解析 —— 三段式 + 元数据
 
 源文件：`parser.go`
 
 每个版本字符串被拆为四个字段：
 
-```
- v1.2.3-beta1+build.7
- │ └─┬─┘ └──┬──┘ └──┬──┘
- │  │      │       └─ Metadata    （semver 构建元数据，"+" 之后）
- │  │      └─ Suffix              （数字部分之后的全部内容）
- │  └─ VersionNumbers             （整数段，解析后统一以 "." 拼接）
- └─ Prefix                        （非数字前导，如 "v"、"release-"）
+| 字段 | 含义 | 示例值（对 `v1.2.3-beta1+build.7`） |
+|:--|:--|:--|
+| `Prefix` | 非数字前导，如 `"v"`、`"release-"` | `"v"` |
+| `VersionNumbers` | 整数段，解析后统一以 `.` 拼接 | `[1, 2, 3]` |
+| `Suffix` | 数字部分之后的全部内容 | `"-beta1"` |
+| `Metadata` | semver 构建元数据，`+` 之后 | `"build.7"` |
+
+字符串上四段的边界：
+
+```text
+ v   1.2.3   -beta1   +build.7
+ └─  └──┬──┘  └──┬──┘  └───┬───┘
+Prefix  Numbers   Suffix   Metadata
 ```
 
 :::mermaid
@@ -61,20 +83,21 @@ flowchart LR
 
 :::mermaid
 flowchart TD
-  START["a.CompareTo(b)"] --> N1{"比较 VersionNumbers<br/>逐位 int"}
-  N1 -->|"不等"| R1["返回结果 ✅"]
-  N1 -->|"相等"| S1{"后缀对比"}
-  S1 -->|"一空一非空<br/>稳定版 > 预发布"| R2["返回结果 ✅"]
-  S1 -->|"都非空<br/>按权重比"| W{"后缀权重<br/>+ 子版本号"}
-  W -->|"不等"| R3["返回结果 ✅"]
-  W -->|"相等"| T1{"PublicTime<br/>两者均非零?"}
-  T1 -->|"是 且不等"| R4["晚者胜 ✅"]
-  T1 -->|"否"| RAW["原始串字典序<br/>最终兜底 ✅"]
-  style R1 fill:#f0fdf4,stroke:#16a34a
-  style R2 fill:#f0fdf4,stroke:#16a34a
-  style R3 fill:#f0fdf4,stroke:#16a34a
-  style R4 fill:#f0fdf4,stroke:#16a34a
-  style RAW fill:#fef2f2,stroke:#dc2626
+  START["a.CompareTo(b)"] --> N1{"1️⃣ 比较 VersionNumbers<br/>逐位 int"}
+  N1 -->|"不等"| DONE1["返回 ✅"]
+  N1 -->|"相等"| S1{"2️⃣ 后缀对比"}
+  S1 -->|"一空一非空<br/>稳定版 > 预发布"| DONE2["返回 ✅"]
+  S1 -->|"都非空<br/>按权重比"| W{"3️⃣ 后缀权重<br/>+ 子版本号"}
+  W -->|"不等"| DONE3["返回 ✅"]
+  W -->|"相等"| T1{"4️⃣ PublicTime<br/>两者均非零?"}
+  T1 -->|"是 且不等"| DONE4["晚者胜 ✅"]
+  T1 -->|"否"| RAW["原始串字典序<br/>兜底"]
+  style START fill:#eff6ff,stroke:#2563eb
+  style DONE1 fill:#f0fdf4,stroke:#16a34a
+  style DONE2 fill:#f0fdf4,stroke:#16a34a
+  style DONE3 fill:#f0fdf4,stroke:#16a34a
+  style DONE4 fill:#f0fdf4,stroke:#16a34a
+  style RAW fill:#fefce8,stroke:#ca8a04
 :::
 
 | # | 键 | 规则 | 源文件 |
@@ -96,10 +119,11 @@ flowchart TD
 
 每个后缀（大小写不敏感，可有前导 `-`/`.`）与一张有序模式表匹配。命中的**权重**决定排名；若两者权重相同，再用尾部整数（"子版本号"，如 `-alpha1` 的 `1`）破平。
 
-| 权重 | 后缀模式（示例） | 含义 |
+| 权重 | 后缀模式（正则示例） | 含义 |
 |-------:|:--|:--|
+| 0 | 不匹配任何模式 | 未知后缀（见下方规则） |
 | 50 | `dev`、`dev1`、`.dev.2` | 开发构建 |
-| 60 | `snapshot`、`snapshot20201012…` | 快照 |
+| 60 | `snapshot`、`snapshot20201012` | 快照 |
 | 70 | `nightly` | 夜间构建 |
 | 100 | `a`、`alpha`、`alpha1`、`.alpha.2` | Alpha |
 | 200 | `b`、`beta`、`beta2` | Beta |
@@ -113,8 +137,10 @@ flowchart TD
 | 800 | `post`、`post1` | 后发布（PEP 440） |
 
 规则：
-- **未知后缀排在已知后缀之后**：不匹配任何模式的后缀，权重低于任何已知预发布类型；彼此之间退化为字典序。
+
+- **未知后缀权重为 0**：不匹配任何模式的后缀，权重 `SuffixWeightUnknown = 0`，低于任何已知预发布类型；彼此之间退化为字典序。所以一个拼写怪异的后缀会排在所有已知后缀之后。
 - `final`/`release`/`ga` 权重都是 500——排序上与无后缀等价，但 `IsStable()` 只在后缀**字面为空**时返回 true。`1.0.0-ga` 是正式权重，但按"空后缀"判稳定版时不算稳定。
+- 匹配对大小写不敏感：`-RC1` 与 `-rc1` 同权。
 
 ## 4. 约束语法 —— 三层
 
@@ -140,14 +166,17 @@ flowchart TD
 
 支持的操作符（比较一律走 `CompareTo`，因此后缀权重生效）：
 
-| 操作符 | 名称 | base | v 命中条件 |
+| 操作符 | 名称 | 示例 | `v` 命中条件 |
 |:--:|:--|:--|:--|
-| `=` | 等于 | `1.2.3` | `v == 1.2.3`（裸写即 `=`） |
-| `!=` | 不等 | `1.2.3` | `v != 1.2.3` |
-| `>` `<` `>=` `<=` | 范围比较 | `1.2.3` | 直接 `CompareTo` |
-| `^` | caret | `^1.2.3` | `v >= 1.2.3` 且 `v < {首个非零段+1, 0…}` |
-| `~` | tilde | `~1.2.3` | `v >= 1.2.3` 且 `v < {major, minor+1, 0…}` |
-| `x`/`X`/`*` | 通配 | `1.x` | `v >= 1.0.0` 且 `v < {末位非零+1, 0…}` |
+| `=` | 等于 | `=1.2.3` | `v == 1.2.3`（裸写 `1.2.3` 即 `=`） |
+| `!=` | 不等 | `!=1.2.3` | `v != 1.2.3` |
+| `>` | 大于 | `>1.2.3` | `v > 1.2.3` |
+| `<` | 小于 | `<2.0.0` | `v < 2.0.0` |
+| `>=` | 大于等于 | `>=1.0.0` | `v >= 1.0.0` |
+| `<=` | 小于等于 | `<=2.0.0` | `v <= 2.0.0` |
+| `^` | caret（兼容） | `^1.2.3` | `v >= 1.2.3` 且 `v < 2.0.0`（首个非零段进一作上界） |
+| `~` | tilde（锁 minor） | `~1.2.3` | `v >= 1.2.3` 且 `v < 1.3.0`（minor+1 作上界） |
+| `x`/`X`/`*` | 通配 | `1.x` | `v >= 1.0.0` 且 `v < 2.0.0`（末位非零进一） |
 
 ### 边界算法详解
 
@@ -177,17 +206,20 @@ flowchart TD
 
 源文件：`version_range.go`
 
-`VersionRange{Low, High, LowInclusive, HighInclusive}` 通过四步边界检查判定归属：
+`VersionRange` 由两个 `*Version` 端点（`Low` / `High`）和两个 `bool` 闭性标志（`LowInclusive` / `HighInclusive`）组成。`Contains(v)` 按四步边界检查判定归属：
 
-- `Low == nil` → 无下界；`High == nil` → 无上界。
-- 下界侧：`v < Low` 不通过；`v == Low && !LowInclusive` 不通过（开区间排除端点）。
-- 上界侧对称。
+1. **无界检测**：`Low == nil` → 无下界；`High == nil` → 无上界。两端皆 nil 则全包含。
+2. **下界检查**：`v < Low` → 不通过；`v == Low && !LowInclusive` → 不通过（开区间排除端点）。
+3. **上界检查**：与下界对称，`v > High` 或 `v == High && !HighInclusive` → 不通过。
+4. **通过**：两端都未拦下 → 命中。
+
+构造器：
 
 | 构造方式 | 区间 | 含义 |
 |:--|:--|:--|
-| `NewClosedRange(1.0.0, 2.0.0)` | `[1.0.0, 2.0.0]` | 两端都含 |
-| `NewOpenRange(1.0.0, 2.0.0)` | `(1.0.0, 2.0.0)` | 两端都不含 |
-| `NewVersionRange(1.0.0, 2.0.0, true, false)` | `[1.0.0, 2.0.0)` | 左含右不含 |
+| `NewClosedRange(low, high)` | `[low, high]` | 两端都含 |
+| `NewOpenRange(low, high)` | `(low, high)` | 两端都不含 |
+| `NewVersionRange(low, high, true, false)` | `[low, high)` | 左含右不含 |
 
 `IsEmpty()` 检测退化区间：`Low > High`，或 `Low == High` 但至少一端为开。
 
@@ -249,14 +281,14 @@ flowchart LR
 
 关键细节：
 
-1. **Bump 清除后缀**：`BumpMajor` / `BumpMinor` / `BumpPatch` 都通过 Builder 重建，**只设数字段**，不传 Suffix —— 所以 `1.2.3-beta1.BumpPatch()` 得到 `1.2.4`（后缀没了），不是 `1.2.4-beta1`。这符合"发布新版本时预发布标记应脱落"的语义。
+1. **Bump 清除后缀**：`BumpMajor` / `BumpMinor` / `BumpPatch` 都通过 Builder 重建，**只设数字段**，不传 Suffix —— 所以 `v := NewVersion("1.2.3-beta1"); v.BumpPatch()` 得到 `1.2.4`（后缀没了），不是 `1.2.4-beta1`。这符合"发布新版本时预发布标记应脱落"的语义。
 2. **Bump 的零填充**：`BumpMajor` 显式设 `Minor(0).Patch(0)`，保证 `1.2.3 → 2.0.0` 而非 `2.2.3`。空数字段的 Version（无效解析结果）Bump 会退化为 `"1"` / `"0.1"` / `"0.0.1"`。
-3. **With* 保留前缀与后缀**：`WithMajor(5)` 只改 numbers[0]，Prefix、Suffix、Metadata 原样带入 Builder。`WithMinor` / `WithPatch` 在数字段不足时会**自动补零扩长**（`WithPatch` 于 2 段版本上会扩成 3 段）。
+3. **With\* 保留前缀与后缀**：`WithMajor(5)` 只改 `numbers[0]`，Prefix、Suffix、Metadata 原样带入 Builder。`WithMinor` / `WithPatch` 在数字段不足时会**自动补零扩长**（`WithPatch` 于 2 段版本上会扩成 3 段）。
 4. **WithPublicTime 走 Clone**：它不重建 raw 字符串（发布时间不影响 Raw），而是 `Clone()` 后改 `PublicTime` 字段。
 5. **Clone 是深拷贝**：`VersionNumbers` 是 `[]int`，`Clone` 会 `make + copy` 新切片，所以改拷贝的数字段不影响原对象。
 
-::: warning Builder 重建会丢弃 Metadata
-`WithPrefix` / `WithSuffix` / `WithMajor` 等在 Builder 构造后**手动回填** `v.Metadata = x.Metadata`，所以 metadata 保留。但 `Bump*` 系列没有回填——`1.2.3+build.7.BumpPatch()` 得到的 `1.2.4` **会丢失** `+build.7`。如果你的工作流依赖 metadata，Bump 后需手动 `WithMetadata` 补回。
+::: warning Bump 会丢弃 Metadata
+`WithPrefix` / `WithSuffix` / `WithMajor` 等在 Builder 构造后**手动回填** `v.Metadata = x.Metadata`，所以 metadata 保留。但 `Bump*` 系列没有回填——对 `NewVersion("1.2.3+build.7").BumpPatch()` 得到的 `1.2.4` **会丢失** `+build.7`。如果你的工作流依赖 metadata，Bump 后需用 `WithMetadata(...)` 补回。
 :::
 
 `VersionBuilder` 本身是流式 API，也可独立用于程序化构造版本：
@@ -277,7 +309,7 @@ v := versions.NewVersionBuilder().
 
 versions-skills 用一个极简的**行式文本格式**承载版本列表，便于 diff、人工编辑、管道处理：
 
-```
+```text
 1.1.28
 1.1.29
 1.1.31.sec01     ← Maven 风格后缀，照常解析
@@ -333,7 +365,7 @@ func WriteVersionsToFile(versions []*Version, filepath string) error
 
 ### VisualizeVersions —— 组内明细树
 
-```
+```text
 版本总数: 6
 版本组数: 2
 
@@ -356,7 +388,7 @@ func WriteVersionsToFile(versions []*Version, filepath string) error
 
 ### VisualizeVersionGroups —— 主版本概览树
 
-```
+```text
 版本总数: 6
 版本组数: 2
 
@@ -375,48 +407,49 @@ func WriteVersionsToFile(versions []*Version, filepath string) error
 - 两者都写到 `io.Writer`，可落地 stdout、文件、HTTP 响应、MCP 工具返回。
 :::
 
-## 11. ContainsPolicy —— 边界与子串策略
+## 11. ContainsPolicy —— 边界纳入策略
 
 源文件：`contains_policy.go`
 
-`ContainsPolicy` 是个三值枚举，控制"是否纳入匹配项"：
+`ContainsPolicy` 是个三值枚举，控制范围查询时**边界版本本身是否纳入结果**：
 
-| 值 | 常量 | 语义 |
-|:--:|:--|:--|
-| 0 | `ContainsPolicyNone` | 未指定，不做该维度的过滤 |
-| 1 | `ContainsPolicyYes` | **包含**匹配项（只留命中的） |
-| 2 | `ContainsPolicyNo` | **排除**匹配项（剔除命中的） |
+| 值 | 常量 | 语义 | 在范围查询中的效果 |
+|:--:|:--|:--|:--|
+| 0 | `ContainsPolicyNone` | 未指定 | 等同 `Yes`（纳入边界） |
+| 1 | `ContainsPolicyYes` | 纳入 | 闭端点，边界版本**保留** |
+| 2 | `ContainsPolicyNo` | 排除 | 开端点，边界版本**剔除** |
 
-它出现在两个地方：
+### 与 VersionRange 的对应
 
-### 范围查询边界（第 7 节的 tuple）
-
-`SortedVersionGroups.QueryRange` 的起止 tuple 各带一个 `ContainsPolicy`：
+第 5 节的 `VersionRange` 用 `LowInclusive` / `HighInclusive` 两个 `bool` 表达开闭；`SortedVersionGroups.QueryRange` 把同样的语义收纳进 `ContainsPolicy`，挂在起止 tuple 上：
 
 ```go
 start := tuple.NewTuple2(versions.NewVersion("1.0.0"), versions.ContainsPolicyYes)  // 含 1.0.0
 end   := tuple.NewTuple2(versions.NewVersion("2.0.0"), versions.ContainsPolicyNo)   // 不含 2.0.0
-// 结果 = [1.0.0, 2.0.0)
+hits  := sg.QueryRange(start, end)   // 结果区间 = [1.0.0, 2.0.0)
 ```
 
-`Yes` = 闭端点（纳入边界版本），`No` = 开端点（排除边界版本）。这正是第 5 节 `VersionRange` 的 `LowInclusive` / `HighInclusive` 在有序索引上的等价表达。
+两者是同一概念的不同载体：`bool` 适合构造单个区间，`ContainsPolicy` 三值枚举适合在有序索引上链式传递（`None` 表"这一端未由调用方指定，走默认纳入"）。
 
-### 子串过滤（VersionFilter）
+### 底层判定
 
-在 `VersionFilter` 结构里，`Contains`（子串）配 `ContainsPolicy` 决定保留还是剔除含该子串的版本——例如 `Contains:"snapshot", Policy:No` 用来剔除所有快照版。
+`VersionGroup.QueryRangeVersions` 在逐版本收集时，对恰好等于端点的版本按策略分流（`version_group.go`）：
 
-`String()` 返回 `"none"` / `"yes"` / `"no"`，便于日志与 MCP 工具的入参校验。
+- `ContainsPolicyNone`、`ContainsPolicyYes` → 纳入边界版本；
+- `ContainsPolicyNo` → 剔除边界版本。
+
+`String()` 返回 `"none"` / `"yes"` / `"no"`，便于日志与 MCP 工具的入参校验。CLI 的 `range` 命令与 MCP 的 `version_range_query` 工具都通过 `--include-start/--include-end` 之类的开关映射到这两个枚举值。
 
 ## 性能摘要
 
-| 操作 | 复杂度 |
-|:--|:--|
-| 解析 | `O(n)`，n 为版本串长度 |
-| 比较 | `O(m)`，m 为数字段数 |
-| 排序 | `O(n log n)`，n 为列表长度 |
-| 范围查询（有序索引） | O(组数) 扫描 + 索引跳跃 |
-| Bump / With（Builder 重建） | O(m) 拼接 + O(n) 重新解析 |
-| 文件读取 | O(行数 × 行长) |
-| 可视化 | O(n log n)（内含分组排序） |
+| 操作 | 复杂度 | 说明 |
+|:--|:--|:--|
+| 解析 `Parse` | `O(n)` | n 为版本串长度 |
+| 比较 `CompareTo` | `O(m)` | m 为数字段数 |
+| 排序 `SortVersionSlice` | `O(n log n)` | n 为列表长度（含分组） |
+| 范围查询 `QueryRange` | `O(g + k)` | g 为组数扫描、k 为命中数；经有序索引跳跃 |
+| Bump / With | `O(m) + O(n)` | Builder 拼接 + 重新解析 |
+| 文件读取 | `O(Σ 行长)` | 整文件读入 + 逐行解析 |
+| 可视化 | `O(n log n)` | 内含分组排序 |
 
 → 想直接调用这些能力，进 [Go SDK API](./sdk)、[CLI 命令](./cli) 或 [MCP 工具](./mcp)。
