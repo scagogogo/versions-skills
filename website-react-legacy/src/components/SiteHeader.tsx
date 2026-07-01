@@ -7,6 +7,7 @@ const { Header } = Layout
 const navItems = [
   { key: '/', label: '首页' },
   { key: '/#features', label: '功能' },
+  { key: '/#algorithms', label: '算法' },
   { key: '/#access', label: '接入方式' },
   { key: '/#cases', label: '案例' },
   { key: '/#tutorials', label: '教程' },

@@ -16,15 +16,18 @@ const aiClients = [
     skills: true,
     mcp: true,
     configPath: '~/.claude/settings.json',
-    config: `{
-  "mcpServers": {
-    "versions": {
-      "command": "versions-mcp",
-      "args": ["--transport", "stdio"]
-    }
-  }
-}`,
-    note: '同时支持 Skills Plugin 和 MCP Server',
+    config: `# 1. Skills 插件（13 个斜杠命令）：
+claude plugin marketplace add https://github.com/scagogogo/versions-skills
+claude plugin install versions
+
+# 2. MCP Server（直连工具执行）：
+claude mcp add versions -- versions-mcp --transport stdio
+
+# 或写入 ~/.claude/settings.json：
+# { "mcpServers": { "versions": {
+#     "command": "versions-mcp",
+#     "args": ["--transport", "stdio"] } } }`,
+    note: '同时支持 Skills Plugin 和 MCP Server，推荐两者都装',
   },
   {
     name: 'Cursor',
@@ -74,6 +77,39 @@ const aiClients = [
 }`,
     note: '注意字段名是 "servers"',
   },
+  {
+    name: 'Codex',
+    icon: <RobotOutlined style={{ fontSize: 18, color: '#475569' }} />,
+    skills: false,
+    mcp: true,
+    configPath: '~/.codex/config.toml',
+    config: `# 命令式注册（推荐）：
+codex mcp add versions -- versions-mcp --transport stdio
+
+# 或直接编辑 ~/.codex/config.toml：
+[mcp_servers.versions]
+command = "versions-mcp"
+args = ["--transport", "stdio"]`,
+    note: 'OpenAI Codex CLI，TOML 配置格式',
+  },
+  {
+    name: 'Cline',
+    icon: <CodeOutlined style={{ fontSize: 18, color: '#6750a4' }} />,
+    skills: false,
+    mcp: true,
+    configPath: '~/.cline/cline_mcp_settings.json',
+    config: `{
+  "mcpServers": {
+    "versions": {
+      "command": "versions-mcp",
+      "args": ["--transport", "stdio"],
+      "disabled": false,
+      "autoApprove": []
+    }
+  }
+}`,
+    note: 'VS Code 上的 Cline 插件，含 disabled/autoApprove 字段',
+  },
 ]
 
 const AiIntegrationSection: React.FC = () => {
@@ -84,6 +120,15 @@ const AiIntegrationSection: React.FC = () => {
           <div className="section-title">AI Agent 集成指南</div>
           <p className="section-subtitle">一键接入主流 AI 编程工具，让版本号操作成为 AI 的原生能力</p>
         </div>
+
+        <Card className="flat-card" style={{ marginBottom: 16, borderRadius: 4, border: '1px solid #bfdbfe', background: '#eff6ff' }} styles={{ body: { padding: 16 } }}>
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
+            <CheckCircleOutlined style={{ color: '#2563eb', fontSize: 16, marginTop: 2 }} />
+            <Text style={{ fontSize: 13, color: '#1e3a8a', lineHeight: 1.7 }}>
+              <strong>选型建议：</strong>在 Claude Code 上同时安装 Skills 插件与 MCP Server —— 插件提供版本号领域知识（何时用约束、后缀如何排序），MCP 提供快速结构化执行通道；其它 Agent 仅需 MCP Server 一条路径即可。下方为各客户端的配置方式。
+            </Text>
+          </div>
+        </Card>
 
         <Row gutter={[16, 16]}>
           {aiClients.map((client, index) => (

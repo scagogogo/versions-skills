@@ -3,6 +3,7 @@ import SiteHeader from '../components/SiteHeader'
 import SiteFooter from '../components/SiteFooter'
 import HeroSection from '../components/HeroSection'
 import FeaturesSection from '../components/FeaturesSection'
+import AlgorithmsSection from '../components/AlgorithmsSection'
 import ArchitectureSection from '../components/ArchitectureSection'
 import AccessSection from '../components/AccessSection'
 import CasesSection from '../components/CasesSection'
@@ -19,6 +20,7 @@ const HomePage: React.FC = () => {
       <Content>
         <HeroSection />
         <FeaturesSection />
+        <AlgorithmsSection />
         <ArchitectureSection />
         <AccessSection />
         <CasesSection />

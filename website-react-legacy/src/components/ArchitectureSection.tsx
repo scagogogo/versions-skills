@@ -43,7 +43,7 @@ const ArchitectureSection: React.FC = () => {
               🤖 AI Agent / IDE
               <br />
               <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: 12, fontWeight: 400 }}>
-                Claude Code · Cursor · Windsurf · VS Code Copilot
+                Claude Code · Codex · Cursor · Windsurf · Cline · VS Code Copilot
               </Text>
             </div>
             <Row>

@@ -78,7 +78,7 @@ const HeroSection: React.FC = () => {
         </Space>
 
         <Paragraph style={{ color: 'rgba(255,255,255,0.45)', fontSize: 13, marginTop: 4 }}>
-          兼容 Claude Code · Cursor · Windsurf · VS Code Copilot
+          兼容 Claude Code · Codex · Cursor · Windsurf · Cline · VS Code Copilot
         </Paragraph>
       </Space>
     </div>
