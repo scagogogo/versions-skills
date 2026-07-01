@@ -52,6 +52,7 @@ versions sort --desc 3.0.0 1.0.0 2.0.0    # 降序
 versions sort-strings 3.0.0 1.0.0 2.0.0   # 排序但返回原始字符串（非规范化的 Version）
 versions filter --stable 1.0.0-alpha 1.0.0 2.0.0-beta 2.0.0
 versions filter --constraint ">=1.0.0,<2.0.0" 0.5.0 1.0.0 1.5.0 2.0.0
+versions filter --constraint ">=1.0.0 || >=3.0.0" --constraint-type union 1.0.0 2.0.0 3.0.0
 versions partition --stable 1.0.0-alpha 1.0.0 2.0.0   # 分两组
 ```
 
@@ -75,8 +76,11 @@ versions group-latest-stable 1.0.0-alpha 1.0.0 1.0.1  # 分组最新稳定版
 versions group-latest-prerelease 1.0.0-alpha 1.0.0    # 分组最新预发布版
 
 # 范围查询
-versions range 1.0.0 2.0.0 1.0.0 1.5.0 2.0.0 3.0.0  # [1.0.0, 2.0.0] 内的版本
+versions range 1.0.0 2.0.0 1.0.0 1.5.0 2.0.0 3.0.0            # [1.0.0, 2.0.0]，默认含起不含止
+versions range 1.0.0 2.0.0 --include-end 1.0.0 1.5.0 2.0.0     # [1.0.0, 2.0.0]，含两端
 ```
+
+`--include-start`（默认 true）/ `--include-end`（默认 false）控制边界是否纳入，对应 [算法详解 §11](./algorithms#_11-containspolicy-边界纳入策略) 的 `ContainsPolicy`。
 
 ## 最大/最小/最新
 
@@ -92,7 +96,9 @@ versions latest-prerelease 1.0.0-alpha 1.0.0 2.0.0-beta
 `set-*` 系列与 `bump` 都遵循**不可变**语义——返回新版本，原版本不变（见 [算法详解 §8](./algorithms#_8-不可变变更-builder-重建)）。
 
 ```bash
-versions build --prefix v --major 1 --minor 2 --patch 3
+versions build --prefix v --major 1 --minor 2 --patch 3          # → v1.2.3
+versions build --major 1 --minor 2 --patch 3 --suffix -beta1     # → 1.2.3-beta1
+versions build --numbers 1,2,3,4                                  # → 1.2.3.4（任意段数）
 versions bump 1.2.3 --patch              # 递增 patch → 1.2.4（后缀脱落）
 versions core 1.2.3-beta                 # 去后缀核心版本 → 1.2.3
 versions clone 1.2.3                     # 深拷贝
