@@ -227,6 +227,186 @@ hits  := sg.QueryRange(start, end)                    // 跳索引 + 组遍历
 
 它预排序所有组并构建 `groupID → 索引` 映射。`QueryRange` 经映射直接跳到起始组（跳过其下一切），随后逐组收集 `QueryRangeVersions` 直到越过结束组。每个 tuple 上的 `ContainsPolicy` 决定边界版本本身是否纳入（`Yes` 含 / `No` 不含）。这是 `version_range_query` MCP 工具的底层引擎，远比每次重新过滤全表便宜。
 
+## 8. 不可变变更 —— Builder 重建
+
+源文件：`version_builder.go`、`version_clone.go`
+
+`Version` 设计为**不可变**：所有 `Bump*` / `With*` 都返回新对象，原对象绝不被修改。它们不是简单的字段赋值，而是走 **Builder 重建** 流程：
+
+:::mermaid
+flowchart LR
+  SRC["原版本 1.2.3"] --> DECIDE{"操作类型"}
+  DECIDE -->|"Bump*"| BUMP["数字段 +1<br/>低位置零<br/>后缀清除"]
+  DECIDE -->|"With*"| WITH["替换指定段<br/>保留其余"]
+  BUMP --> B["NewVersionBuilder"]
+  WITH --> B
+  B --> REBUILD["buildRawString<br/>prefix+numbers+suffix"]
+  REBUILD --> PARSE["NewVersion(raw)<br/>重新解析"]
+  PARSE --> OUT["新 Version 对象"]
+  style SRC fill:#eff6ff,stroke:#2563eb
+  style OUT fill:#f0fdf4,stroke:#16a34a
+:::
+
+关键细节：
+
+1. **Bump 清除后缀**：`BumpMajor` / `BumpMinor` / `BumpPatch` 都通过 Builder 重建，**只设数字段**，不传 Suffix —— 所以 `1.2.3-beta1.BumpPatch()` 得到 `1.2.4`（后缀没了），不是 `1.2.4-beta1`。这符合"发布新版本时预发布标记应脱落"的语义。
+2. **Bump 的零填充**：`BumpMajor` 显式设 `Minor(0).Patch(0)`，保证 `1.2.3 → 2.0.0` 而非 `2.2.3`。空数字段的 Version（无效解析结果）Bump 会退化为 `"1"` / `"0.1"` / `"0.0.1"`。
+3. **With* 保留前缀与后缀**：`WithMajor(5)` 只改 numbers[0]，Prefix、Suffix、Metadata 原样带入 Builder。`WithMinor` / `WithPatch` 在数字段不足时会**自动补零扩长**（`WithPatch` 于 2 段版本上会扩成 3 段）。
+4. **WithPublicTime 走 Clone**：它不重建 raw 字符串（发布时间不影响 Raw），而是 `Clone()` 后改 `PublicTime` 字段。
+5. **Clone 是深拷贝**：`VersionNumbers` 是 `[]int`，`Clone` 会 `make + copy` 新切片，所以改拷贝的数字段不影响原对象。
+
+::: warning Builder 重建会丢弃 Metadata
+`WithPrefix` / `WithSuffix` / `WithMajor` 等在 Builder 构造后**手动回填** `v.Metadata = x.Metadata`，所以 metadata 保留。但 `Bump*` 系列没有回填——`1.2.3+build.7.BumpPatch()` 得到的 `1.2.4` **会丢失** `+build.7`。如果你的工作流依赖 metadata，Bump 后需手动 `WithMetadata` 补回。
+:::
+
+`VersionBuilder` 本身是流式 API，也可独立用于程序化构造版本：
+
+```go
+v := versions.NewVersionBuilder().
+    Prefix("v").
+    Major(1).Minor(2).Patch(3).
+    Suffix("-beta1").
+    Build()                 // v.Raw == "v1.2.3-beta1"
+```
+
+`Build()` 内部先 `buildRawString()` 拼出 `"v1.2.3-beta1"`，再交给 `NewVersion` **重新解析**——所以 Builder 产物与直接解析等价字符串的结果一致。
+
+## 9. 文件 I/O —— 行式格式
+
+源文件：`file.go`
+
+versions-skills 用一个极简的**行式文本格式**承载版本列表，便于 diff、人工编辑、管道处理：
+
+```
+1.1.28
+1.1.29
+1.1.31.sec01     ← Maven 风格后缀，照常解析
+# 这一行会被当作版本号解析，不是注释！
+```
+
+:::mermaid
+flowchart LR
+  F["文件 versions.txt"] --> READ["os.ReadFile<br/>整文件读入"]
+  READ --> SPLIT["按 \\n 切分"]
+  SPLIT --> LOOP{"逐行处理"}
+  LOOP -->|"TrimSpace 后为空"| SKIP["跳过"]
+  LOOP -->|"非空"| PARSE["NewVersionStringParser<br/>.Parse()"]
+  PARSE --> APPEND["追加到结果"]
+  APPEND --> LOOP
+  style SKIP fill:#fef2f2,stroke:#dc2626
+  style PARSE fill:#fff7ed,stroke:#ea580c
+:::
+
+**读**（`ReadVersionsFromFile` / `ReadVersionsFromReader`）：
+
+1. 整文件读入，按 `\n` 切分。
+2. 每行 `TrimSpace`；**空行跳过**。
+3. 非空行**原样交给解析器**——没有注释剥离、没有字段切分。
+
+::: warning 三个易踩的坑
+1. **没有 `#` 注释支持**：`#` 开头的行会被当作版本字符串解析。由于它不含数字，走"纯字母快捷路径"成为**无效版本**（VersionNumbers 为空）。它不会报错，但会污染结果集——用前请自行预处理注释行。
+2. **带计数前缀的行解析失真**：`maven_versions_count.txt` 里 `71270\t1.0.0` 这种行，解析器从第一个数字 `7` 开始读，得到 `numbers=[71270]`、`suffix="\t1.0.0"`——**不是** `1.0.0`。要处理这种格式，先用 `Coerce` 或自行切 tab 取版本列。
+3. **CRLF**：`TrimSpace` 会吃掉 `\r`，所以 Windows 换行也能正确处理。
+:::
+
+**写**（`WriteVersionsToFile`）：
+
+```go
+func WriteVersionsToFile(versions []*Version, filepath string) error
+```
+
+- **写入前先排序**：内部调用 `SortVersionSlice`，保证输出有序（即使输入乱序）。
+- **写 `Raw` 字段**：每行写版本的原始字符串，`v.Raw`，而非重建的规范形态。
+- **无尾随换行**：行间用 `\n` 连接，最后一行后不补 `\n`。
+
+::: tip 读 ↔ 写 的对称性破缺
+`ReadVersionsFromFile` 解析每行得到 Version，其 `Raw` 等于该行原文；`WriteVersionsToFile` 写的也是 `Raw`。所以"读 → 写"往返保持字符串一致——**但仅在输入已是规范形态时**。若输入是 `v1.2.3`（带前缀），读出的 `Raw` 是 `v1.2.3`，写回仍是 `v1.2.3`。排序发生在往返之间，故乱序输入经"读 → 写"后变有序。
+:::
+
+`ReadVersionsStringFromFile` 是只读字符串、不解析的变体——当你只需要原始行、不想承担解析开销时用。
+
+## 10. 可视化 —— 组感知文本树
+
+源文件：`visualize.go`
+
+"一图抵千言"在 CLI/MCP 场景下落地为**Unicode 文本树**。两个函数都建立在第 6 节的分组排序之上：
+
+### VisualizeVersions —— 组内明细树
+
+```
+版本总数: 6
+版本组数: 2
+
+┌─ 版本组: 1.2 (3个版本)
+├── 1.2.0
+├── 1.2.0-beta
+└── 1.2.1 (发布时间: 2026-06-01)
+
+┌─ 版本组: 2.0 (1个版本)
+└── 2.0.0
+```
+
+算法：
+
+1. `Group(versions)` 按完整数字串建组（同第 6 节）。
+2. `NewSortedVersionGroups` 给组排序。
+3. 逐组 `group.SortVersions()` 排组内版本。
+4. `maxItems > 0` 时截断，末尾打印 `...还有 N 个版本未显示`。
+5. 每个版本若 `PublicTime` 非零，附 `(发布时间: YYYY-MM-DD)`。
+
+### VisualizeVersionGroups —— 主版本概览树
+
+```
+版本总数: 6
+版本组数: 2
+
+├─ 1 (2个版本组, 共5个版本)
+│  ├─ 1.2 (3个版本)
+│  └─ 1.3 (2个版本)
+└─ 2 (1个版本组, 共1个版本)
+   └─ 2.0 (1个版本)
+```
+
+它**不调** `SortedVersionGroups`，而是自己 `sort.Strings(groupIDs)`（字符串序，注意：这对 `1.10` vs `1.2` 是字典序，**不**保证数值序——这是概览树的已知取舍）。然后按 groupID 的首段（`.` 之前）二次归并为"主版本 → 子组"两级树，用 `├─` / `└─` / `│ ` / `  ` 绘制缩进。
+
+::: tip 两个函数的选择
+- 想看**每个具体版本** → `VisualizeVersions`（组内明细，可截断）。
+- 想看**版本库整体结构** → `VisualizeVersionGroups`（主版本概览，紧凑）。
+- 两者都写到 `io.Writer`，可落地 stdout、文件、HTTP 响应、MCP 工具返回。
+:::
+
+## 11. ContainsPolicy —— 边界与子串策略
+
+源文件：`contains_policy.go`
+
+`ContainsPolicy` 是个三值枚举，控制"是否纳入匹配项"：
+
+| 值 | 常量 | 语义 |
+|:--:|:--|:--|
+| 0 | `ContainsPolicyNone` | 未指定，不做该维度的过滤 |
+| 1 | `ContainsPolicyYes` | **包含**匹配项（只留命中的） |
+| 2 | `ContainsPolicyNo` | **排除**匹配项（剔除命中的） |
+
+它出现在两个地方：
+
+### 范围查询边界（第 7 节的 tuple）
+
+`SortedVersionGroups.QueryRange` 的起止 tuple 各带一个 `ContainsPolicy`：
+
+```go
+start := tuple.NewTuple2(versions.NewVersion("1.0.0"), versions.ContainsPolicyYes)  // 含 1.0.0
+end   := tuple.NewTuple2(versions.NewVersion("2.0.0"), versions.ContainsPolicyNo)   // 不含 2.0.0
+// 结果 = [1.0.0, 2.0.0)
+```
+
+`Yes` = 闭端点（纳入边界版本），`No` = 开端点（排除边界版本）。这正是第 5 节 `VersionRange` 的 `LowInclusive` / `HighInclusive` 在有序索引上的等价表达。
+
+### 子串过滤（VersionFilter）
+
+在 `VersionFilter` 结构里，`Contains`（子串）配 `ContainsPolicy` 决定保留还是剔除含该子串的版本——例如 `Contains:"snapshot", Policy:No` 用来剔除所有快照版。
+
+`String()` 返回 `"none"` / `"yes"` / `"no"`，便于日志与 MCP 工具的入参校验。
+
 ## 性能摘要
 
 | 操作 | 复杂度 |
@@ -235,5 +415,8 @@ hits  := sg.QueryRange(start, end)                    // 跳索引 + 组遍历
 | 比较 | `O(m)`，m 为数字段数 |
 | 排序 | `O(n log n)`，n 为列表长度 |
 | 范围查询（有序索引） | O(组数) 扫描 + 索引跳跃 |
+| Bump / With（Builder 重建） | O(m) 拼接 + O(n) 重新解析 |
+| 文件读取 | O(行数 × 行长) |
+| 可视化 | O(n log n)（内含分组排序） |
 
 → 想直接调用这些能力，进 [Go SDK API](./sdk)、[CLI 命令](./cli) 或 [MCP 工具](./mcp)。

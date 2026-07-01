@@ -72,7 +72,7 @@ claude plugin tag . --dry-run
 - **Never nil from NewVersion**: Always returns a Version struct; check `IsValid()` for invalid inputs
 - **Suffix weight ordering**: dev(50) < snapshot(60) < nightly(70) < alpha(100) < beta(200) < milestone(300) < rc(400) < final/release/ga(500) < sp(600) < patch(700) < post(800)
 - **CompareTo priority order**: VersionNumbers → Suffix → PublicTime → Raw string
-- **File format**: One version per line, `#` comments, blank lines ignored
+- **File format**: One version per line, blank lines ignored. Note: `#` is **not** a comment marker — `#`-prefixed lines are parsed as (invalid) versions; strip comments upstream if needed. `WriteVersionsToFile` sorts before writing.
 
 ## Release Process
 
