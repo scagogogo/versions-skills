@@ -6,14 +6,14 @@
 
 ### 完整接入（推荐）
 
-一次性同时安装 Skills 插件与 MCP Server，接入后即可用 13 个斜杠命令 + 21 个 MCP 工具。
+一次性同时安装 Skills 插件与 MCP Server，接入后即可用 14 个斜杠命令 + 21 个 MCP 工具。
 
 ```markdown
 请帮我接入 versions-skills 工具，用于版本号的解析、比较、排序、约束检查。
 
 按以下步骤执行，每步完成后简要汇报：
 
-1. 安装 Claude Code 的 versions 插件（提供 13 个版本号斜杠命令）：
+1. 安装 Claude Code 的 versions 插件（提供 14 个版本号斜杠命令）：
    - 运行：claude plugin marketplace add https://github.com/scagogogo/versions-skills
    - 运行：claude plugin install versions
 

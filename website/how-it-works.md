@@ -15,7 +15,7 @@ flowchart TB
   end
   subgraph L2["接口层"]
     direction LR
-    SK["Skills Plugin<br/>13 SKILL.md → 斜杠命令<br/>领域知识注入"]
+    SK["Skills Plugin<br/>14 SKILL.md → 斜杠命令<br/>领域知识注入"]
     MCP["MCP Server<br/>21 version_* 工具<br/>结构化 JSON 响应"]
     CLI["CLI Binary<br/>shell / CI/CD"]
     SDK["Go SDK<br/>程序内嵌"]
@@ -45,7 +45,7 @@ flowchart TB
 
 ### 路径 1：Skills Plugin（Claude Code 专属）
 
-Claude Code 的 Skills 机制会把 `skills/*/SKILL.md` 这 13 个文件作为**领域知识**注入。每个 SKILL.md 里写的是"什么时候用、怎么用、API 参考、代码示例、决策树"。
+Claude Code 的 Skills 机制会把 `skills/*/SKILL.md` 这 14 个文件作为**领域知识**注入。每个 SKILL.md 里写的是"什么时候用、怎么用、API 参考、代码示例、决策树"。
 
 当你在 Claude Code 里输入 `/version-sorting`，发生的事是：
 

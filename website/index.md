@@ -23,7 +23,7 @@ hero:
 features:
   - icon: 🤖
     title: AI 原生接入
-    details: 同时提供 Claude Code Skills（13 个斜杠命令）与 MCP Server（21 个工具）。Codex、Cursor、Windsurf、Cline 等 MCP 客户端一行配置即可接入。
+    details: 同时提供 Claude Code Skills（14 个斜杠命令）与 MCP Server（21 个工具）。Codex、Cursor、Windsurf、Cline 等 MCP 客户端一行配置即可接入。
   - icon: 🧩
     title: 宽口径解析
     details: 标准 semver、带前缀（v1.2.3）、预发布（1.2.3-beta1）、Maven/Scala/PEP 440 风格全支持。还能从任意字符串里 Coerce 出版本号。
@@ -73,7 +73,7 @@ flowchart LR
 
 按以下步骤执行，每步完成后简要汇报：
 
-1. 安装 Claude Code 的 versions 插件（提供 13 个版本号斜杠命令）：
+1. 安装 Claude Code 的 versions 插件（提供 14 个版本号斜杠命令）：
    运行：claude plugin marketplace add https://github.com/scagogogo/versions-skills
    运行：claude plugin install versions
 

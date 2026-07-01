@@ -31,7 +31,7 @@ flowchart LR
 |:--|:--|:--|
 | 排序 | 字典序 vs 数值序 | `1.10.0` 应在 `1.2.0` 之后 |
 | 预发布顺序 | `1.0.0-rc1` 和 `1.0.0` 谁新？ | `1.0.0-rc1` < `1.0.0`（rc 早于正式版） |
-| 后缀梯队 | alpha/beta/rc/milestone 的先后 | `dev < snapshot < alpha < beta < milestone < rc < 正式版 < sp < patch < post` |
+| 后缀梯队 | alpha/beta/rc/milestone 的先后 | `dev < snapshot < nightly < alpha < beta < milestone < rc < 正式版 < sp < patch < post` |
 | 约束表达式 | `^1.2.3` 允许哪些版本？ | `>=1.2.3, <2.0.0`，但 `^0.2.3` 是 `>=0.2.3, <0.3.0` |
 | 范围查询 | 边界含不含？ | `[1.0.0, 2.0.0)` 与 `(1.0.0, 2.0.0]` 含义不同 |
 | 格式多样性 | Maven 的 `0.9.0+121-bcc5decc`、PEP 440 的 `1.0.0.post1` | 不是所有版本都遵循 semver |

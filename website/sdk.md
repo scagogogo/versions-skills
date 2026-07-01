@@ -47,7 +47,7 @@ v.Major()          // 1
 v.IsValid()        // true
 v.IsPrerelease()   // true
 v.PreReleaseType() // "beta"
-v.IsSemver()       // false（不够 3 段？实际 1.2.3-beta1 是 3 段，true）
+v.IsSemver()       // true（semver 正则允许 v 前缀与预发布段）
 v.SuffixWeight()   // 200 (beta)
 ```
 
@@ -56,9 +56,15 @@ v.SuffixWeight()   // 200 (beta)
 ```go
 a := versions.NewVersion("1.0.0")
 b := versions.NewVersion("1.0.0-rc1")
-a.IsNewerThan(b)        // true
-a.Diff(b).IsUpgrade()   // true
-a.Diff(b).IsPatchChange() // true（同 major/minor，patch 都 0... 见 Diff 语义）
+a.IsNewerThan(b)        // true（数字段相同，稳定版 > 预发布版，由后缀权重决定）
+
+// 注意：Diff 只比数字段差值，不看后缀
+a.Diff(b).IsUpgrade()   // false（major/minor/patch 差值都为 0，不算升级）
+a.Diff(b).IsPatchChange() // false（同理，patch 差值为 0）
+
+d := versions.NewVersion("1.2.3").Diff(versions.NewVersion("1.2.5"))
+d.IsPatchChange()       // true（仅 patch +2）
+d.IsUpgrade()           // true
 ```
 
 ### 排序与分组

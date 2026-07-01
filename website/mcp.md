@@ -1,6 +1,6 @@
 # MCP 工具
 
-`versions-mcp` 把核心库的 22 个能力暴露为 MCP 工具，任何 MCP 兼容客户端可调。安装与配置见 [AI Agent 接入指南](./ai-agents)。
+`versions-mcp` 把核心库的 21 个能力暴露为 MCP 工具，任何 MCP 兼容客户端可调。安装与配置见 [AI Agent 接入指南](./ai-agents)。
 
 ## 工具清单
 
@@ -24,7 +24,6 @@
 | `version_build` | 构造版本 | `VersionBuilder` / `build` |
 | `version_bump` | 递增版本号 | `BumpMajor/Minor/Patch` / `bump` |
 | `version_core` | 去后缀核心版本 | `Core` / `core` |
-| `version_string` | 版本字符串操作 | — |
 | `version_read_file` | 从文件读取版本列表 | `ReadVersionsFromFile` / `read` |
 | `version_write_file` | 写入文件 | `WriteVersionsToFile` / `write` |
 | `version_visualize` | 树形可视化 | `VisualizeVersions` / `visualize` |

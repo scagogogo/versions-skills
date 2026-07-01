@@ -62,7 +62,7 @@ chmod +x versions-mcp && sudo mv versions-mcp /usr/local/bin/
 Skills 插件 + MCP Server 双装：
 
 ```bash
-# 1. 领域知识：13 个斜杠命令
+# 1. 领域知识：14 个斜杠命令
 claude plugin marketplace add https://github.com/scagogogo/versions-skills
 claude plugin install versions
 
