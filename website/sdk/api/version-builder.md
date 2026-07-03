@@ -22,12 +22,12 @@ VersionBuilder 允许通过方法链的方式逐步构建版本对象，
 
 ```go
 v := versions.NewVersionBuilder().
-Prefix("v").
-Major(1).
-Minor(2).
-Patch(3).
-Suffix("-beta1").
-Build()
+    Prefix("v").
+    Major(1).
+    Minor(2).
+    Patch(3).
+    Suffix("-beta1").
+    Build()
 // v.Raw == "v1.2.3-beta1"
 ```
 

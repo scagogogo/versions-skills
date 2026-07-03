@@ -17,14 +17,14 @@ ContainsPolicy 用于控制版本查询时的包含/排除策略
 ```go
 // 使用包含策略进行版本过滤
 filter := &VersionFilter{
-Contains: "beta",
-ContainsPolicy: ContainsPolicyYes,
+    Contains: "beta",
+    ContainsPolicy: ContainsPolicyYes,
 }
 
 // 使用排除策略进行版本过滤
 filter := &VersionFilter{
-Contains: "snapshot",
-ContainsPolicy: ContainsPolicyNo,
+    Contains: "snapshot",
+    ContainsPolicy: ContainsPolicyNo,
 }
 ```
 

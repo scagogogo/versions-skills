@@ -26,8 +26,8 @@ groupID := numbers.BuildGroupID() // 返回 "1.2.3"
 // 可用于版本分组
 versionGroups := make(map[string][]*Version)
 for _, version := range allVersions {
-groupID := version.VersionNumbers.BuildGroupID()
-versionGroups[groupID] = append(versionGroups[groupID], version)
+    groupID := version.VersionNumbers.BuildGroupID()
+    versionGroups[groupID] = append(versionGroups[groupID], version)
 }
 ```
 

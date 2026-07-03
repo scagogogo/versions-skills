@@ -28,7 +28,7 @@ group := versions.NewVersionGroup(versions.NewVersionNumbers([]int{1, 2}))
 version := versions.NewVersion("1.2.3")
 exists := group.Add(version)
 if !exists {
-fmt.Println("添加了新版本")
+    fmt.Println("添加了新版本")
 }
 ```
 

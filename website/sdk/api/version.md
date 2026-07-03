@@ -51,15 +51,15 @@ version := versions.NewVersion("v1.2.3-rc1")
 
 // 检查版本是否有效
 if version.IsValid() {
-fmt.Printf("版本号有效: %s\n", version.Raw)
-fmt.Printf("版本号数字部分: %v\n", version.VersionNumbers)
+    fmt.Printf("版本号有效: %s\n", version.Raw)
+    fmt.Printf("版本号数字部分: %v\n", version.VersionNumbers)
 }
 
 // 比较两个版本
 v1 := versions.NewVersion("1.2.3")
 v2 := versions.NewVersion("1.3.0")
 if v1.CompareTo(v2) < 0 {
-fmt.Println("v1 比 v2 旧")
+    fmt.Println("v1 比 v2 旧")
 }
 ```
 

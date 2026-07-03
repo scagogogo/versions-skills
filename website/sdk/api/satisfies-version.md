@@ -28,7 +28,7 @@ v.Satisfies(constraint) 等价于 constraint.Match(v)。
 c, _ := versions.ParseConstraint(">=1.0.0")
 v := versions.NewVersion("1.5.0")
 if v.Satisfies(c) {
-fmt.Println("版本满足约束")
+    fmt.Println("版本满足约束")
 }
 ```
 

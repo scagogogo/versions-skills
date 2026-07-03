@@ -14,7 +14,7 @@ SuffixWeight 用于在版本比较时为不同类型的后缀分配语义化的�
 使得预发布版本的排序符合实际发布顺序，而非简单的字典序。
 
 权重规则（从低到高）:
-- dev/snapshot < alpha/a < beta/b < milestone/m < rc/cr/pre < 正式版(无后缀)
+  - dev/snapshot < alpha/a < beta/b < milestone/m < rc/cr/pre < 正式版(无后缀)
 
 
 ```go

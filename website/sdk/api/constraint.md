@@ -23,11 +23,11 @@ Constraint 用于判断某个版本是否满足指定的约束条件，
 ```go
 c, err := versions.ParseConstraint(">=1.0.0")
 if err != nil {
-log.Fatal(err)
+    log.Fatal(err)
 }
 v := versions.NewVersion("1.5.0")
 if c.Match(v) {
-fmt.Println("1.5.0 satisfies >=1.0.0")
+    fmt.Println("1.5.0 satisfies >=1.0.0")
 }
 ```
 

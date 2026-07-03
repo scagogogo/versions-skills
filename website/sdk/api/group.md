@@ -35,11 +35,11 @@ groups := versions.Group(allVersions)
 
 // 遍历所有版本组
 for groupID, group := range groups {
-fmt.Printf("版本组 %s 包含 %d 个版本\n", groupID, len(group.Versions))
+    fmt.Printf("版本组 %s 包含 %d 个版本\n", groupID, len(group.Versions))
 
-// 获取组内最新版本
-latestVersion := group.GetLatestVersion()
-fmt.Printf("组内最新版本: %s\n", latestVersion.Raw)
+    // 获取组内最新版本
+    latestVersion := group.GetLatestVersion()
+    fmt.Printf("组内最新版本: %s\n", latestVersion.Raw)
 }
 ```
 

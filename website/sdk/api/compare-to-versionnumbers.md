@@ -30,11 +30,11 @@ v2 := versions.NewVersionNumbers([]int{1, 1, 0})
 
 result := v1.CompareTo(v2)
 if result < 0 {
-fmt.Println("v1 比 v2 旧")
+    fmt.Println("v1 比 v2 旧")
 } else if result > 0 {
-fmt.Println("v1 比 v2 新")
+    fmt.Println("v1 比 v2 新")
 } else {
-fmt.Println("v1 和 v2 相等")
+    fmt.Println("v1 和 v2 相等")
 }
 ```
 

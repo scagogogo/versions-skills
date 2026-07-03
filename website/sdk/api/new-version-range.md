@@ -26,10 +26,10 @@ NewVersionRange 创建一个新的版本范围
 
 ```go
 r := versions.NewVersionRange(
-versions.NewVersion("1.0.0"),
-versions.NewVersion("2.0.0"),
-true,  // [1.0.0
-false, // 2.0.0)
+    versions.NewVersion("1.0.0"),
+    versions.NewVersion("2.0.0"),
+    true,  // [1.0.0
+    false, // 2.0.0)
 )
 ```
 

@@ -37,11 +37,11 @@ v2 := versions.NewVersion("1.1.0")
 
 switch v1.CompareTo(v2) {
 case -1:
-fmt.Println("v1 < v2")
+    fmt.Println("v1 < v2")
 case 0:
-fmt.Println("v1 = v2")
+    fmt.Println("v1 = v2")
 case 1:
-fmt.Println("v1 > v2")
+    fmt.Println("v1 > v2")
 }
 ```
 

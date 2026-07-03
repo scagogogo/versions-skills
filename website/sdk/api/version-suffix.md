@@ -21,14 +21,14 @@ VersionSuffix 是一个字符串类型，用于表示和操作版本号的后缀
 // 检查后缀是否为空
 suffix := versions.VersionSuffix("-beta1")
 if !suffix.IsEmpty() {
-fmt.Printf("版本后缀: %s\n", suffix)
+    fmt.Printf("版本后缀: %s\n", suffix)
 }
 
 // 比较后缀的优先级
 suffix1 := versions.VersionSuffix("-alpha")
 suffix2 := versions.VersionSuffix("-beta")
 if suffix1.CompareTo(suffix2) < 0 {
-fmt.Println("alpha 后缀的优先级低于 beta 后缀")
+    fmt.Println("alpha 后缀的优先级低于 beta 后缀")
 }
 ```
 
