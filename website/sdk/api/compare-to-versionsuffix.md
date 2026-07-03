@@ -11,6 +11,12 @@ func (x VersionSuffix) CompareTo(target VersionSuffix) int
 _该符号无文档注释，请参考源码 `version_suffix.go`。_
 
 
+## 🔗 同类方法
+
+- [`VersionSuffix.IsEmpty`](/sdk/api/is-empty-versionsuffix)
+- [`VersionSuffix.String`](/sdk/api/string-versionsuffix)
+
+
 ---
 
 ::: details 源码位置

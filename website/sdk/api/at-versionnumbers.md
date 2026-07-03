@@ -23,6 +23,15 @@ At 返回指定索引位置的版本号数字
 - `int`：对应位置的版本号数字，越界返回 0
 
 
+## 🔗 同类方法
+
+- [`VersionNumbers.CompareTo`](/sdk/api/compare-to-versionnumbers)
+- [`VersionNumbers.BuildGroupID`](/sdk/api/build-group-id-versionnumbers)
+- [`VersionNumbers.Len`](/sdk/api/len-versionnumbers)
+- [`VersionNumbers.String`](/sdk/api/string-versionnumbers)
+- [`VersionNumbers.Equals`](/sdk/api/equals-versionnumbers)
+
+
 ---
 
 ::: details 源码位置

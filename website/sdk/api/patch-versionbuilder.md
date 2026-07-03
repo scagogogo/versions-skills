@@ -11,6 +11,18 @@ func (b *VersionBuilder) Patch(patch int) *VersionBuilder
 Patch 设置修订版本号
 
 
+## 🔗 同类方法
+
+- [`VersionBuilder.Prefix`](/sdk/api/prefix-versionbuilder)
+- [`VersionBuilder.Major`](/sdk/api/major-versionbuilder)
+- [`VersionBuilder.Minor`](/sdk/api/minor-versionbuilder)
+- [`VersionBuilder.Numbers`](/sdk/api/numbers-versionbuilder)
+- [`VersionBuilder.Suffix`](/sdk/api/suffix-versionbuilder)
+- [`VersionBuilder.PublicTime`](/sdk/api/public-time-versionbuilder)
+- [`VersionBuilder.Metadata`](/sdk/api/metadata-versionbuilder)
+- [`VersionBuilder.Build`](/sdk/api/build-versionbuilder)
+
+
 ---
 
 ::: details 源码位置

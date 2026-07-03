@@ -18,6 +18,15 @@ String 返回版本号数字部分的字符串表示
 - `string`：如 "1.2.3"
 
 
+## 🔗 同类方法
+
+- [`VersionNumbers.CompareTo`](/sdk/api/compare-to-versionnumbers)
+- [`VersionNumbers.BuildGroupID`](/sdk/api/build-group-id-versionnumbers)
+- [`VersionNumbers.Len`](/sdk/api/len-versionnumbers)
+- [`VersionNumbers.At`](/sdk/api/at-versionnumbers)
+- [`VersionNumbers.Equals`](/sdk/api/equals-versionnumbers)
+
+
 ---
 
 ::: details 源码位置

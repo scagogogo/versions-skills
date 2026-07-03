@@ -46,6 +46,12 @@ if result < 0 {
 - `string`：后缀字符串，如 "-beta1"
 
 
+## 🔗 同类方法
+
+- [`VersionSuffix.IsEmpty`](/sdk/api/is-empty-versionsuffix)
+- [`VersionSuffix.CompareTo`](/sdk/api/compare-to-versionsuffix)
+
+
 ---
 
 ::: details 源码位置

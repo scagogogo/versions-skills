@@ -18,6 +18,13 @@ String 返回版本范围的字符串表示
 - `string`：如 "[1.0.0, 2.0.0]"、"(1.0.0, 2.0.0)"等
 
 
+## 🔗 同类方法
+
+- [`VersionRange.Contains`](/sdk/api/contains-versionrange)
+- [`VersionRange.Filter`](/sdk/api/filter-versionrange)
+- [`VersionRange.IsEmpty`](/sdk/api/is-empty-versionrange)
+
+
 ---
 
 ::: details 源码位置

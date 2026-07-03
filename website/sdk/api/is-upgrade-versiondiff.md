@@ -11,6 +11,15 @@ func (d *VersionDiff) IsUpgrade() bool
 IsUpgrade 判断差异是否为升级（主、次或修订版本号至少有一项增加）
 
 
+## 🔗 同类方法
+
+- [`VersionDiff.String`](/sdk/api/string-versiondiff)
+- [`VersionDiff.IsDowngrade`](/sdk/api/is-downgrade-versiondiff)
+- [`VersionDiff.IsMajorChange`](/sdk/api/is-major-change-versiondiff)
+- [`VersionDiff.IsMinorChange`](/sdk/api/is-minor-change-versiondiff)
+- [`VersionDiff.IsPatchChange`](/sdk/api/is-patch-change-versiondiff)
+
+
 ---
 
 ::: details 源码位置

@@ -21,6 +21,15 @@ Equals 判断两个版本号数字部分是否相等
 - `bool`：如果完全相等则返回 true
 
 
+## 🔗 同类方法
+
+- [`VersionNumbers.CompareTo`](/sdk/api/compare-to-versionnumbers)
+- [`VersionNumbers.BuildGroupID`](/sdk/api/build-group-id-versionnumbers)
+- [`VersionNumbers.Len`](/sdk/api/len-versionnumbers)
+- [`VersionNumbers.At`](/sdk/api/at-versionnumbers)
+- [`VersionNumbers.String`](/sdk/api/string-versionnumbers)
+
+
 ---
 
 ::: details 源码位置

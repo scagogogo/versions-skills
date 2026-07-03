@@ -23,6 +23,12 @@ IsDigit 判断是否是数字
 - `bool`：如果是数字则返回 true，否则返回 false
 
 
+## 🔗 同类方法
+
+- [`VersionStringParser.Parse`](/sdk/api/parse-versionstringparser)
+- [`VersionStringParser.IsVersionNumberDelimiter`](/sdk/api/is-version-number-delimiter-versionstringparser)
+
+
 ---
 
 ::: details 源码位置

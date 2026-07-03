@@ -19,6 +19,12 @@ PurePrefix 返回去除分隔符后的纯净前缀
 - `string`：去除末尾分隔符后的前缀
 
 
+## 🔗 同类方法
+
+- [`VersionPrefix.IsEmpty`](/sdk/api/is-empty-versionprefix)
+- [`VersionPrefix.String`](/sdk/api/string-versionprefix)
+
+
 ---
 
 ::: details 源码位置

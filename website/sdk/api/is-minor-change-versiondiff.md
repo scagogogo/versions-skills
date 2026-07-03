@@ -11,6 +11,15 @@ func (d *VersionDiff) IsMinorChange() bool
 IsMinorChange 判断差异是否仅涉及次版本号变化（主版本号不变）
 
 
+## 🔗 同类方法
+
+- [`VersionDiff.String`](/sdk/api/string-versiondiff)
+- [`VersionDiff.IsUpgrade`](/sdk/api/is-upgrade-versiondiff)
+- [`VersionDiff.IsDowngrade`](/sdk/api/is-downgrade-versiondiff)
+- [`VersionDiff.IsMajorChange`](/sdk/api/is-major-change-versiondiff)
+- [`VersionDiff.IsPatchChange`](/sdk/api/is-patch-change-versiondiff)
+
+
 ---
 
 ::: details 源码位置

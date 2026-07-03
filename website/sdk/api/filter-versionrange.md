@@ -21,6 +21,13 @@ Filter 过滤版本列表，只保留在范围内的版本
 - `[]*Version`：范围内的版本列表
 
 
+## 🔗 同类方法
+
+- [`VersionRange.Contains`](/sdk/api/contains-versionrange)
+- [`VersionRange.String`](/sdk/api/string-versionrange)
+- [`VersionRange.IsEmpty`](/sdk/api/is-empty-versionrange)
+
+
 ---
 
 ::: details 源码位置

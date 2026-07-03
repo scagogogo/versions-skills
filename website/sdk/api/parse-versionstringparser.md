@@ -26,6 +26,12 @@ fmt.Printf("版本号: %s\n", version.Raw)
 ```
 
 
+## 🔗 同类方法
+
+- [`VersionStringParser.IsDigit`](/sdk/api/is-digit-versionstringparser)
+- [`VersionStringParser.IsVersionNumberDelimiter`](/sdk/api/is-version-number-delimiter-versionstringparser)
+
+
 ---
 
 ::: details 源码位置

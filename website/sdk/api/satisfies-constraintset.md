@@ -24,6 +24,13 @@ cs.Satisfies(v) 等价于 cs.Match(v)，与 Version.Satisfies(constraint) 对称
 - `bool`：如果版本满足所有约束则返回 true
 
 
+## 🔗 同类方法
+
+- [`ConstraintSet.Match`](/sdk/api/match-constraintset)
+- [`ConstraintSet.String`](/sdk/api/string-constraintset)
+- [`ConstraintSet.Len`](/sdk/api/len-constraintset)
+
+
 ---
 
 ::: details 源码位置

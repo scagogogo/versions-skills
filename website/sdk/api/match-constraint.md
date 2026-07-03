@@ -21,6 +21,11 @@ Match 判断版本是否满足约束条件
 - `bool`：如果版本满足约束则返回 true
 
 
+## 🔗 同类方法
+
+- [`Constraint.String`](/sdk/api/string-constraint)
+
+
 ---
 
 ::: details 源码位置

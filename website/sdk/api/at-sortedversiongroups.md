@@ -23,6 +23,16 @@ At 根据索引获取版本组
 - `*VersionGroup`：对应的版本组，越界则返回 nil
 
 
+## 🔗 同类方法
+
+- [`SortedVersionGroups.GroupIDs`](/sdk/api/group-ids-sortedversiongroups)
+- [`SortedVersionGroups.QueryRange`](/sdk/api/query-range-sortedversiongroups)
+- [`SortedVersionGroups.Len`](/sdk/api/len-sortedversiongroups)
+- [`SortedVersionGroups.Get`](/sdk/api/get-sortedversiongroups)
+- [`SortedVersionGroups.Contains`](/sdk/api/contains-sortedversiongroups)
+- [`SortedVersionGroups.Versions`](/sdk/api/versions-sortedversiongroups)
+
+
 ---
 
 ::: details 源码位置

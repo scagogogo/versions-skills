@@ -23,6 +23,12 @@ Match 判断版本是否满足约束联合（OR 逻辑）
 - `bool`：如果版本满足任意约束集则返回 true
 
 
+## 🔗 同类方法
+
+- [`ConstraintUnion.Satisfies`](/sdk/api/satisfies-constraintunion)
+- [`ConstraintUnion.String`](/sdk/api/string-constraintunion)
+
+
 ---
 
 ::: details 源码位置

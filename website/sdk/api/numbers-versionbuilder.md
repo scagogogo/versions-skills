@@ -11,6 +11,18 @@ func (b *VersionBuilder) Numbers(numbers []int) *VersionBuilder
 Numbers 设置版本号数字部分
 
 
+## 🔗 同类方法
+
+- [`VersionBuilder.Prefix`](/sdk/api/prefix-versionbuilder)
+- [`VersionBuilder.Major`](/sdk/api/major-versionbuilder)
+- [`VersionBuilder.Minor`](/sdk/api/minor-versionbuilder)
+- [`VersionBuilder.Patch`](/sdk/api/patch-versionbuilder)
+- [`VersionBuilder.Suffix`](/sdk/api/suffix-versionbuilder)
+- [`VersionBuilder.PublicTime`](/sdk/api/public-time-versionbuilder)
+- [`VersionBuilder.Metadata`](/sdk/api/metadata-versionbuilder)
+- [`VersionBuilder.Build`](/sdk/api/build-versionbuilder)
+
+
 ---
 
 ::: details 源码位置
