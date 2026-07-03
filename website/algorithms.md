@@ -452,4 +452,4 @@ hits  := sg.QueryRange(start, end)   // 结果区间 = [1.0.0, 2.0.0)
 | 文件读取 | `O(Σ 行长)` | 整文件读入 + 逐行解析 |
 | 可视化 | `O(n log n)` | 内含分组排序 |
 
-→ 想直接调用这些能力，进 [Go SDK API](./sdk)、[CLI 命令](./cli) 或 [MCP 工具](./mcp)。
+→ 想直接调用这些能力，进 [Go SDK API](/sdk/)、[CLI 命令](/cli/) 或 [MCP 工具](/mcp/)。

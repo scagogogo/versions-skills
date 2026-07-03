@@ -180,4 +180,4 @@ versions-mcp --transport sse --port 8080
 任何支持 MCP 的工具都能接入——把它的 stdio 命令指向 `versions-mcp --transport stdio`，或把 HTTP 传输指向上面的 SSE 端点即可。
 :::
 
-→ 想让 AI 自动完成上面所有配置？用 [一键提示词](./prompts)。想看可用工具清单？进 [MCP 工具](./mcp)。
+→ 想让 AI 自动完成上面所有配置？用 [一键提示词](./prompts)。想看可用工具清单？进 [MCP 工具](/mcp/)。

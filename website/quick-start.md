@@ -85,5 +85,5 @@ go install github.com/scagogogo/versions-skills/cmd/versions-mcp@latest
 
 ---
 
-→ 深入了解能力：[Go SDK API](./sdk)、[CLI 命令](./cli)、[MCP 工具](./mcp)。
+→ 深入了解能力：[Go SDK API](/sdk/)、[CLI 命令](/cli/)、[MCP 工具](/mcp/)。
 → 理解原理：[算法详解](./algorithms)。
