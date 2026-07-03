@@ -11,6 +11,18 @@ func (b *VersionBuilder) Suffix(suffix string) *VersionBuilder
 Suffix 设置版本后缀
 
 
+## 🔗 同类方法
+
+- [`VersionBuilder.Prefix`](/sdk/api/prefix-versionbuilder)
+- [`VersionBuilder.Major`](/sdk/api/major-versionbuilder)
+- [`VersionBuilder.Minor`](/sdk/api/minor-versionbuilder)
+- [`VersionBuilder.Patch`](/sdk/api/patch-versionbuilder)
+- [`VersionBuilder.Numbers`](/sdk/api/numbers-versionbuilder)
+- [`VersionBuilder.PublicTime`](/sdk/api/public-time-versionbuilder)
+- [`VersionBuilder.Metadata`](/sdk/api/metadata-versionbuilder)
+- [`VersionBuilder.Build`](/sdk/api/build-versionbuilder)
+
+
 ---
 
 ::: details 源码位置

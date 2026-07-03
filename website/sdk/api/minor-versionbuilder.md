@@ -11,6 +11,18 @@ func (b *VersionBuilder) Minor(minor int) *VersionBuilder
 Minor 设置次版本号
 
 
+## 🔗 同类方法
+
+- [`VersionBuilder.Prefix`](/sdk/api/prefix-versionbuilder)
+- [`VersionBuilder.Major`](/sdk/api/major-versionbuilder)
+- [`VersionBuilder.Patch`](/sdk/api/patch-versionbuilder)
+- [`VersionBuilder.Numbers`](/sdk/api/numbers-versionbuilder)
+- [`VersionBuilder.Suffix`](/sdk/api/suffix-versionbuilder)
+- [`VersionBuilder.PublicTime`](/sdk/api/public-time-versionbuilder)
+- [`VersionBuilder.Metadata`](/sdk/api/metadata-versionbuilder)
+- [`VersionBuilder.Build`](/sdk/api/build-versionbuilder)
+
+
 ---
 
 ::: details 源码位置

@@ -25,6 +25,11 @@ fmt.Println(c.String()) // 输出: ">=1.0.0"
 ```
 
 
+## 🔗 同类方法
+
+- [`Constraint.Match`](/sdk/api/match-constraint)
+
+
 ---
 
 ::: details 源码位置

@@ -21,6 +21,13 @@ Match 判断版本是否满足所有约束（AND 逻辑）
 - `bool`：如果版本满足所有约束则返回 true
 
 
+## 🔗 同类方法
+
+- [`ConstraintSet.String`](/sdk/api/string-constraintset)
+- [`ConstraintSet.Satisfies`](/sdk/api/satisfies-constraintset)
+- [`ConstraintSet.Len`](/sdk/api/len-constraintset)
+
+
 ---
 
 ::: details 源码位置

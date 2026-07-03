@@ -28,6 +28,16 @@ for _, id := range groupIDs {
 ```
 
 
+## 🔗 同类方法
+
+- [`SortedVersionGroups.QueryRange`](/sdk/api/query-range-sortedversiongroups)
+- [`SortedVersionGroups.Len`](/sdk/api/len-sortedversiongroups)
+- [`SortedVersionGroups.Get`](/sdk/api/get-sortedversiongroups)
+- [`SortedVersionGroups.At`](/sdk/api/at-sortedversiongroups)
+- [`SortedVersionGroups.Contains`](/sdk/api/contains-sortedversiongroups)
+- [`SortedVersionGroups.Versions`](/sdk/api/versions-sortedversiongroups)
+
+
 ---
 
 ::: details 源码位置

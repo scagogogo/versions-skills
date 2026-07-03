@@ -23,6 +23,12 @@ IsVersionNumberDelimiter 判断是否是版本数字的分隔符
 - `bool`：如果是分隔符则返回 true，否则返回 false
 
 
+## 🔗 同类方法
+
+- [`VersionStringParser.Parse`](/sdk/api/parse-versionstringparser)
+- [`VersionStringParser.IsDigit`](/sdk/api/is-digit-versionstringparser)
+
+
 ---
 
 ::: details 源码位置

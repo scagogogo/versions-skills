@@ -31,6 +31,12 @@ if !version2.Prefix.IsEmpty() {
 ```
 
 
+## 🔗 同类方法
+
+- [`VersionPrefix.String`](/sdk/api/string-versionprefix)
+- [`VersionPrefix.PurePrefix`](/sdk/api/pure-prefix-versionprefix)
+
+
 ---
 
 ::: details 源码位置

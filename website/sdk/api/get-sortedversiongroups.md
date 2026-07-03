@@ -23,6 +23,16 @@ Get 根据组 ID 获取版本组
 - `*VersionGroup`：对应的版本组，不存在则返回 nil
 
 
+## 🔗 同类方法
+
+- [`SortedVersionGroups.GroupIDs`](/sdk/api/group-ids-sortedversiongroups)
+- [`SortedVersionGroups.QueryRange`](/sdk/api/query-range-sortedversiongroups)
+- [`SortedVersionGroups.Len`](/sdk/api/len-sortedversiongroups)
+- [`SortedVersionGroups.At`](/sdk/api/at-sortedversiongroups)
+- [`SortedVersionGroups.Contains`](/sdk/api/contains-sortedversiongroups)
+- [`SortedVersionGroups.Versions`](/sdk/api/versions-sortedversiongroups)
+
+
 ---
 
 ::: details 源码位置

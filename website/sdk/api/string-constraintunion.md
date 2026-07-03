@@ -18,6 +18,12 @@ String 返回约束联合的字符串表示
 - `string`：约束联合的字符串表示
 
 
+## 🔗 同类方法
+
+- [`ConstraintUnion.Match`](/sdk/api/match-constraintunion)
+- [`ConstraintUnion.Satisfies`](/sdk/api/satisfies-constraintunion)
+
+
 ---
 
 ::: details 源码位置

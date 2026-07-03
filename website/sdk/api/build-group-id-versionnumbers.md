@@ -32,6 +32,15 @@ for _, version := range allVersions {
 ```
 
 
+## 🔗 同类方法
+
+- [`VersionNumbers.CompareTo`](/sdk/api/compare-to-versionnumbers)
+- [`VersionNumbers.Len`](/sdk/api/len-versionnumbers)
+- [`VersionNumbers.At`](/sdk/api/at-versionnumbers)
+- [`VersionNumbers.String`](/sdk/api/string-versionnumbers)
+- [`VersionNumbers.Equals`](/sdk/api/equals-versionnumbers)
+
+
 ---
 
 ::: details 源码位置

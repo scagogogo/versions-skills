@@ -39,6 +39,15 @@ if result < 0 {
 ```
 
 
+## 🔗 同类方法
+
+- [`VersionNumbers.BuildGroupID`](/sdk/api/build-group-id-versionnumbers)
+- [`VersionNumbers.Len`](/sdk/api/len-versionnumbers)
+- [`VersionNumbers.At`](/sdk/api/at-versionnumbers)
+- [`VersionNumbers.String`](/sdk/api/string-versionnumbers)
+- [`VersionNumbers.Equals`](/sdk/api/equals-versionnumbers)
+
+
 ---
 
 ::: details 源码位置

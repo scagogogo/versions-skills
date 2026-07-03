@@ -18,6 +18,12 @@ String 返回前缀的字符串表示
 - `string`：前缀字符串，如 "v"
 
 
+## 🔗 同类方法
+
+- [`VersionPrefix.IsEmpty`](/sdk/api/is-empty-versionprefix)
+- [`VersionPrefix.PurePrefix`](/sdk/api/pure-prefix-versionprefix)
+
+
 ---
 
 ::: details 源码位置

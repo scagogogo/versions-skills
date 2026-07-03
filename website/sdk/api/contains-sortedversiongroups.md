@@ -21,6 +21,16 @@ Contains 检查是否包含指定组 ID 的版本组
 - `bool`：如果存在则返回 true
 
 
+## 🔗 同类方法
+
+- [`SortedVersionGroups.GroupIDs`](/sdk/api/group-ids-sortedversiongroups)
+- [`SortedVersionGroups.QueryRange`](/sdk/api/query-range-sortedversiongroups)
+- [`SortedVersionGroups.Len`](/sdk/api/len-sortedversiongroups)
+- [`SortedVersionGroups.Get`](/sdk/api/get-sortedversiongroups)
+- [`SortedVersionGroups.At`](/sdk/api/at-sortedversiongroups)
+- [`SortedVersionGroups.Versions`](/sdk/api/versions-sortedversiongroups)
+
+
 ---
 
 ::: details 源码位置

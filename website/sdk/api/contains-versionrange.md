@@ -28,6 +28,13 @@ fmt.Println(r.Contains(v)) // true
 ```
 
 
+## 🔗 同类方法
+
+- [`VersionRange.String`](/sdk/api/string-versionrange)
+- [`VersionRange.Filter`](/sdk/api/filter-versionrange)
+- [`VersionRange.IsEmpty`](/sdk/api/is-empty-versionrange)
+
+
 ---
 
 ::: details 源码位置

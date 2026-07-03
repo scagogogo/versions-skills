@@ -31,6 +31,12 @@ if !version2.Suffix.IsEmpty() {
 ```
 
 
+## 🔗 同类方法
+
+- [`VersionSuffix.String`](/sdk/api/string-versionsuffix)
+- [`VersionSuffix.CompareTo`](/sdk/api/compare-to-versionsuffix)
+
+
 ---
 
 ::: details 源码位置

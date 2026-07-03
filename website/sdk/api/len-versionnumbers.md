@@ -11,6 +11,15 @@ func (x VersionNumbers) Len() int
 Len 返回版本号数字部分的长度
 
 
+## 🔗 同类方法
+
+- [`VersionNumbers.CompareTo`](/sdk/api/compare-to-versionnumbers)
+- [`VersionNumbers.BuildGroupID`](/sdk/api/build-group-id-versionnumbers)
+- [`VersionNumbers.At`](/sdk/api/at-versionnumbers)
+- [`VersionNumbers.String`](/sdk/api/string-versionnumbers)
+- [`VersionNumbers.Equals`](/sdk/api/equals-versionnumbers)
+
+
 ---
 
 ::: details 源码位置
