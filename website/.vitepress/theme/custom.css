@@ -1,0 +1,99 @@
+/**
+ * versions-skills 自定义主题
+ *
+ * 设计原则：
+ * - 全站禁止紫色，品牌色统一为蓝色系（与 meta theme-color #2563eb 对齐）
+ * - 文字、按钮、链接、自定义容器、代码块强调等均走 --vp-c-brand-* 变量
+ * - 仅覆盖变量，不改动 VitePress 默认结构，保证升级兼容
+ */
+
+:root {
+  /* 品牌主色：蓝色 */
+  --vp-c-brand-1: #2563eb;
+  --vp-c-brand-2: #1d4ed8;
+  --vp-c-brand-3: #1e40af;
+  --vp-c-brand-soft: rgba(37, 99, 235, 0.14);
+
+  /* hero 名称渐变（默认会用到 brand-1/2，保持蓝色） */
+  --vp-home-hero-name-color: transparent;
+  --vp-home-hero-name-background: -webkit-linear-gradient(120deg, #3b82f6 30%, #1d4ed8);
+  --vp-home-hero-image-background-image: linear-gradient(-45deg, #dbeafe 50%, #bfdbfe 50%);
+  --vp-home-hero-image-filter: blur(40px);
+
+  /* 强调色（用于 code、kbd 等内联强调） */
+  --vp-c-accent: #2563eb;
+
+  /* 自定义容器（tip/info/warning/danger）的边框与背景——确保不带紫 */
+  --vp-c-tip-1: #2563eb;
+  --vp-c-tip-2: #3b82f6;
+  --vp-c-tip-soft: rgba(37, 99, 235, 0.14);
+  --vp-c-info-1: #0ea5e9;
+  --vp-c-info-2: #38bdf8;
+  --vp-c-info-soft: rgba(14, 165, 233, 0.14);
+  --vp-c-warning-1: #ea580c;
+  --vp-c-warning-2: #f97316;
+  --vp-c-warning-soft: rgba(234, 88, 12, 0.14);
+  --vp-c-danger-1: #dc2626;
+  --vp-c-danger-2: #ef4444;
+  --vp-c-danger-soft: rgba(220, 38, 38, 0.14);
+
+  /* 代码块语法高亮：把默认主题里的紫色关键字改为蓝色 */
+  --vp-code-color: #1c7ed3;
+  /* shiki 主题由 VitePress 内置控制，这里通过 CSS 兜底覆盖明显紫色 token */
+
+  /* 覆盖 VitePress 内置的紫色调色板（定义了但通常不引用，覆盖以防万一） */
+  --vp-c-purple-1: #2563eb;
+  --vp-c-purple-2: #3b82f6;
+  --vp-c-purple-3: #60a5fa;
+  --vp-c-purple-soft: rgba(37, 99, 235, 0.14);
+
+  /* 本地搜索 / DocSearch 主色（默认 #5468ff 偏紫） */
+  --vp-local-search-bg: #2563eb;
+  --docsearch-primary-color: #2563eb;
+  --docsearch-logo-color: #2563eb;
+  --docsearch-key-gradient: linear-gradient(#eff6ff, #dbeafe);
+  --docsearch-key-shadow: inset 0 -2px 0 #bfdbfe, inset 0 0 1px 1px #fff, 0 2px 2px rgba(37, 99, 235, 0.25);
+}
+
+.dark {
+  /* 深色模式：蓝色亮度提高，保证对比度 */
+  --vp-c-brand-1: #60a5fa;
+  --vp-c-brand-2: #3b82f6;
+  --vp-c-brand-3: #2563eb;
+  --vp-c-brand-soft: rgba(96, 165, 250, 0.16);
+
+  --vp-home-hero-name-background: -webkit-linear-gradient(120deg, #60a5fa 30%, #93c5fd);
+  --vp-home-hero-image-background-image: linear-gradient(-45deg, #1e3a8a 50%, #1e40af 50%);
+
+  --vp-c-accent: #60a5fa;
+
+  --vp-c-tip-1: #60a5fa;
+  --vp-c-tip-2: #93c5fd;
+  --vp-c-tip-soft: rgba(96, 165, 250, 0.16);
+  --vp-c-info-1: #38bdf8;
+  --vp-c-info-2: #7dd3fc;
+  --vp-c-info-soft: rgba(56, 189, 248, 0.16);
+
+  --vp-code-color: #74c0fc;
+
+  /* 深色模式：紫色调色板与搜索主色也覆盖为蓝色 */
+  --vp-c-purple-1: #60a5fa;
+  --vp-c-purple-2: #3b82f6;
+  --vp-c-purple-3: #2563eb;
+  --vp-c-purple-soft: rgba(96, 165, 250, 0.16);
+
+  --vp-local-search-bg: #60a5fa;
+  --docsearch-primary-color: #60a5fa;
+  --docsearch-logo-color: #60a5fa;
+}
+
+/**
+ * 兜底：强制覆盖 shiki/github 主题里残留的紫色关键字色。
+ * VitePress 默认用 shiki 的 github-light/github-dark，其中 "keyword" 是 #d73a49（红），
+ * "string" 是 #032f62（深蓝），本无紫色；但部分 token（如 "builtin"）在 dark 主题偏紫。
+ * 这里不劫持 shiki 输出，仅对极少数偏紫的 utility class 兜底。
+ */
+.vp-doc span[style*="#8250df"],
+.vp-doc span[style*="#6639ba"] {
+  color: #1c7ed3 !important;
+}
