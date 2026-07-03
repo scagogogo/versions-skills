@@ -28,7 +28,7 @@ group1 := versions.NewVersionGroup(versions.NewVersionNumbers([]int{1, 2}))
 group2 := versions.NewVersionGroup(versions.NewVersionNumbers([]int{1, 3}))
 
 if group1.CompareTo(group2) < 0 {
-fmt.Println("group1 比 group2 旧")
+    fmt.Println("group1 比 group2 旧")
 }
 ```
 

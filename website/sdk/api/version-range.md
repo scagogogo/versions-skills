@@ -32,7 +32,7 @@ high := versions.NewVersion("2.0.0")
 r := versions.NewVersionRange(low, high, true, true)
 v := versions.NewVersion("1.5.0")
 if r.Contains(v) {
-fmt.Println("1.5.0 in [1.0.0, 2.0.0]")
+    fmt.Println("1.5.0 in [1.0.0, 2.0.0]")
 }
 ```
 

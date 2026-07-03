@@ -27,7 +27,7 @@ GroupByMinor 按次版本号分组
 list := versions.NewVersions("1.0.0", "1.0.1", "1.1.0", "2.0.0")
 groups := versions.GroupByMinor(list)
 for key, vs := range groups {
-fmt.Printf("Minor %s: %d versions\n", key, len(vs))
+    fmt.Printf("Minor %s: %d versions\n", key, len(vs))
 }
 ```
 

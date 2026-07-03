@@ -27,7 +27,7 @@ SortVersionGroupMap 对版本组映射进行排序
 groupMap := Group(versions)
 sortedGroups := SortVersionGroupMap(groupMap)
 for _, group := range sortedGroups {
-fmt.Printf("组: %s, 版本数: %d\n", group.GroupID, len(group.Versions))
+    fmt.Printf("组: %s, 版本数: %d\n", group.GroupID, len(group.Versions))
 }
 ```
 

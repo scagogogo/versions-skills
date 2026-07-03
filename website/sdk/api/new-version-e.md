@@ -27,7 +27,7 @@ NewVersionE 从版本字符串创建一个新的 Version 对象，并返回可�
 ```go
 version, err := versions.NewVersionE("v1.2.3-beta1")
 if err != nil {
-log.Fatalf("无效的版本号: %v", err)
+    log.Fatalf("无效的版本号: %v", err)
 }
 ```
 

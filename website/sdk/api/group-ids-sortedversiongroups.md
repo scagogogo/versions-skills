@@ -23,7 +23,7 @@ GroupIDs 返回所有版本组的ID列表
 sortedGroups := versions.NewSortedVersionGroups(allVersions)
 groupIDs := sortedGroups.GroupIDs()
 for _, id := range groupIDs {
-fmt.Printf("版本组: %s\n", id)
+    fmt.Printf("版本组: %s\n", id)
 }
 ```
 

@@ -22,7 +22,7 @@ ParserOption 允许调用者自定义解析器支持的数字分隔符，
 ```go
 // 支持 underscore 分隔（Python/RPM 生态）
 v := versions.NewVersionWithOption("1_2_3",
-versions.ParserOption{Delimiters: ".-_"})
+    versions.ParserOption{Delimiters: ".-_"})
 ```
 
 

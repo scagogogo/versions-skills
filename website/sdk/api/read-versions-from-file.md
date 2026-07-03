@@ -39,7 +39,7 @@ ReadVersionsFromFile 从文件中读取版本号并解析为Version对象
 // 从版本列表文件中读取版本
 versions, err := versions.ReadVersionsFromFile("./versions.txt")
 if err != nil {
-log.Fatalf("读取版本文件失败: %v", err)
+    log.Fatalf("读取版本文件失败: %v", err)
 }
 
 // 打印解析的版本数

@@ -31,7 +31,7 @@ SortVersionSlice 对版本号对象数组进行排序
 versions := versions.NewVersions("1.2.0", "1.0.0", "1.10.0", "2.0.0")
 sorted := versions.SortVersionSlice(versions)
 for _, v := range sorted {
-fmt.Println(v.Raw)
+    fmt.Println(v.Raw)
 }
 ```
 

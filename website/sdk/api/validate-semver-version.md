@@ -24,7 +24,7 @@ ValidateSemver 按照 SemVer 2.0.0 规范严格校验版本号
 ```go
 v := versions.NewVersion("1.2.3")
 if err := v.ValidateSemver(); err != nil {
-fmt.Println("不符合 semver 规范:", err)
+    fmt.Println("不符合 semver 规范:", err)
 }
 ```
 

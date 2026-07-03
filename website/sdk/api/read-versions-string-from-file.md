@@ -30,12 +30,12 @@ ReadVersionsStringFromFile 从文件中读取版本号字符串
 // 从版本列表文件中读取版本字符串
 versionStrings, err := versions.ReadVersionsStringFromFile("./versions.txt")
 if err != nil {
-log.Fatalf("读取版本文件失败: %v", err)
+    log.Fatalf("读取版本文件失败: %v", err)
 }
 
 // 使用版本字符串
 for _, vStr := range versionStrings {
-fmt.Printf("发现版本: %s\n", vStr)
+    fmt.Printf("发现版本: %s\n", vStr)
 }
 ```
 

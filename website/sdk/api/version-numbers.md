@@ -25,7 +25,7 @@ groupID := numbers.BuildGroupID() // 返回 "1.2.3"
 // 比较两个版本号数字部分
 other := versions.NewVersionNumbers([]int{1, 3, 0})
 if numbers.CompareTo(other) < 0 {
-fmt.Println("1.2.3 比 1.3.0 旧")
+    fmt.Println("1.2.3 比 1.3.0 旧")
 }
 ```
 

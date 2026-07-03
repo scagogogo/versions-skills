@@ -21,12 +21,12 @@ IsEmpty 返回前缀是否为空
 ```go
 version := versions.NewVersion("1.2.3") // 没有前缀
 if version.Prefix.IsEmpty() {
-fmt.Println("版本没有前缀")
+    fmt.Println("版本没有前缀")
 }
 
 version2 := versions.NewVersion("v1.2.3") // 有前缀
 if !version2.Prefix.IsEmpty() {
-fmt.Printf("版本前缀是: %s\n", version2.Prefix)
+    fmt.Printf("版本前缀是: %s\n", version2.Prefix)
 }
 ```
 

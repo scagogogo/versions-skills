@@ -31,7 +31,7 @@ suffix2 := versions.VersionSuffix("-beta1")
 
 result := suffix1.CompareTo(suffix2)
 if result < 0 {
-fmt.Println("alpha1 后缀的优先级低于 beta1 后缀")
+    fmt.Println("alpha1 后缀的优先级低于 beta1 后缀")
 }
 
 # String

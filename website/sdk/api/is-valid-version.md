@@ -21,7 +21,7 @@ IsValid 检查版本号是否有效
 ```go
 version := versions.NewVersion("not-a-version")
 if !version.IsValid() {
-fmt.Println("无效的版本号")
+    fmt.Println("无效的版本号")
 }
 ```
 

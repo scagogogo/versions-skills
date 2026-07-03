@@ -27,7 +27,7 @@ Contains 判断本版本组中是否包含给定的版本
 group := versions.NewVersionGroup(versions.NewVersionNumbers([]int{1, 2}))
 version := versions.NewVersion("1.2.3")
 if !group.Contains(version) {
-group.Add(version)
+    group.Add(version)
 }
 ```
 

@@ -27,7 +27,7 @@ GroupByMajor 按主版本号分组
 list := versions.NewVersions("1.0.0", "1.1.0", "2.0.0", "2.1.0")
 groups := versions.GroupByMajor(list)
 for major, vs := range groups {
-fmt.Printf("Major %d: %d versions\n", major, len(vs))
+    fmt.Printf("Major %d: %d versions\n", major, len(vs))
 }
 ```
 

@@ -22,7 +22,7 @@ IsPrerelease 判断版本是否为预发布版本
 ```go
 v := versions.NewVersion("1.0.0-beta")
 if v.IsPrerelease() {
-fmt.Println("这是预发布版本")
+    fmt.Println("这是预发布版本")
 }
 ```
 

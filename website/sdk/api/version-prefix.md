@@ -19,7 +19,7 @@ VersionPrefix 是一个字符串类型，用于表示和操作版本号的前缀
 // 检查前缀是否为空
 prefix := versions.VersionPrefix("v")
 if !prefix.IsEmpty() {
-fmt.Printf("版本前缀: %s\n", prefix)
+    fmt.Printf("版本前缀: %s\n", prefix)
 }
 
 // 在解析版本号时处理前缀

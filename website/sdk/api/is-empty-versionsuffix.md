@@ -21,12 +21,12 @@ IsEmpty 判断版本后缀是否为空
 ```go
 version := versions.NewVersion("1.2.3") // 没有后缀
 if version.Suffix.IsEmpty() {
-fmt.Println("版本没有后缀")
+    fmt.Println("版本没有后缀")
 }
 
 version2 := versions.NewVersion("1.2.3-rc1") // 有后缀
 if !version2.Suffix.IsEmpty() {
-fmt.Printf("版本后缀是: %s\n", version2.Suffix)
+    fmt.Printf("版本后缀是: %s\n", version2.Suffix)
 }
 ```
 
