@@ -127,4 +127,4 @@ Cursor / Windsurf / VS Code Copilot / Cline 的提示词结构相同，只是配
 
 :::
 
-→ 提示词背后的能力详见 [AI Agent 接入指南](./ai-agents) 与 [MCP 工具](./mcp)。
+→ 提示词背后的能力详见 [AI Agent 接入指南](./ai-agents) 与 [MCP 工具](/mcp/)。
