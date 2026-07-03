@@ -35,7 +35,7 @@ features:
     details: 完整支持 >=、^、~、1.x、|| 组合约束表达式。约束语法三层（Union OR / Set AND / Single），语义与 npm/pip 一致。
   - icon: 🌳
     title: 分组与可视化
-    details: 按主/次版本号分组排序，1.10.0 正确排在 1.2.0 之后。Unicode 树形展示版本层次。
+    details: 按版本号数字部分分组排序，1.10.0 正确排在 1.2.0 之后。Unicode 树形展示版本层次。
   - icon: 🚀
     title: 零依赖核心
     details: Go 核心库无外部重依赖，纯标准库可编译。CLI/MCP/Skills 三种交付形态共享同一引擎。
