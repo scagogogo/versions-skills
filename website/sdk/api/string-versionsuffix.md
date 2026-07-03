@@ -8,42 +8,22 @@ func (x VersionSuffix) String() string
 
 ## 📖 说明
 
-CompareTo 比较两个版本后缀的优先级
+String 返回后缀的字符串表示
 
-该方法使用后缀语义权重系统比较两个版本后缀的优先级。
-对于已知后缀类型（alpha、beta、rc等），按语义权重排序；
-对于未知后缀，退化为字典序比较。
-
-
-#### 参数
-
-- `target`：要比较的目标版本后缀
-
+实现 `fmt.Stringer` 接口，返回版本后缀的原始字符串形式。
 
 #### 返回
 
-- `int`：如果当前后缀优先级低于目标后缀，返回-1；如果相等，返回0；如果高于，返回1
+- `string`：后缀字符串，如 `"-beta1"`、`"-rc1"`；空后缀返回 `""`
 
 
 ```go
-suffix1 := versions.VersionSuffix("-alpha1")
-suffix2 := versions.VersionSuffix("-beta1")
+suffix := versions.VersionSuffix("-beta1")
+fmt.Println(suffix.String()) // -beta1
 
-result := suffix1.CompareTo(suffix2)
-if result < 0 {
-    fmt.Println("alpha1 后缀的优先级低于 beta1 后缀")
-}
-
-# String
-
-返回后缀的字符串表示，实现 fmt.Stringer 接口。
+empty := versions.EmptyVersionSuffix
+fmt.Println(empty.String() == "") // true
 ```
-
-
-
-#### 返回
-
-- `string`：后缀字符串，如 "-beta1"
 
 
 ## 🔗 同类方法

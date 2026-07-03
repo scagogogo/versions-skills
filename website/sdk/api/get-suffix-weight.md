@@ -23,6 +23,10 @@ GetSuffixWeight 获取后缀的语义权重
 
 - `SuffixWeight`：后缀的语义权重值
 
+::: tip 完整权重表
+各后缀对应的权重值见 [`SuffixWeight` 类型页](/sdk/api/suffix-weight) 的完整权重表，或 [后缀权重概念页](/concepts/suffix-weight)。注意 `sp`/`patch`/`post` 的权重高于正式版。
+:::
+
 
 ---
 

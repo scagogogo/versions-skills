@@ -1,7 +1,7 @@
 # 后缀权重
 
 ::: tip 关键
-当两个版本的**数字段完全相同**时，按后缀权重决定先后。权重越大越「新」（稳定版 > 预发布版）。
+当两个版本的**数字段完全相同**时，按后缀权重决定先后。权重越大越「新」。绝大多数情况下稳定版 > 预发布版，但 `sp`/`patch`/`post` 是例外（见下方 warning）。
 :::
 
 ## 📊 权重表
@@ -22,6 +22,17 @@
 | 600 | `SuffixWeightSP` | `sp` | 服务包 |
 | 700 | `SuffixWeightPatch` | `patch` | 补丁 |
 | 800 | `SuffixWeightPost` | `post` | Post 发布（PEP 440） |
+
+::: warning 反直觉：sp/patch/post 高于正式版
+`sp(600)`、`patch(700)`、`post(800)` 的权重**大于**正式版 `final/release/ga(500)`。语义上 `1.0.0-sp1` 是 `1.0.0` 正式版**之后**发布的服务包，`1.0.0-post1` 是 PEP 440 中正式版**之后**的修订。因此：
+
+```go
+versions.NewVersion("1.0.0-post1").IsNewerThan(versions.NewVersion("1.0.0")) // true
+versions.NewVersion("1.0.0-sp1").IsNewerThan(versions.NewVersion("1.0.0"))   // true
+```
+
+排序结果：`1.0.0-rc1` < `1.0.0` < `1.0.0-sp1` < `1.0.0-post1`。
+:::
 
 ## 🔍 比较示例
 
