@@ -2,6 +2,24 @@
 
 常见任务的「复制即用」片段。每篇聚焦一个具体问题。
 
+:::mermaid
+flowchart LR
+  PARSE["🔍 解析与检查"] --> COMP["⚖️ 比较"]
+  COMP --> SORT["📊 排序与集合"]
+  SORT --> GROUP["🗃 分组"]
+  GROUP --> CONSTR["🎯 约束与范围"]
+  CONSTR --> MUT["🛠 变更"]
+  MUT --> FILE["📁 文件"]
+
+  style PARSE fill:#eff6ff,stroke:#2563eb
+  style COMP fill:#eff6ff,stroke:#2563eb
+  style SORT fill:#f0fdf4,stroke:#16a34a
+  style GROUP fill:#f0fdf4,stroke:#16a34a
+  style CONSTR fill:#fff7ed,stroke:#ea580c
+  style MUT fill:#fff7ed,stroke:#ea580c
+  style FILE fill:#fef2f2,stroke:#dc2626
+:::
+
 ## 🔍 解析与检查
 
 - [如何判断版本是预发布](/recipes/is-prerelease)
