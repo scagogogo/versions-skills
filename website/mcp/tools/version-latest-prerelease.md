@@ -22,8 +22,21 @@ version_latest_prerelease
 {
   "tool": "version_latest_prerelease",
   "arguments": {
-    "versions": []
+    "versions": [
+      "1.0.0-alpha",
+      "1.0.0-beta",
+      "1.0.0-rc1",
+      "1.0.0"
+    ]
   }
+}
+```
+
+## 📤 返回示例
+
+```json
+{
+  "latest_prerelease": "1.0.0-rc1"
 }
 ```
 

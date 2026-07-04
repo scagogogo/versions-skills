@@ -19,8 +19,15 @@ versions constraint "^1.2.0" 1.5.0
 
 ## 🤖 MCP
 
-```
-version_constraint_check(expression="^1.2.0", version="1.5.0")
+```json
+{
+  "tool": "version_constraint_check",
+  "arguments": {
+    "expression": "^1.2.3",
+    "version": "1.5.0",
+    "type": "constraint_set"
+  }
+}
 ```
 
 ## 📚 参考

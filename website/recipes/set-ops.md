@@ -20,8 +20,21 @@ versions.Difference(a, b)
 
 ## 🤖 MCP
 
-```
-version_set_operation(operation="union", set_a=[...], set_b=[...])
+```json
+{
+  "tool": "version_set_operation",
+  "arguments": {
+    "operation": "intersection",
+    "set_a": [
+      "1.0.0",
+      "2.0.0"
+    ],
+    "set_b": [
+      "1.0.0",
+      "3.0.0"
+    ]
+  }
+}
 ```
 
 ## 📚 参考

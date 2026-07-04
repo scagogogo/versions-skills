@@ -23,9 +23,22 @@ version_write_file
 {
   "tool": "version_write_file",
   "arguments": {
-    "filepath": "",
-    "versions": []
+    "filepath": "/path/to/output.txt",
+    "versions": [
+      "1.0.0",
+      "1.1.0",
+      "2.0.0"
+    ]
   }
+}
+```
+
+## 📤 返回示例
+
+```json
+{
+  "success": true,
+  "written_count": 3
 }
 ```
 

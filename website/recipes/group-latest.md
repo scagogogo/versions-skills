@@ -18,8 +18,17 @@ versions group-latest 1.0.0 1.0.1 1.0.2 --group-id 1.0
 
 ## 🤖 MCP
 
-```
-version_group(versions=[...]) → 解析分组
+```json
+{
+  "tool": "version_group",
+  "arguments": {
+    "versions": [
+      "1.0.0",
+      "1.0.0-rc1",
+      "1.1.0"
+    ]
+  }
+}
 ```
 
 ## 📚 参考

@@ -1,13 +1,11 @@
-# Version Range Query
+# 范围查询
 
 ::: tip 源文件
 对应的 Skill 定义位于 [`skills/version-range-query/SKILL.md`](https://github.com/scagogogo/versions-skills/blob/main/skills/version-range-query/SKILL.md)。
 :::
 
 
-# Version Range Query
-
-> **Prerequisite:** See `/installation` skill for SDK/CLI/MCP setup.
+> **前置：** SDK / CLI / MCP 安装见 [`/installation`](/skills/installation)。
 
 ## When to Use
 

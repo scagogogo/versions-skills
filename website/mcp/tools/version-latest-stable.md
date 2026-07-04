@@ -22,8 +22,22 @@ version_latest_stable
 {
   "tool": "version_latest_stable",
   "arguments": {
-    "versions": []
+    "versions": [
+      "1.0.0-alpha",
+      "1.0.0",
+      "1.1.0-beta",
+      "1.1.0",
+      "2.0.0-rc1"
+    ]
   }
+}
+```
+
+## 📤 返回示例
+
+```json
+{
+  "latest_stable": "1.1.0"
 }
 ```
 

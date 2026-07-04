@@ -1,4 +1,4 @@
-# Cli Operations
+# CLI 操作
 
 ::: tip 源文件
 对应的 Skill 定义位于 [`skills/cli-operations/SKILL.md`](https://github.com/scagogogo/versions-skills/blob/main/skills/cli-operations/SKILL.md)。
@@ -7,8 +7,8 @@
 
 # CLI Operations
 
-> **Setup:** See `/installation` for one-time CLI binary install.  
-> **Layers:** CLI (shell) — this skill covers CLI-specific patterns. For domain logic, see the corresponding version-* skill.
+> **前置：** 一次性安装 CLI 二进制见 [`/installation`](/skills/installation)。  
+> **入口：** CLI (shell) — 本篇聚焦 CLI 用法。领域逻辑见对应的 `version-*` skill。
 
 ## When to Use
 

@@ -26,12 +26,20 @@ version_build
 {
   "tool": "version_build",
   "arguments": {
-    "prefix": "",
-    "suffix": "",
+    "prefix": "v",
+    "suffix": "-beta1",
     "major": 1,
-    "minor": 1,
-    "patch": 1
+    "minor": 2,
+    "patch": 3
   }
+}
+```
+
+## 📤 返回示例
+
+```json
+{
+  "built_version": "v1.2.3-beta1"
 }
 ```
 

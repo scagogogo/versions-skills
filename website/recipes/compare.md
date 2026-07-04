@@ -20,8 +20,14 @@ versions compare 1.2.3 1.2.4
 
 ## 🤖 MCP
 
-```
-version_compare(version1="1.2.3", version2="1.2.4")
+```json
+{
+  "tool": "version_compare",
+  "arguments": {
+    "version1": "1.0.0",
+    "version2": "2.0.0"
+  }
+}
 ```
 
 ## 📚 参考

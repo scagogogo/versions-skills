@@ -26,7 +26,7 @@ QueryRangeVersions 获取组内指定区间内的版本
 
 
 ```go
-group := versions.NewVersionGroupFromVersions(versions.NewVersions("1.2.0", "1.2.1", "1.2.2", "1.2.3"))
+group := versions.NewVersionGroupFromVersions(vs.NewVersions("1.2.0", "1.2.1", "1.2.2", "1.2.3"))
 
 // 查询 1.2.0（包含）到 1.2.2（包含）的版本
 startTuple := tuple.NewTuple2(versions.NewVersion("1.2.0"), versions.ContainsPolicyYes)
@@ -37,7 +37,9 @@ rangeVersions := group.QueryRangeVersions(startTuple, endTuple)
 ```
 
 
-## 🔗 同类方法
+::: details 同类方法（点击展开）
+
+**第 1 组**
 
 - [`VersionGroup.Add`](/sdk/api/add-versiongroup)
 - [`VersionGroup.Contains`](/sdk/api/contains-versiongroup)
@@ -47,6 +49,9 @@ rangeVersions := group.QueryRangeVersions(startTuple, endTuple)
 - [`VersionGroup.SortVersions`](/sdk/api/sort-versions-versiongroup)
 - [`VersionGroup.GetLatest`](/sdk/api/get-latest-versiongroup)
 - [`VersionGroup.GetOldest`](/sdk/api/get-oldest-versiongroup)
+
+**第 2 组**
+
 - [`VersionGroup.Count`](/sdk/api/count-versiongroup)
 - [`VersionGroup.StableVersions`](/sdk/api/stable-versions-versiongroup)
 - [`VersionGroup.PrereleaseVersions`](/sdk/api/prerelease-versions-versiongroup)
@@ -56,8 +61,8 @@ rangeVersions := group.QueryRangeVersions(startTuple, endTuple)
 - [`VersionGroup.String`](/sdk/api/string-versiongroup)
 - [`VersionGroup.Filter`](/sdk/api/filter-versiongroup)
 
+:::
 
----
 
 ::: details 源码位置
 定义于 [`version_group.go`](https://github.com/scagogogo/versions-skills/blob/main/version_group.go)

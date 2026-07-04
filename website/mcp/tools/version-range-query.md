@@ -26,12 +26,30 @@ version_range_query
 {
   "tool": "version_range_query",
   "arguments": {
-    "start": "1.2.3",
-    "end": "1.2.3",
-    "include_start": false,
-    "include_end": false,
-    "versions": []
+    "start": "1.0.0",
+    "end": "2.0.0",
+    "include_start": true,
+    "include_end": true,
+    "versions": [
+      "0.9.0",
+      "1.0.0",
+      "1.5.0",
+      "2.0.0",
+      "2.1.0"
+    ]
   }
+}
+```
+
+## 📤 返回示例
+
+```json
+{
+  "versions_in_range": [
+    "1.0.0",
+    "1.5.0",
+    "2.0.0"
+  ]
 }
 ```
 

@@ -19,8 +19,14 @@ d.IsMajorChange() // true
 
 ## 🤖 MCP
 
-```
-# 用 version_compare 取关系
+```json
+{
+  "tool": "version_compare",
+  "arguments": {
+    "version1": "1.2.3",
+    "version2": "1.3.0"
+  }
+}
 ```
 
 ## 📚 参考

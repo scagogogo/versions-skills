@@ -22,7 +22,40 @@ version_group
 {
   "tool": "version_group",
   "arguments": {
-    "versions": []
+    "versions": [
+      "1.0.0",
+      "1.0.0-rc1",
+      "1.1.0",
+      "2.0.0"
+    ]
+  }
+}
+```
+
+## 📤 返回示例
+
+```json
+{
+  "groups": {
+    "1.0.0": {
+      "versions": [
+        "1.0.0",
+        "1.0.0-rc1"
+      ],
+      "latest": "1.0.0"
+    },
+    "1.1.0": {
+      "versions": [
+        "1.1.0"
+      ],
+      "latest": "1.1.0"
+    },
+    "2.0.0": {
+      "versions": [
+        "2.0.0"
+      ],
+      "latest": "2.0.0"
+    }
   }
 }
 ```

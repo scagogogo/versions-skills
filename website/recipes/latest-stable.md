@@ -18,8 +18,18 @@ versions latest-stable 1.0.0 1.1.0-rc1 1.2.0
 
 ## 🤖 MCP
 
-```
-version_latest_stable(versions=[...])
+```json
+{
+  "tool": "version_latest_stable",
+  "arguments": {
+    "versions": [
+      "1.0.0-alpha",
+      "1.0.0",
+      "2.0.0-beta",
+      "2.0.0"
+    ]
+  }
+}
 ```
 
 ## 📚 参考

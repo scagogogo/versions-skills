@@ -12,7 +12,7 @@ NewOpenRange 创建一个开区间版本范围 (low, high)
 
 
 ```go
-r := versions.NewOpenRange(versions.NewVersion("1.0.0"), versions.NewVersion("2.0.0"))
+r := versions.NewOpenRange(vs.NewVersion("1.0.0"), versions.NewVersion("2.0.0"))
 ```
 
 

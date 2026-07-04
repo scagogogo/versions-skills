@@ -26,7 +26,7 @@ VersionGroup 用于管理具有相同版本号数字部分的一组版本。它�
 
 ```go
 // 创建一个新的版本组
-group := versions.NewVersionGroup(versions.NewVersionNumbers([]int{1, 2}))
+group := versions.NewVersionGroup(vs.NewVersionNumbers([]int{1, 2}))
 
 // 添加版本到组中
 v1 := versions.NewVersion("1.2.0")

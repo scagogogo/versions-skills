@@ -18,8 +18,13 @@ versions read releases.txt
 
 ## 🤖 MCP
 
-```
-version_read_file(filepath="releases.txt")
+```json
+{
+  "tool": "version_read_file",
+  "arguments": {
+    "filepath": "/path/to/releases.txt"
+  }
+}
 ```
 
 ## 📚 参考

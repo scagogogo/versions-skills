@@ -13,7 +13,9 @@ Filter 根据谓词函数过滤版本切片
 返回所有满足谓词条件的版本。
 
 
-## 🔗 同类方法
+::: details 同类方法（点击展开）
+
+**第 1 组**
 
 - [`VersionSlice.Len`](/sdk/api/len-versionslice)
 - [`VersionSlice.Less`](/sdk/api/less-versionslice)
@@ -23,11 +25,14 @@ Filter 根据谓词函数过滤版本切片
 - [`VersionSlice.Contains`](/sdk/api/contains-versionslice)
 - [`VersionSlice.IndexOf`](/sdk/api/index-of-versionslice)
 - [`VersionSlice.Unique`](/sdk/api/unique-versionslice)
+
+**第 2 组**
+
 - [`VersionSlice.Sort`](/sdk/api/sort-versionslice)
 - [`VersionSlice.Sorted`](/sdk/api/sorted-versionslice)
 
+:::
 
----
 
 ::: details 源码位置
 定义于 [`version_slice.go`](https://github.com/scagogogo/versions-skills/blob/main/version_slice.go)

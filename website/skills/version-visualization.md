@@ -1,14 +1,12 @@
-# Version Visualization
+# 版本可视化
 
 ::: tip 源文件
 对应的 Skill 定义位于 [`skills/version-visualization/SKILL.md`](https://github.com/scagogogo/versions-skills/blob/main/skills/version-visualization/SKILL.md)。
 :::
 
 
-# Version Visualization
-
-> **Setup:** See `/installation` for one-time SDK/CLI/MCP install.  
-> **Layers:** SDK (Go) → CLI (shell) → MCP (AI tools) — pick your entry point.
+> **前置：** 一次性安装见 [`/installation`](/skills/installation)，完成 SDK / CLI / MCP 配置。  
+> **三层入口：** SDK (Go) → CLI (shell) → MCP (AI 工具)，按需选用。
 
 ## When to Use
 

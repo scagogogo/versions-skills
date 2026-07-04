@@ -19,8 +19,18 @@ versions check 1.2.3-rc1 --prerelease
 
 ## 🤖 MCP
 
-```
-version_info(version_string="1.2.3-rc1") → is_prerelease
+```json
+{
+  "tool": "version_filter",
+  "arguments": {
+    "prerelease": true,
+    "versions": [
+      "1.0.0",
+      "1.0.0-rc1",
+      "2.0.0"
+    ]
+  }
+}
 ```
 
 ## 📚 参考

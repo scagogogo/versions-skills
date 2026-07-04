@@ -18,8 +18,17 @@ versions build --prefix v --major 1 --minor 2 --patch 3 --suffix -beta1
 
 ## 🤖 MCP
 
-```
-version_build(prefix="v", major=1, minor=2, patch=3, suffix="-beta1")
+```json
+{
+  "tool": "version_build",
+  "arguments": {
+    "prefix": "v",
+    "suffix": "-beta1",
+    "major": 1,
+    "minor": 2,
+    "patch": 3
+  }
+}
 ```
 
 ## 📚 参考

@@ -24,8 +24,16 @@ version_bump
   "tool": "version_bump",
   "arguments": {
     "version_string": "1.2.3",
-    "bump_type": ""
+    "bump_type": "patch"
   }
+}
+```
+
+## 📤 返回示例
+
+```json
+{
+  "bumped_version": "1.2.4"
 }
 ```
 

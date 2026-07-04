@@ -18,8 +18,17 @@ versions write sorted.txt 1.2.0 1.10.0 1.0.0
 
 ## 🤖 MCP
 
-```
-version_write_file(filepath="sorted.txt", versions=[...])
+```json
+{
+  "tool": "version_write_file",
+  "arguments": {
+    "filepath": "/path/to/output.txt",
+    "versions": [
+      "1.0.0",
+      "2.0.0"
+    ]
+  }
+}
 ```
 
 ## 📚 参考

@@ -26,8 +26,8 @@ WriteVersionsToFile 将版本列表写入文件
 
 
 ```go
-versions := versions.NewVersions("2.0.0", "1.0.0", "1.1.0")
-err := versions.WriteVersionsToFile(versions, "./output.txt")
+vs := versions.NewVersions("2.0.0", "1.0.0", "1.1.0")
+err := versions.WriteVersionsToFile(vs, "./output.txt")
 ```
 
 
