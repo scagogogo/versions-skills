@@ -29,16 +29,18 @@ flowchart LR
 ```go
 vs := versions.NewVersions("1.10.0", "1.2.0", "1.1.0", "1.0.0")
 
-asc := versions.SortVersionSlice(vs)                          // 升序
-desc := versions.SortVersionSlice(vs)                         // 原地已排
-// 降序可用 VersionSlice
-slice := versions.VersionSlice(asc)
-slice.Sort()
-// 反转
-for i, j := 0, len(slice)-1; i < j; i, j = i+1, j-1 {
-    slice[i], slice[j] = slice[j], slice[i]
-}
+asc := versions.SortVersionSlice(vs)  // 升序：[1.0.0, 1.1.0, 1.2.0, 1.10.0]
+
+// 降序：用 VersionSlice + sort.Reverse
+import "sort"
+desc := versions.VersionSlice(asc)
+sort.Sort(sort.Reverse(desc))  // [1.10.0, 1.2.0, 1.1.0, 1.0.0]
 ```
+
+::: tip 降序的两种方式
+- **SDK**：`sort.Sort(sort.Reverse(slice))` —— 标准库 `sort.Reverse` 包一层即可
+- **CLI**：`versions sort --desc` —— 直接用 `--desc` 标志
+:::
 
 字符串版（保留原始书写）：
 

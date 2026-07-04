@@ -213,6 +213,32 @@ flowchart TD
 3. **上界检查**：与下界对称，`v > High` 或 `v == High && !HighInclusive` → 不通过。
 4. **通过**：两端都未拦下 → 命中。
 
+:::mermaid
+flowchart LR
+  subgraph CLOSED["NewClosedRange [1.0.0, 2.0.0]"]
+    direction LR
+    C1["[ 1.0.0"] --- C2["1.5.0 ✓"] --- C3["2.0.0 ]"]
+  end
+  subgraph OPEN["NewOpenRange (1.0.0, 2.0.0)"]
+    direction LR
+    O1["( 1.0.0"] --- O2["1.5.0 ✓"] --- O3["2.0.0 )"]
+  end
+  subgraph MIX["NewVersionRange [1.0.0, 2.0.0)"]
+    direction LR
+    M1["[ 1.0.0"] --- M2["1.5.0 ✓"] --- M3["2.0.0 )"]
+  end
+
+  style C1 fill:#f0fdf4,stroke:#16a34a
+  style C2 fill:#f0fdf4,stroke:#16a34a
+  style C3 fill:#f0fdf4,stroke:#16a34a
+  style O1 fill:#fef2f2,stroke:#dc2626
+  style O2 fill:#f0fdf4,stroke:#16a34a
+  style O3 fill:#fef2f2,stroke:#dc2626
+  style M1 fill:#f0fdf4,stroke:#16a34a
+  style M2 fill:#f0fdf4,stroke:#16a34a
+  style M3 fill:#fef2f2,stroke:#dc2626
+:::
+
 构造器：
 
 | 构造方式 | 区间 | 含义 |
@@ -228,6 +254,21 @@ flowchart TD
 源文件：`sort.go`、`version_group.go`
 
 `SortVersionSlice` **不是**朴素 `sort.Slice`，而是两阶段：
+
+:::mermaid
+flowchart LR
+  IN["无序列表<br/>1.10.0 / 1.2.0 / 1.0.0 / 1.2.0-beta"]
+  IN --> P1["阶段 1：分组<br/>BuildGroupID 归组"]
+  P1 --> GROUPS["组 1.0.0<br/>组 1.2.0<br/>组 1.10.0"]
+  GROUPS --> P2["阶段 2：组间排序 + 组内排序"]
+  P2 --> OUT["有序列表<br/>1.0.0 → 1.2.0-beta → 1.2.0 → 1.10.0"]
+
+  style IN fill:#f8fafc,stroke:#475569
+  style P1 fill:#eff6ff,stroke:#2563eb
+  style GROUPS fill:#fff7ed,stroke:#ea580c
+  style P2 fill:#eff6ff,stroke:#2563eb
+  style OUT fill:#f0fdf4,stroke:#16a34a,stroke-width:3px
+:::
 
 1. **分组**：按 `BuildGroupID()`（完整数字串）归组。
 2. **排序组**：按组数字前缀（`VersionGroup.CompareTo`）排组，**组内再排序**，最后拼接。
