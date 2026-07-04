@@ -97,3 +97,18 @@
 .vp-doc span[style*="#6639ba"] {
   color: #1c7ed3 !important;
 }
+
+/**
+ * 导航栏：禁止隐藏溢出项，允许换行显示
+ * VitePress 默认在窄屏时隐藏溢出的 nav 项，改为允许 flex-wrap
+ */
+.VPNav .VPNavBar .VPNavBar-menu {
+  flex-wrap: wrap;
+  overflow: visible;
+}
+
+/* 确保下拉菜单项也能显示 */
+.VPNav .VPNavBar .VPNavBar-menu .VPNavBarMenuGroup,
+.VPNav .VPNavBar .VPNavBar-menu .VPNavBarMenuLink {
+  display: flex;
+}
