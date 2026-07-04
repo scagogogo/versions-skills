@@ -2,6 +2,35 @@
 
 通过动手实践学习 versions-skills。每篇教程都是可运行的完整示例。
 
+:::mermaid
+flowchart LR
+  subgraph BEGINNER["🎓 入门系列"]
+    direction TB
+    B1["1. 10 分钟入门"] --> B2["2. 解析与检查"]
+    B2 --> B3["3. 排序与极值"]
+    B3 --> B4["4. 分组与聚合"]
+  end
+
+  subgraph ADVANCED["🚀 进阶系列"]
+    direction TB
+    A1["5. 约束表达式"] --> A2["6. 范围查询"]
+    A2 --> A3["7. 不可变变更"]
+    A3 --> A4["8. 文件批处理"]
+    A4 --> A5["9. 可视化"]
+  end
+
+  subgraph AI["🤖 AI 集成"]
+    direction TB
+    C1["10. Claude 管理版本"] --> C2["11. CI/CD 版本判断"]
+  end
+
+  BEGINNER --> ADVANCED --> AI
+
+  style BEGINNER fill:#eff6ff,stroke:#2563eb
+  style ADVANCED fill:#f0fdf4,stroke:#16a34a
+  style AI fill:#fff7ed,stroke:#ea580c
+:::
+
 ## 🎓 入门系列
 
 1. [10 分钟入门](/tutorials/getting-started) — 从解析到比较，跑通第一个程序
