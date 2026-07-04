@@ -24,34 +24,64 @@ export default withMermaid(
     ['meta', { name: 'theme-color', content: '#2563eb' }],
   ],
 
-  themeConfig: {
-    // 站点级导航
-    nav: [
-      { text: '首页', link: '/' },
-      { text: '为什么用', link: '/why' },
-      {
-        text: '学习',
-        items: [
-          { text: '核心概念', link: '/concepts/' },
-          { text: '教程', link: '/tutorials/' },
-          { text: '实用配方', link: '/recipes/' },
-          { text: '可运行示例', link: '/examples/' },
-          { text: '工作原理', link: '/how-it-works' },
-          { text: '算法详解', link: '/algorithms' },
+  locales: {
+    // 默认语言：简体中文（根路径，无前缀）
+    root: {
+      label: '简体中文',
+      lang: 'zh-CN',
+      themeConfig: {
+        nav: [
+          { text: '首页', link: '/' },
+          { text: '为什么用', link: '/why' },
+          {
+            text: '学习',
+            items: [
+              { text: '核心概念', link: '/concepts/' },
+              { text: '教程', link: '/tutorials/' },
+              { text: '实用配方', link: '/recipes/' },
+              { text: '可运行示例', link: '/examples/' },
+              { text: '工作原理', link: '/how-it-works' },
+              { text: '算法详解', link: '/algorithms' },
+            ],
+          },
+          { text: 'AI Agent 接入', link: '/ai-agents' },
+          {
+            text: '参考',
+            items: [
+              { text: 'Go SDK API', link: '/sdk/' },
+              { text: 'CLI 命令', link: '/cli/' },
+              { text: 'MCP 工具', link: '/mcp/' },
+              { text: 'Skills 斜杠命令', link: '/skills/' },
+            ],
+          },
         ],
       },
-      { text: 'AI Agent 接入', link: '/ai-agents' },
-      {
-        text: '参考',
-        items: [
-          { text: 'Go SDK API', link: '/sdk/' },
-          { text: 'CLI 命令', link: '/cli/' },
-          { text: 'MCP 工具', link: '/mcp/' },
-          { text: 'Skills 斜杠命令', link: '/skills/' },
+    },
+    // 英文（/en/ 前缀）
+    'en': {
+      label: 'English',
+      lang: 'en-US',
+      link: '/en/',
+      themeConfig: {
+        nav: [
+          { text: 'Home', link: '/en/' },
+          {
+            text: 'Reference',
+            items: [
+              { text: 'Go SDK API', link: '/sdk/' },
+              { text: 'CLI Commands', link: '/cli/' },
+              { text: 'MCP Tools', link: '/mcp/' },
+              { text: 'Skills', link: '/skills/' },
+            ],
+          },
+          { text: '中文文档', link: '/' },
         ],
       },
-    ],
+    },
+  },
 
+  themeConfig: {
+    // 站点级导航已移至 locales 中按语言配置
     // 侧边栏：按路径分目录，每部分独立侧边栏
     sidebar: {
       '/sdk/': [
