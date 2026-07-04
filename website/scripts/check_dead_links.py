@@ -1,0 +1,135 @@
+#!/usr/bin/env python3
+# coding: utf-8
+"""
+Scan VitePress dist directory for internal dead links.
+Run after npm run build to verify all internal hrefs resolve correctly.
+
+Usage:
+    python scripts/check_dead_links.py [--dist DIR] [--base PATH]
+
+Exit codes:
+    0 - No dead links found
+    1 - Dead links detected (CI will fail)
+"""
+
+import os
+import re
+import html
+import argparse
+import sys
+from pathlib import Path
+
+
+def normalize_href(href, base_path):
+    """Convert href to relative path(s) within dist.
+    - Remove base path prefix
+    - Handle cleanUrls: /foo → /foo.html or /foo/index.html
+    """
+    if not href or href.startswith('#') or href.startswith('mailto:'):
+        return None
+
+    # External links (http/https) - not checked
+    if re.match(r'^https?://', href):
+        return None
+
+    # GitHub repository links - not checked (valid external)
+    if href.startswith('https://github.com/scagogogo/versions-skills'):
+        return None
+
+    # Remove base path
+    if base_path and href.startswith(base_path):
+        href = href[len(base_path):]
+
+    if not href.startswith('/'):
+        href = '/' + href
+
+    # cleanUrls: /foo → /foo.html or /foo/index.html
+    if not re.search(r'\.\w+$', href):  # No file extension
+        html_path = href + '.html'
+        index_path = href.rstrip('/') + '/index.html'
+        return [html_path.lstrip('/'), index_path.lstrip('/')]
+
+    return [href.lstrip('/')]
+
+
+def check_file(relpaths, dist_dir):
+    """Check if any of relpaths exists as a file."""
+    for rp in relpaths:
+        fp = os.path.join(dist_dir, rp)
+        if os.path.isfile(fp):
+            return True
+    return False
+
+
+def scan_dead_links(dist_dir, base_path):
+    """Scan all HTML files in dist_dir for internal dead links."""
+    dead_links = []
+    checked = set()
+
+    if not os.path.isdir(dist_dir):
+        print(f"❌ dist directory not found: {dist_dir}")
+        return dead_links
+
+    for html_file in Path(dist_dir).rglob('*.html'):
+        rel_html = os.path.relpath(html_file, dist_dir)
+        try:
+            src = open(html_file, encoding='utf-8').read()
+        except Exception as e:
+            print(f"⚠️ Failed to read {rel_html}: {e}")
+            continue
+
+        # Extract all <a href="...">
+        for m in re.finditer(r'<a[^>]*href=["\']([^"\']+)["\']', src):
+            href = html.unescape(m.group(1))
+            key = (rel_html, href)
+            if key in checked:
+                continue
+            checked.add(key)
+
+            relpaths = normalize_href(href, base_path)
+            if relpaths is None:
+                continue  # External/anchor/empty
+
+            if not check_file(relpaths, dist_dir):
+                dead_links.append((rel_html, href, relpaths))
+
+    return dead_links
+
+
+def main():
+    parser = argparse.ArgumentParser(description='Check internal dead links in VitePress dist')
+    parser.add_argument('--dist', default='website/.vitepress/dist', help='dist directory path')
+    parser.add_argument('--base', default='/versions-skills', help='GitHub Pages base path')
+    parser.add_argument('--ci', action='store_true', help='CI mode: exit 1 on dead links')
+    args = parser.parse_args()
+
+    # Resolve dist path relative to repo root
+    script_dir = Path(__file__).parent
+    repo_root = script_dir.parent.parent
+    dist_dir = (repo_root / args.dist).resolve()
+
+    print(f"🔍 Scanning dist: {dist_dir}")
+    print(f"📍 Base path: {args.base}")
+
+    dead_links = scan_dead_links(str(dist_dir), args.base)
+
+    if not dead_links:
+        print("✅ No internal dead links found")
+        return 0
+
+    print(f"\n⚠️ Found {len(dead_links)} internal dead links:\n")
+    for src, href, targets in dead_links[:50]:
+        print(f"  {src} → {href}")
+        print(f"    Targets not found: {targets}")
+
+    if len(dead_links) > 50:
+        print(f"\n  ... and {len(dead_links) - 50} more")
+
+    if args.ci:
+        return 1
+
+    return 0
+
+
+if __name__ == '__main__':
+    sys.exit(main())
