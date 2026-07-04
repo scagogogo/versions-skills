@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
 """
-Generate a flat-style capability tree diagram — refined version.
-Color palette: blue-gray, no purple, square corners, clean spacing.
+Generate a refined capability tree diagram with modern styling.
+Features: rounded corners, gradient fills, shadows, elegant typography.
 """
 
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-from matplotlib.patches import FancyBboxPatch
+from matplotlib.patches import FancyBboxPatch, Rectangle
+import numpy as np
 
 # ─── Data ───
 tree = {
@@ -27,12 +28,48 @@ tree = {
     ],
 }
 
-# Flat palette — blue-gray, no purple
+# Refined color palette — modern blue-gray, no purple
 cat_colors = [
-    "#2563eb", "#0ea5e9", "#16a34a", "#0891b2",
-    "#ea580c", "#dc2626", "#0d9488", "#d97706",
-    "#059669", "#0284c7", "#15803d", "#0369a1",
+    "#3b82f6",  # blue
+    "#06b6d4",  # cyan
+    "#10b981",  # emerald
+    "#0ea5e9",  # sky
+    "#f59e0b",  # amber
+    "#ef4444",  # red
+    "#14b8a6",  # teal
+    "#f97316",  # orange
+    "#22c55e",  # green
+    "#0284c7",  # deeper sky
+    "#16a34a",  # deeper green
+    "#0369a1",  # deep blue
 ]
+
+def draw_shadow(ax, x, y, w, h, radius=0.15, offset=0.08, alpha=0.12):
+    """Draw a subtle shadow under a box."""
+    shadow = FancyBboxPatch(
+        (x + offset, y - offset), w, h,
+        boxstyle=f"round,pad=0,rounding_size={radius}",
+        facecolor="#000000", edgecolor="none", alpha=alpha, zorder=3
+    )
+    ax.add_patch(shadow)
+
+def draw_gradient_box(ax, x, y, w, h, color, radius=0.15, alpha_start=0.95, alpha_end=0.75):
+    """Draw a box with gradient-like effect using multiple layers."""
+    # Main box
+    box = FancyBboxPatch(
+        (x, y), w, h,
+        boxstyle=f"round,pad=0,rounding_size={radius}",
+        facecolor=color, edgecolor="none", alpha=alpha_start, zorder=5
+    )
+    ax.add_patch(box)
+    # Subtle top highlight
+    highlight_h = h * 0.3
+    highlight = FancyBboxPatch(
+        (x, y + h - highlight_h), w, highlight_h,
+        boxstyle=f"round,pad=0,rounding_size={radius}",
+        facecolor="#ffffff", edgecolor="none", alpha=0.15, zorder=6
+    )
+    ax.add_patch(highlight)
 
 # ─── Layout computation ───
 def compute_positions(tree_data, x_start=0, y_center=0, level_gap=4.5, leaf_h=0.56):
@@ -63,66 +100,95 @@ def compute_positions(tree_data, x_start=0, y_center=0, level_gap=4.5, leaf_h=0.
 
 
 # ─── Drawing ───
-fig, ax = plt.subplots(figsize=(26, 16))
-ax.set_xlim(-3, 24)
-ax.set_ylim(-10, 5)
+fig, ax = plt.subplots(figsize=(28, 18))
+ax.set_xlim(-3, 26)
+ax.set_ylim(-11, 6)
 ax.axis("off")
-fig.patch.set_facecolor("white")
+fig.patch.set_facecolor("#fafbfc")
 
-positions = compute_positions(tree, x_start=0, y_center=-2.5, level_gap=4.8, leaf_h=0.60)
+positions = compute_positions(tree, x_start=0, y_center=-2.5, level_gap=5.2, leaf_h=0.65)
 root = list(tree.keys())[0]
 children = tree[root]
 
-# Connections — root to category
+# Background pattern - subtle grid
+for i in range(-3, 27, 2):
+    ax.axvline(i, color="#f1f5f9", lw=0.5, zorder=0)
+for i in range(-11, 7, 2):
+    ax.axhline(i, color="#f1f5f9", lw=0.5, zorder=0)
+
+# Connections — smooth curved lines
 rx, ry = positions[root]
 for i, (cat_label, sub_items) in enumerate(children):
     cx, cy = positions[cat_label]
     color = cat_colors[i % len(cat_colors)]
-    # Horizontal then vertical (Manhattan routing)
-    mid_x = (rx + 1.5 + cx - 1.6) / 2
-    ax.plot([rx + 1.5, mid_x], [ry, ry], color=color, lw=1.6, alpha=0.35, zorder=2)
-    ax.plot([mid_x, mid_x], [ry, cy], color=color, lw=1.6, alpha=0.35, zorder=2)
-    ax.plot([mid_x, cx - 1.6], [cy, cy], color=color, lw=1.6, alpha=0.35, zorder=2)
+
+    # Draw curved connection using bezier-like path
+    mid_x = (rx + 1.8 + cx - 1.8) / 2
+
+    # Horizontal from root
+    ax.plot([rx + 1.8, mid_x], [ry, ry], color=color, lw=2, alpha=0.3, zorder=2, solid_capstyle='round')
+    # Vertical drop
+    ax.plot([mid_x, mid_x], [ry, cy], color=color, lw=2, alpha=0.3, zorder=2, solid_capstyle='round')
+    # Horizontal to category
+    ax.plot([mid_x, cx - 1.8], [cy, cy], color=color, lw=2, alpha=0.3, zorder=2, solid_capstyle='round')
 
     # Category to sub items
     for sub_label in sub_items:
         sx, sy = positions[sub_label]
-        mid_x2 = (cx + 1.5 + sx - 1.5) / 2
-        ax.plot([cx + 1.5, mid_x2], [cy, cy], color=color, lw=0.8, alpha=0.2, zorder=2)
-        ax.plot([mid_x2, mid_x2], [cy, sy], color=color, lw=0.8, alpha=0.2, zorder=2)
-        ax.plot([mid_x2, sx - 1.5], [sy, sy], color=color, lw=0.8, alpha=0.2, zorder=2)
+        mid_x2 = (cx + 1.7 + sx - 1.6) / 2
+        ax.plot([cx + 1.7, mid_x2], [cy, cy], color=color, lw=1, alpha=0.2, zorder=2, solid_capstyle='round')
+        ax.plot([mid_x2, mid_x2], [cy, sy], color=color, lw=1, alpha=0.2, zorder=2, solid_capstyle='round')
+        ax.plot([mid_x2, sx - 1.6], [sy, sy], color=color, lw=1, alpha=0.2, zorder=2, solid_capstyle='round')
 
-# Root node
+# Root node — elegant dark with gradient effect
 rx, ry = positions[root]
-root_box = FancyBboxPatch((rx - 1.6, ry - 0.32), 3.2, 0.64,
-    boxstyle="square,pad=0.04", facecolor="#0f172a", edgecolor="#0f172a", lw=1.5, zorder=5)
-ax.add_patch(root_box)
-ax.text(rx, ry, root, ha="center", va="center", fontsize=14, fontweight="bold", color="white", zorder=6, family="monospace")
+draw_shadow(ax, rx - 1.8, ry - 0.38, 3.6, 0.76, radius=0.2, offset=0.1)
+draw_gradient_box(ax, rx - 1.8, ry - 0.38, 3.6, 0.76, "#0f172a", radius=0.2)
+ax.text(rx, ry, root, ha="center", va="center", fontsize=15, fontweight="bold", color="white", zorder=7, family="sans-serif")
 
 # Category & sub nodes
 for i, (cat_label, sub_items) in enumerate(children):
     cx, cy = positions[cat_label]
     color = cat_colors[i % len(cat_colors)]
 
-    # Category box
-    cat_box = FancyBboxPatch((cx - 1.6, cy - 0.26), 3.2, 0.52,
-        boxstyle="square,pad=0.04", facecolor=color, edgecolor=color, lw=1, alpha=0.92, zorder=5)
-    ax.add_patch(cat_box)
-    ax.text(cx, cy, cat_label, ha="center", va="center", fontsize=10, fontweight="bold", color="white", zorder=6)
+    # Category box with shadow and gradient
+    draw_shadow(ax, cx - 1.8, cy - 0.32, 3.6, 0.64, radius=0.15, offset=0.06)
+    draw_gradient_box(ax, cx - 1.8, cy - 0.32, 3.6, 0.64, color, radius=0.15)
+    ax.text(cx, cy, cat_label, ha="center", va="center", fontsize=11, fontweight="600", color="white", zorder=7)
 
-    # Sub item boxes
+    # Sub item boxes — clean white with colored border
     for sub_label in sub_items:
         sx, sy = positions[sub_label]
-        sub_box = FancyBboxPatch((sx - 1.5, sy - 0.18), 3.0, 0.36,
-            boxstyle="square,pad=0.03", facecolor="white", edgecolor=color, lw=1, zorder=5)
-        ax.add_patch(sub_box)
-        ax.text(sx, sy, sub_label, ha="center", va="center", fontsize=8.5, color="#334155", zorder=6, family="monospace")
 
-# Title
-ax.text(12, 4.5, "Capability Map", ha="center", va="center", fontsize=22, fontweight="bold", color="#0f172a")
-ax.text(12, 3.7, "12 domains · 3-level tree: Category → Sub-system → Specific API", ha="center", va="center", fontsize=11, color="#64748b")
+        # Subtle shadow
+        draw_shadow(ax, sx - 1.6, sy - 0.22, 3.2, 0.44, radius=0.1, offset=0.04, alpha=0.08)
+
+        # White box with colored border
+        sub_box = FancyBboxPatch(
+            (sx - 1.6, sy - 0.22), 3.2, 0.44,
+            boxstyle="round,pad=0,rounding_size=0.1",
+            facecolor="white", edgecolor=color, lw=1.5, zorder=5
+        )
+        ax.add_patch(sub_box)
+
+        # Monospace text for API names
+        ax.text(sx, sy, sub_label, ha="center", va="center", fontsize=9, color="#334155", zorder=6, family="monospace", weight="medium")
+
+# Title with modern typography
+ax.text(12, 5.2, "Capability Map", ha="center", va="center", fontsize=26, fontweight="bold", color="#0f172a", family="sans-serif")
+ax.text(12, 4.3, "12 domains · 3-level tree: Category → Sub-system → Specific API", ha="center", va="center", fontsize=12, color="#64748b", family="sans-serif")
+
+# Decorative elements — subtle corner accents
+corner_size = 0.8
+corner_color = "#e2e8f0"
+# Top left
+ax.plot([-2.5, -2.5], [5.5 - corner_size, 5.5], color=corner_color, lw=3, solid_capstyle='round')
+ax.plot([-2.5, -2.5 + corner_size], [5.5, 5.5], color=corner_color, lw=3, solid_capstyle='round')
+# Bottom right
+ax.plot([25, 25], [-10 + corner_size, -10], color=corner_color, lw=3, solid_capstyle='round')
+ax.plot([25, 25 - corner_size], [-10, -10], color=corner_color, lw=3, solid_capstyle='round')
 
 plt.tight_layout()
-plt.savefig("/home/cc11001100/github/scagogogo/versions-skills/docs/images/capability-tree.png", dpi=150, bbox_inches="tight", facecolor="white")
+plt.savefig("/home/cc11001100/github/scagogogo/versions-skills/docs/images/capability-tree.png", dpi=150, bbox_inches="tight", facecolor="#fafbfc")
 plt.close()
 print("capability-tree.png saved")

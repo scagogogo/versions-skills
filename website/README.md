@@ -4,7 +4,7 @@ The official documentation site for [versions-skills](https://github.com/scagogo
 
 Deployed at **https://scagogogo.github.io/versions-skills/** via GitHub Pages.
 
-> The previous React site is preserved under [`../website-react-legacy/`](../website-react-legacy/) for reference. This directory is now the VitePress implementation.
+> The previous React site is preserved under `website-react-legacy/` for reference. This directory is now the VitePress implementation.
 
 ## Stack
 
@@ -52,7 +52,7 @@ Nav and sidebar are configured in `.vitepress/config.ts`. The `base: '/versions-
 
 ## CI / Deployment
 
-[`.github/workflows/deploy-website.yml`](../.github/workflows/deploy-website.yml) runs on every push to `main` that touches `website/**`:
+[`deploy-website.yml`](https://github.com/scagogogo/versions-skills/blob/main/.github/workflows/deploy-website.yml) runs on every push to `main` that touches `website/**`:
 
 1. `npm ci` + `npm run build`
 2. Uploads `website/.vitepress/dist` as a Pages artifact
