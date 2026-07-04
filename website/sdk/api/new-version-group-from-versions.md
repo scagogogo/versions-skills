@@ -25,8 +25,8 @@ NewVersionGroupFromVersions 从版本数组创建一个版本组
 
 
 ```go
-versions := versions.NewVersions("1.2.0", "1.2.1", "1.2.2")
-group := versions.NewVersionGroupFromVersions(versions)
+vs := versions.NewVersions("1.2.0", "1.2.1", "1.2.2")
+group := versions.NewVersionGroupFromVersions(vs)
 ```
 
 

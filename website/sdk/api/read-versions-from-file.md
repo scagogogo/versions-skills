@@ -46,7 +46,7 @@ if err != nil {
 fmt.Printf("共读取 %d 个版本\n", len(versions))
 
 // 对版本进行排序
-sortedVersions := versions.SortVersionSlice(versions)
+sortedVersions := versions.SortVersionSlice(vs)
 ```
 
 

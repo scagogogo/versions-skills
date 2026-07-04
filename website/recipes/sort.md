@@ -18,8 +18,17 @@ versions sort 1.10.0 1.2.0 1.1.0
 
 ## 🤖 MCP
 
-```
-version_sort(versions=["1.10.0","1.2.0","1.1.0"])
+```json
+{
+  "tool": "version_sort",
+  "arguments": {
+    "versions": [
+      "1.10.0",
+      "1.2.0",
+      "1.1.0"
+    ]
+  }
+}
 ```
 
 ## 📚 参考

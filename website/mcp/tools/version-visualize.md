@@ -24,10 +24,31 @@ version_visualize
 {
   "tool": "version_visualize",
   "arguments": {
-    "max_items_per_group": 1,
+    "max_items_per_group": 3,
     "groups_only": false,
-    "versions": []
+    "versions": [
+      "1.0.0",
+      "1.0.1",
+      "1.1.0",
+      "2.0.0-rc1",
+      "2.0.0"
+    ]
   }
+}
+```
+
+## 📤 返回示例
+
+```json
+{
+  "visualization": "1
+├─0
+│ ├─0
+│ └─1
+└─1
+2
+├─0-rc1
+└─0"
 }
 ```
 

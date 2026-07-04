@@ -22,8 +22,26 @@ version_unique
 {
   "tool": "version_unique",
   "arguments": {
-    "versions": []
+    "versions": [
+      "1.0.0",
+      "1.0.0",
+      "1.1.0",
+      "1.1.0",
+      "2.0.0"
+    ]
   }
+}
+```
+
+## 📤 返回示例
+
+```json
+{
+  "unique_versions": [
+    "1.0.0",
+    "1.1.0",
+    "2.0.0"
+  ]
 }
 ```
 

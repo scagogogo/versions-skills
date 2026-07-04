@@ -22,8 +22,21 @@ version_read_file
 {
   "tool": "version_read_file",
   "arguments": {
-    "filepath": ""
+    "filepath": "/path/to/releases.txt"
   }
+}
+```
+
+## 📤 返回示例
+
+```json
+{
+  "versions": [
+    "1.0.0",
+    "1.1.0",
+    "1.2.0"
+  ],
+  "count": 3
 }
 ```
 

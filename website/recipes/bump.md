@@ -18,8 +18,14 @@ versions bump 1.2.3 --minor
 
 ## 🤖 MCP
 
-```
-version_bump(version_string="1.2.3", bump_type="minor")
+```json
+{
+  "tool": "version_bump",
+  "arguments": {
+    "version_string": "1.2.3",
+    "bump_type": "patch"
+  }
+}
 ```
 
 ## 📚 参考

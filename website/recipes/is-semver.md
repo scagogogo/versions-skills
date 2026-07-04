@@ -18,8 +18,13 @@ versions check 1.2.3 --semver
 
 ## 🤖 MCP
 
-```
-version_validate(version_string="1.2.3")
+```json
+{
+  "tool": "version_validate",
+  "arguments": {
+    "version_string": "1.2.3"
+  }
+}
 ```
 
 ## 📚 参考

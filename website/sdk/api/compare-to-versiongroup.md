@@ -24,8 +24,8 @@ CompareTo 比较两个版本组的大小
 
 
 ```go
-group1 := versions.NewVersionGroup(versions.NewVersionNumbers([]int{1, 2}))
-group2 := versions.NewVersionGroup(versions.NewVersionNumbers([]int{1, 3}))
+group1 := versions.NewVersionGroup(vs.NewVersionNumbers([]int{1, 2}))
+group2 := versions.NewVersionGroup(vs.NewVersionNumbers([]int{1, 3}))
 
 if group1.CompareTo(group2) < 0 {
     fmt.Println("group1 比 group2 旧")
@@ -33,7 +33,9 @@ if group1.CompareTo(group2) < 0 {
 ```
 
 
-## 🔗 同类方法
+::: details 同类方法（点击展开）
+
+**第 1 组**
 
 - [`VersionGroup.Add`](/sdk/api/add-versiongroup)
 - [`VersionGroup.Contains`](/sdk/api/contains-versiongroup)
@@ -43,6 +45,9 @@ if group1.CompareTo(group2) < 0 {
 - [`VersionGroup.GetLatest`](/sdk/api/get-latest-versiongroup)
 - [`VersionGroup.GetOldest`](/sdk/api/get-oldest-versiongroup)
 - [`VersionGroup.Count`](/sdk/api/count-versiongroup)
+
+**第 2 组**
+
 - [`VersionGroup.StableVersions`](/sdk/api/stable-versions-versiongroup)
 - [`VersionGroup.PrereleaseVersions`](/sdk/api/prerelease-versions-versiongroup)
 - [`VersionGroup.LatestStable`](/sdk/api/latest-stable-versiongroup)
@@ -52,8 +57,8 @@ if group1.CompareTo(group2) < 0 {
 - [`VersionGroup.Filter`](/sdk/api/filter-versiongroup)
 - [`VersionGroup.QueryRangeVersions`](/sdk/api/query-range-versions-versiongroup)
 
+:::
 
----
 
 ::: details 源码位置
 定义于 [`version_group.go`](https://github.com/scagogogo/versions-skills/blob/main/version_group.go)

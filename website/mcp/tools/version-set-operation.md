@@ -24,10 +24,29 @@ version_set_operation
 {
   "tool": "version_set_operation",
   "arguments": {
-    "operation": "",
-    "set_a": [],
-    "set_b": []
+    "operation": "intersection",
+    "set_a": [
+      "1.0.0",
+      "1.1.0",
+      "2.0.0"
+    ],
+    "set_b": [
+      "1.1.0",
+      "2.0.0",
+      "3.0.0"
+    ]
   }
+}
+```
+
+## 📤 返回示例
+
+```json
+{
+  "result_versions": [
+    "1.1.0",
+    "2.0.0"
+  ]
 }
 ```
 

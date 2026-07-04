@@ -19,8 +19,23 @@ versions range 1.0.0 2.0.0 0.9.0 1.5.0 2.1.0
 
 ## 🤖 MCP
 
-```
-version_range_query(start="1.0.0", end="2.0.0", versions=[...])
+```json
+{
+  "tool": "version_range_query",
+  "arguments": {
+    "start": "1.0.0",
+    "end": "2.0.0",
+    "include_start": true,
+    "include_end": true,
+    "versions": [
+      "0.9.0",
+      "1.0.0",
+      "1.5.0",
+      "2.0.0",
+      "2.1.0"
+    ]
+  }
+}
 ```
 
 ## 📚 参考

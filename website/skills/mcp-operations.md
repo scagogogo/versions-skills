@@ -7,8 +7,8 @@
 
 # MCP Operations
 
-> **Setup:** See `/installation` for one-time MCP server binary install and configuration.  
-> **Layers:** MCP (AI tools) — this skill covers MCP-specific patterns. For domain logic, see the corresponding version-* skill.
+> **前置：** 一次性安装并配置 MCP Server 见 [`/installation`](/skills/installation)。  
+> **入口：** MCP (AI 工具) — 本篇聚焦 MCP 用法。领域逻辑见对应的 `version-*` skill。
 
 ## When to Use
 

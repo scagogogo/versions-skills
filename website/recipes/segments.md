@@ -19,8 +19,13 @@ versions segments 1.2.3
 
 ## 🤖 MCP
 
-```
-version_parse(version_string="1.2.3") → version_numbers
+```json
+{
+  "tool": "version_info",
+  "arguments": {
+    "version_string": "1.2.3-beta1"
+  }
+}
 ```
 
 ## 📚 参考

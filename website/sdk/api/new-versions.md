@@ -24,7 +24,7 @@ NewVersions 批量创建多个 Version 对象
 
 
 ```go
-versions := versions.NewVersions("1.0.0", "1.1.0", "2.0.0")
+vs := versions.NewVersions("1.0.0", "1.1.0", "2.0.0")
 for _, v := range versions {
     fmt.Println(v.Raw)
 }

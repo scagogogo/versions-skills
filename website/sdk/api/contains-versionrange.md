@@ -22,7 +22,7 @@ Contains 判断版本是否在当前范围内
 
 
 ```go
-r := versions.NewClosedRange(versions.NewVersion("1.0.0"), versions.NewVersion("2.0.0"))
+r := versions.NewClosedRange(vs.NewVersion("1.0.0"), versions.NewVersion("2.0.0"))
 v := versions.NewVersion("1.5.0")
 fmt.Println(r.Contains(v)) // true
 ```

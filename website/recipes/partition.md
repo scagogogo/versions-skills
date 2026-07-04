@@ -18,8 +18,18 @@ versions partition 1.0.0 1.1.0-rc1 --stable
 
 ## 🤖 MCP
 
-```
-# 用两次 version_filter
+```json
+{
+  "tool": "version_filter",
+  "arguments": {
+    "stable": true,
+    "versions": [
+      "1.0.0",
+      "1.0.0-beta",
+      "2.0.0"
+    ]
+  }
+}
 ```
 
 ## 📚 参考

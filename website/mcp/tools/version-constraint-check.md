@@ -24,10 +24,18 @@ version_constraint_check
 {
   "tool": "version_constraint_check",
   "arguments": {
-    "expression": "",
-    "version": "1.2.3",
-    "type": ""
+    "expression": ">=1.0.0,<2.0.0",
+    "version": "1.5.0",
+    "type": "constraint_set"
   }
+}
+```
+
+## 📤 返回示例
+
+```json
+{
+  "satisfies": true
 }
 ```
 

@@ -24,7 +24,7 @@ Add 把给定的版本添加到本版本组中
 
 
 ```go
-group := versions.NewVersionGroup(versions.NewVersionNumbers([]int{1, 2}))
+group := versions.NewVersionGroup(vs.NewVersionNumbers([]int{1, 2}))
 version := versions.NewVersion("1.2.3")
 exists := group.Add(version)
 if !exists {
@@ -33,7 +33,9 @@ if !exists {
 ```
 
 
-## 🔗 同类方法
+::: details 同类方法（点击展开）
+
+**第 1 组**
 
 - [`VersionGroup.Contains`](/sdk/api/contains-versiongroup)
 - [`VersionGroup.ID`](/sdk/api/id-versiongroup)
@@ -43,6 +45,9 @@ if !exists {
 - [`VersionGroup.GetLatest`](/sdk/api/get-latest-versiongroup)
 - [`VersionGroup.GetOldest`](/sdk/api/get-oldest-versiongroup)
 - [`VersionGroup.Count`](/sdk/api/count-versiongroup)
+
+**第 2 组**
+
 - [`VersionGroup.StableVersions`](/sdk/api/stable-versions-versiongroup)
 - [`VersionGroup.PrereleaseVersions`](/sdk/api/prerelease-versions-versiongroup)
 - [`VersionGroup.LatestStable`](/sdk/api/latest-stable-versiongroup)
@@ -52,8 +57,8 @@ if !exists {
 - [`VersionGroup.Filter`](/sdk/api/filter-versiongroup)
 - [`VersionGroup.QueryRangeVersions`](/sdk/api/query-range-versions-versiongroup)
 
+:::
 
----
 
 ::: details 源码位置
 定义于 [`version_group.go`](https://github.com/scagogogo/versions-skills/blob/main/version_group.go)

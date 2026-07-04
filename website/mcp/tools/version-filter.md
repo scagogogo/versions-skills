@@ -30,16 +30,27 @@ version_filter
 {
   "tool": "version_filter",
   "arguments": {
-    "prefix": "",
-    "suffix": "",
-    "constraint": "",
-    "major": 1,
-    "minor": 1,
-    "patch": 1,
-    "stable": false,
-    "prerelease": false,
-    "versions": []
+    "stable": true,
+    "versions": [
+      "1.0.0",
+      "1.0.0-rc1",
+      "1.1.0",
+      "1.1.0-beta",
+      "2.0.0"
+    ]
   }
+}
+```
+
+## 📤 返回示例
+
+```json
+{
+  "filtered_versions": [
+    "1.0.0",
+    "1.1.0",
+    "2.0.0"
+  ]
 }
 ```
 

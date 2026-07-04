@@ -26,7 +26,7 @@ SortVersionStringSlice 对字符串形式的版本数组进行排序
 
 ```go
 versions := []string{"1.2.0", "1.0.0", "1.10.0", "2.0.0"}
-sorted := versions.SortVersionStringSlice(versions)
+sorted := versions.SortVersionStringSlice(vs)
 // 结果: ["1.0.0", "1.2.0", "1.10.0", "2.0.0"]
 ```
 

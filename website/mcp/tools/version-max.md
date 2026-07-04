@@ -22,8 +22,21 @@ version_max
 {
   "tool": "version_max",
   "arguments": {
-    "versions": []
+    "versions": [
+      "1.0.0",
+      "1.10.0",
+      "1.2.0",
+      "2.0.0-beta"
+    ]
   }
+}
+```
+
+## 📤 返回示例
+
+```json
+{
+  "max_version": "1.10.0"
 }
 ```
 

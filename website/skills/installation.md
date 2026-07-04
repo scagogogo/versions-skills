@@ -1,11 +1,9 @@
-# Installation
+# 安装配置
 
 ::: tip 源文件
 对应的 Skill 定义位于 [`skills/installation/SKILL.md`](https://github.com/scagogogo/versions-skills/blob/main/skills/installation/SKILL.md)。
 :::
 
-
-# Installation
 
 > **Run this once** before using any `version-*` skill. All other skills assume the tooling is available.
 > **Layers:** Plugin (Claude Code Skills) → SDK (Go) → CLI (shell) → MCP (AI tools) — pick your entry point.

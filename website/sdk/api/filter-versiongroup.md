@@ -23,7 +23,9 @@ Filter 根据谓词函数过滤组内版本
 - `[]*Version`：满足条件的版本列表
 
 
-## 🔗 同类方法
+::: details 同类方法（点击展开）
+
+**第 1 组**
 
 - [`VersionGroup.Add`](/sdk/api/add-versiongroup)
 - [`VersionGroup.Contains`](/sdk/api/contains-versiongroup)
@@ -33,6 +35,9 @@ Filter 根据谓词函数过滤组内版本
 - [`VersionGroup.SortVersions`](/sdk/api/sort-versions-versiongroup)
 - [`VersionGroup.GetLatest`](/sdk/api/get-latest-versiongroup)
 - [`VersionGroup.GetOldest`](/sdk/api/get-oldest-versiongroup)
+
+**第 2 组**
+
 - [`VersionGroup.Count`](/sdk/api/count-versiongroup)
 - [`VersionGroup.StableVersions`](/sdk/api/stable-versions-versiongroup)
 - [`VersionGroup.PrereleaseVersions`](/sdk/api/prerelease-versions-versiongroup)
@@ -42,8 +47,8 @@ Filter 根据谓词函数过滤组内版本
 - [`VersionGroup.String`](/sdk/api/string-versiongroup)
 - [`VersionGroup.QueryRangeVersions`](/sdk/api/query-range-versions-versiongroup)
 
+:::
 
----
 
 ::: details 源码位置
 定义于 [`version_group.go`](https://github.com/scagogogo/versions-skills/blob/main/version_group.go)

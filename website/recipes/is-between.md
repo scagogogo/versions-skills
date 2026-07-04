@@ -19,8 +19,21 @@ v.IsBetween(versions.NewVersion("1.0.0"), versions.NewVersion("2.0.0")) // true
 
 ## 🤖 MCP
 
-```
-# 用 version_range_query
+```json
+{
+  "tool": "version_range_query",
+  "arguments": {
+    "start": "1.0.0",
+    "end": "2.0.0",
+    "include_start": true,
+    "include_end": true,
+    "versions": [
+      "0.9.0",
+      "1.5.0",
+      "2.5.0"
+    ]
+  }
+}
 ```
 
 ## 📚 参考

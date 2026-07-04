@@ -19,8 +19,13 @@ v.Raw // 1.2.3
 
 ## 🤖 MCP
 
-```
-version_parse(version_string="app-1.2.3-linux-amd64")
+```json
+{
+  "tool": "version_parse",
+  "arguments": {
+    "version_string": "program-1.2.3-linux-amd64"
+  }
+}
 ```
 
 ## 📚 参考

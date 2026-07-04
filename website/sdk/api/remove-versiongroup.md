@@ -23,7 +23,9 @@ Remove 从版本组中移除指定的版本
 - `bool`：如果版本存在并被移除则返回 true
 
 
-## 🔗 同类方法
+::: details 同类方法（点击展开）
+
+**第 1 组**
 
 - [`VersionGroup.Add`](/sdk/api/add-versiongroup)
 - [`VersionGroup.Contains`](/sdk/api/contains-versiongroup)
@@ -33,6 +35,9 @@ Remove 从版本组中移除指定的版本
 - [`VersionGroup.SortVersions`](/sdk/api/sort-versions-versiongroup)
 - [`VersionGroup.GetLatest`](/sdk/api/get-latest-versiongroup)
 - [`VersionGroup.GetOldest`](/sdk/api/get-oldest-versiongroup)
+
+**第 2 组**
+
 - [`VersionGroup.Count`](/sdk/api/count-versiongroup)
 - [`VersionGroup.StableVersions`](/sdk/api/stable-versions-versiongroup)
 - [`VersionGroup.PrereleaseVersions`](/sdk/api/prerelease-versions-versiongroup)
@@ -42,8 +47,8 @@ Remove 从版本组中移除指定的版本
 - [`VersionGroup.Filter`](/sdk/api/filter-versiongroup)
 - [`VersionGroup.QueryRangeVersions`](/sdk/api/query-range-versions-versiongroup)
 
+:::
 
----
 
 ::: details 源码位置
 定义于 [`version_group.go`](https://github.com/scagogogo/versions-skills/blob/main/version_group.go)

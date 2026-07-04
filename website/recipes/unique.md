@@ -18,8 +18,17 @@ versions.Unique(vs)
 
 ## 🤖 MCP
 
-```
-version_unique(versions=[...])
+```json
+{
+  "tool": "version_unique",
+  "arguments": {
+    "versions": [
+      "1.0.0",
+      "1.0.0",
+      "2.0.0"
+    ]
+  }
+}
 ```
 
 ## 📚 参考

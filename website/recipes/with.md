@@ -18,8 +18,16 @@ versions set-patch 1.2.3 5
 
 ## 🤖 MCP
 
-```
-version_build(...)
+```json
+{
+  "tool": "version_build",
+  "arguments": {
+    "prefix": "v",
+    "major": 1,
+    "minor": 2,
+    "patch": 5
+  }
+}
 ```
 
 ## 📚 参考

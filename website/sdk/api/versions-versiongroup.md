@@ -19,13 +19,15 @@ Versions 返回组下的所有版本
 
 
 ```go
-group := versions.NewVersionGroupFromVersions(versions.NewVersions("1.2.0", "1.2.1"))
+group := versions.NewVersionGroupFromVersions(vs.NewVersions("1.2.0", "1.2.1"))
 allVersions := group.Versions()
 fmt.Printf("组中包含 %d 个版本\n", len(allVersions))
 ```
 
 
-## 🔗 同类方法
+::: details 同类方法（点击展开）
+
+**第 1 组**
 
 - [`VersionGroup.Add`](/sdk/api/add-versiongroup)
 - [`VersionGroup.Contains`](/sdk/api/contains-versiongroup)
@@ -35,6 +37,9 @@ fmt.Printf("组中包含 %d 个版本\n", len(allVersions))
 - [`VersionGroup.GetLatest`](/sdk/api/get-latest-versiongroup)
 - [`VersionGroup.GetOldest`](/sdk/api/get-oldest-versiongroup)
 - [`VersionGroup.Count`](/sdk/api/count-versiongroup)
+
+**第 2 组**
+
 - [`VersionGroup.StableVersions`](/sdk/api/stable-versions-versiongroup)
 - [`VersionGroup.PrereleaseVersions`](/sdk/api/prerelease-versions-versiongroup)
 - [`VersionGroup.LatestStable`](/sdk/api/latest-stable-versiongroup)
@@ -44,8 +49,8 @@ fmt.Printf("组中包含 %d 个版本\n", len(allVersions))
 - [`VersionGroup.Filter`](/sdk/api/filter-versiongroup)
 - [`VersionGroup.QueryRangeVersions`](/sdk/api/query-range-versions-versiongroup)
 
+:::
 
----
 
 ::: details 源码位置
 定义于 [`version_group.go`](https://github.com/scagogogo/versions-skills/blob/main/version_group.go)

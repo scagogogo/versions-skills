@@ -26,7 +26,7 @@ NewVersionGroup 创建一个新的版本组
 
 ```go
 // 创建表示 "1.2" 版本组的对象
-group := versions.NewVersionGroup(versions.NewVersionNumbers([]int{1, 2}))
+group := versions.NewVersionGroup(vs.NewVersionNumbers([]int{1, 2}))
 ```
 
 

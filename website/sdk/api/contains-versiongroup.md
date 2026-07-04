@@ -24,7 +24,7 @@ Contains 判断本版本组中是否包含给定的版本
 
 
 ```go
-group := versions.NewVersionGroup(versions.NewVersionNumbers([]int{1, 2}))
+group := versions.NewVersionGroup(vs.NewVersionNumbers([]int{1, 2}))
 version := versions.NewVersion("1.2.3")
 if !group.Contains(version) {
     group.Add(version)
@@ -32,7 +32,9 @@ if !group.Contains(version) {
 ```
 
 
-## 🔗 同类方法
+::: details 同类方法（点击展开）
+
+**第 1 组**
 
 - [`VersionGroup.Add`](/sdk/api/add-versiongroup)
 - [`VersionGroup.ID`](/sdk/api/id-versiongroup)
@@ -42,6 +44,9 @@ if !group.Contains(version) {
 - [`VersionGroup.GetLatest`](/sdk/api/get-latest-versiongroup)
 - [`VersionGroup.GetOldest`](/sdk/api/get-oldest-versiongroup)
 - [`VersionGroup.Count`](/sdk/api/count-versiongroup)
+
+**第 2 组**
+
 - [`VersionGroup.StableVersions`](/sdk/api/stable-versions-versiongroup)
 - [`VersionGroup.PrereleaseVersions`](/sdk/api/prerelease-versions-versiongroup)
 - [`VersionGroup.LatestStable`](/sdk/api/latest-stable-versiongroup)
@@ -51,8 +56,8 @@ if !group.Contains(version) {
 - [`VersionGroup.Filter`](/sdk/api/filter-versiongroup)
 - [`VersionGroup.QueryRangeVersions`](/sdk/api/query-range-versions-versiongroup)
 
+:::
 
----
 
 ::: details 源码位置
 定义于 [`version_group.go`](https://github.com/scagogogo/versions-skills/blob/main/version_group.go)

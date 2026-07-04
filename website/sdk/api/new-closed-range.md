@@ -12,7 +12,7 @@ NewClosedRange 创建一个闭区间版本范围 [low, high]
 
 
 ```go
-r := versions.NewClosedRange(versions.NewVersion("1.0.0"), versions.NewVersion("2.0.0"))
+r := versions.NewClosedRange(vs.NewVersion("1.0.0"), versions.NewVersion("2.0.0"))
 ```
 
 
