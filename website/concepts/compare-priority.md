@@ -6,18 +6,29 @@
 
 ## 📐 判定流程
 
-```
-1. VersionNumbers（数字段，逐段比较）
-        ├─ 不同 → 决出结果
-        └─ 相同 → 进入下一级
-2. Suffix（后缀权重 + 子版本号）
-        ├─ 不同 → 决出结果
-        └─ 相同 → 进入下一级
-3. PublicTime（发布时间）
-        ├─ 不同 → 较新时间者更大
-        └─ 相同 → 进入下一级
-4. Raw（原始字符串，字典序兜底）
-```
+:::mermaid
+flowchart TD
+  START(["两个 Version 进入 CompareTo"]) --> L1{"1. VersionNumbers<br/>数字段逐段比较"}
+  L1 -- "不同（如 1.2 vs 1.3）" --> R1["决出结果<br/>返回 ±1"]
+  L1 -- "相同" --> L2{"2. Suffix 后缀权重<br/>+ 子版本号"}
+  L2 -- "不同（如 rc vs 正式版）" --> R2["决出结果<br/>返回 ±1"]
+  L2 -- "相同" --> L3{"3. PublicTime 发布时间"}
+  L3 -- "都非零且不同" --> R3["时间新者更大<br/>返回 ±1"]
+  L3 -- "至少一个为零" --> L4{"4. Raw 原始串<br/>字典序兜底"}
+  L4 --> R4["返回 -1/0/1"]
+
+  style START fill:#eff6ff,stroke:#2563eb
+  style L1 fill:#eff6ff,stroke:#2563eb
+  style L2 fill:#eff6ff,stroke:#2563eb
+  style L3 fill:#eff6ff,stroke:#2563eb
+  style L4 fill:#eff6ff,stroke:#2563eb
+  style R1 fill:#f0fdf4,stroke:#16a34a
+  style R2 fill:#f0fdf4,stroke:#16a34a
+  style R3 fill:#f0fdf4,stroke:#16a34a
+  style R4 fill:#f0fdf4,stroke:#16a34a,stroke-width:3px
+:::
+
+每一级**只在前几级都判定为「相等」时才进入下一级**——任一级决出不同即立即返回，不再往下走。
 
 ## 🔍 示例
 

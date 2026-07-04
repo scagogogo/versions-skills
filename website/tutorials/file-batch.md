@@ -2,6 +2,23 @@
 
 读取版本号文件，去重、排序、写回——批量维护版本清单的常见流程。
 
+:::mermaid
+flowchart LR
+  FILE["releases.txt<br/>含重复/乱序"] --> READ["ReadVersionsFromFile"]
+  READ --> VS["[]*Version<br/>含重复"]
+  VS --> UNIQUE["Unique<br/>去重"]
+  UNIQUE --> SORT["SortVersionSlice<br/>排序"]
+  SORT --> WRITE["WriteVersionsToFile<br/>（自动排序）"]
+  WRITE --> OUT["sorted.txt<br/>有序无重复"]
+
+  style FILE fill:#f8fafc,stroke:#475569
+  style READ fill:#eff6ff,stroke:#2563eb
+  style UNIQUE fill:#eff6ff,stroke:#2563eb
+  style SORT fill:#eff6ff,stroke:#2563eb
+  style WRITE fill:#eff6ff,stroke:#2563eb
+  style OUT fill:#f0fdf4,stroke:#16a34a,stroke-width:3px
+:::
+
 ## 📖 读取
 
 ```go

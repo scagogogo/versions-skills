@@ -14,6 +14,41 @@
 
 CLI 额外依赖 `cobra`，MCP 额外依赖 `mcp-go`——但**核心库本身**保持轻量。
 
+:::mermaid
+flowchart TB
+  subgraph CORE["根包 versions（核心库）"]
+    direction LR
+    P["解析/比较/排序<br/>分组/约束/范围"]
+  end
+
+  CORE --> D1["go-tuple<br/>golang-infrastructure"]
+  CORE --> D2["go-shuffle<br/>golang-infrastructure"]
+  CORE --> D3["go-compare-anything<br/>golang-infrastructure"]
+
+  subgraph EXT["扩展入口（独立二进制）"]
+    direction LR
+    CLI["CLI"]
+    MCP["MCP"]
+    SDK["SDK 用户代码"]
+  end
+
+  CORE --> EXT
+  CLI -.->|"额外"| COBRA["cobra"]
+  MCP -.->|"额外"| MCPGO["mcp-go"]
+
+  D1 ~~~ D2 ~~~ D3
+
+  style CORE fill:#eff6ff,stroke:#2563eb,stroke-width:3px
+  style D1 fill:#f0fdf4,stroke:#16a34a
+  style D2 fill:#f0fdf4,stroke:#16a34a
+  style D3 fill:#f0fdf4,stroke:#16a34a
+  style CLI fill:#fff7ed,stroke:#ea580c
+  style MCP fill:#fff7ed,stroke:#ea580c
+  style SDK fill:#fff7ed,stroke:#ea580c
+  style COBRA fill:#f8fafc,stroke:#94a3b8,stroke-dasharray:4 3
+  style MCPGO fill:#f8fafc,stroke:#94a3b8,stroke-dasharray:4 3
+:::
+
 ## ✅ 为什么重要
 
 - **可移植**：无传递依赖地狱，`go get` 即用

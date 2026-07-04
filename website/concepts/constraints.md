@@ -23,6 +23,39 @@
 - **AND（ConstraintSet）**：逗号分隔，所有条件都须满足。`>=1.0.0,<2.0.0`
 - **OR（ConstraintUnion）**：`||` 分隔，任一满足即可。`1.x || 2.0.0`
 
+约束表达式是**三层结构**——一个 Union 由多个 Set 组成（OR），每个 Set 又由多个 Single 组成（AND）：
+
+:::mermaid
+flowchart TB
+  U["ConstraintUnion<br/><b>1.x || >=2.0.0,&lt;3.0.0</b>"]
+
+  U -->|"||  拆分为 OR"| S1["ConstraintSet #1<br/><b>1.x</b>"]
+  U -->|"||  拆分为 OR"| S2["ConstraintSet #2<br/><b>>=2.0.0,&lt;3.0.0</b>"]
+
+  S1 --> |",  拆分为 AND"| C1["ConstraintSingle<br/>1.x → 通配<br/>≥1.0.0,&lt;2.0.0"]
+  S2 --> |",  拆分为 AND"| C2["ConstraintSingle<br/>>=2.0.0"]
+  S2 --> |",  拆分为 AND"| C3["ConstraintSingle<br/>&lt;3.0.0"]
+
+  C1 --> M1{"Match(version)"}
+  C2 --> M2{"Match(version)"}
+  C3 --> M3{"Match(version)"}
+
+  M1 -- true --> OR1["Set #1 通过"]
+  OR1 --> PASS["✅ Union 满足<br/>（OR：任一 Set 通过即可）"]
+  M2 -- true --> AND2["且"]
+  M3 -- true --> AND2
+  AND2 --> OR2["Set #2 通过"]
+  OR2 --> PASS
+
+  style U fill:#eff6ff,stroke:#2563eb,stroke-width:3px
+  style S1 fill:#fff7ed,stroke:#ea580c
+  style S2 fill:#fff7ed,stroke:#ea580c
+  style C1 fill:#f8fafc,stroke:#475569
+  style C2 fill:#f8fafc,stroke:#475569
+  style C3 fill:#f8fafc,stroke:#475569
+  style PASS fill:#f0fdf4,stroke:#16a34a,stroke-width:3px
+:::
+
 ## 🧪 示例
 
 ```go

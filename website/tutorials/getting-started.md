@@ -2,6 +2,20 @@
 
 本教程带你从零跑通 versions-skills：解析、比较、排序一个版本列表。
 
+:::mermaid
+flowchart LR
+  INSTALL["📦 安装<br/>go get"] --> PARSE["👋 解析版本<br/>NewVersion"]
+  PARSE --> COMPARE["⚖️ 比较<br/>CompareTo"]
+  COMPARE --> SORT["📊 排序+极值<br/>Sort / Max / Min"]
+  SORT --> NEXT["🚀 下一步<br/>约束/分组/范围"]
+
+  style INSTALL fill:#eff6ff,stroke:#2563eb
+  style PARSE fill:#eff6ff,stroke:#2563eb
+  style COMPARE fill:#eff6ff,stroke:#2563eb
+  style SORT fill:#eff6ff,stroke:#2563eb
+  style NEXT fill:#f0fdf4,stroke:#16a34a,stroke-width:3px
+:::
+
 ## 📦 安装
 
 ```bash

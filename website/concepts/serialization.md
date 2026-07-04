@@ -4,6 +4,27 @@
 `Version` 实现了 **JSON / Text / SQL** 三类序列化接口，可直接用于配置、API 传输与数据库。
 :::
 
+:::mermaid
+flowchart LR
+  V["Version 对象<br/>v1.2.3-beta1"]
+
+  V -->|"json.Marshal / Unmarshal"| JSON["JSON<br/>{raw,version_numbers,prefix,suffix,...}"]
+  V -->|"MarshalText / UnmarshalText"| TEXT["Text<br/>v1.2.3-beta1"]
+  V -->|"Value() / Scan()"| SQL["SQL<br/>string / []byte"]
+
+  JSON --> APP1["API / 配置文件"]
+  TEXT --> APP2["YAML / TOML / ENV"]
+  SQL --> APP3["数据库列"]
+
+  style V fill:#eff6ff,stroke:#2563eb,stroke-width:3px
+  style JSON fill:#fff7ed,stroke:#ea580c
+  style TEXT fill:#fff7ed,stroke:#ea580c
+  style SQL fill:#fff7ed,stroke:#ea580c
+  style APP1 fill:#f0fdf4,stroke:#16a34a
+  style APP2 fill:#f0fdf4,stroke:#16a34a
+  style APP3 fill:#f0fdf4,stroke:#16a34a
+:::
+
 ## 📦 JSON
 
 ```go

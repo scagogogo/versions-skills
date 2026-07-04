@@ -62,6 +62,26 @@ cs, _ := versions.ParseConstraintSet("^1.0.0")
 compatible := versions.FilterByConstraintSet(vs, cs) // [1.0.0 1.5.0]
 ```
 
+:::mermaid
+flowchart LR
+  IN["全部版本<br/>0.9.0 / 1.0.0 / 1.5.0 / 2.0.0 / 2.1.0"]
+  IN --> F["FilterByConstraintSet<br/>约束: ^1.0.0<br/>= ≥1.0.0,&lt;2.0.0"]
+  F --> CHK{"逐个 Match"}
+  CHK -->|"0.9.0 → ❌<1.0.0"| OUT1["排除"]
+  CHK -->|"1.0.0 → ✅"| KEEP["保留"]
+  CHK -->|"1.5.0 → ✅"| KEEP
+  CHK -->|"2.0.0 → ❌≥2.0.0"| OUT2["排除"]
+  CHK -->|"2.1.0 → ❌"| OUT2
+  KEEP --> RESULT["兼容版本<br/>[1.0.0, 1.5.0]"]
+
+  style IN fill:#f8fafc,stroke:#475569
+  style F fill:#eff6ff,stroke:#2563eb
+  style KEEP fill:#f0fdf4,stroke:#16a34a
+  style OUT1 fill:#fef2f2,stroke:#dc2626
+  style OUT2 fill:#fef2f2,stroke:#dc2626
+  style RESULT fill:#f0fdf4,stroke:#16a34a,stroke-width:3px
+:::
+
 ## ❌ 取反
 
 ```go

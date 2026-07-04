@@ -6,19 +6,34 @@
 
 ## 🏗 三层架构
 
-```
-        ┌─────────────────────────────────────────┐
-        │      根包 versions（核心实现，Go）        │
-        │  解析 / 比较 / 排序 / 分组 / 约束 / 范围   │
-        └──────────┬───────────────┬──────────────┘
-                   │               │
-          ┌────────┴──────┐  ┌─────┴────────┐
-          │  CLI (cobra)  │  │  MCP (mcp-go) │
-          │  44 个子命令   │  │  21 个工具    │
-          └───────────────┘  └──────────────┘
-                   │               │
-            shell 脚本/CI      AI Agent 调用
-```
+:::mermaid
+flowchart TB
+  subgraph CORE["根包 versions（核心实现，Go）"]
+    direction LR
+    P["解析"]
+    C["比较"]
+    S["排序"]
+    G["分组"]
+    K["约束"]
+    R["范围"]
+  end
+
+  CORE --> SDK["SDK<br/>Go 库<br/>220 公开符号"]
+  CORE --> CLI["CLI (cobra)<br/>44 个子命令"]
+  CORE --> MCP["MCP (mcp-go)<br/>21 个工具"]
+
+  SDK --> USE1["Go 程序内集成"]
+  CLI --> USE2["Shell 脚本 / CI/CD"]
+  MCP --> USE3["AI Agent 调用<br/>Claude/Codex/Cursor"]
+
+  style CORE fill:#eff6ff,stroke:#2563eb,stroke-width:3px
+  style SDK fill:#fff7ed,stroke:#ea580c
+  style CLI fill:#fff7ed,stroke:#ea580c
+  style MCP fill:#fff7ed,stroke:#ea580c
+  style USE1 fill:#f0fdf4,stroke:#16a34a
+  style USE2 fill:#f0fdf4,stroke:#16a34a
+  style USE3 fill:#f0fdf4,stroke:#16a34a
+:::
 
 三层共享**同一份核心代码**，行为完全一致——SDK 怎么比较，CLI 与 MCP 就怎么比较。
 

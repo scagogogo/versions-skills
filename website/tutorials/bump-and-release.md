@@ -65,6 +65,22 @@ rc := versions.NewVersionBuilder().
 release := dev.BumpMinor() // 或直接 WithSuffix("")
 ```
 
+发布阶梯——从开发版到正式版的晋升路径：
+
+:::mermaid
+flowchart LR
+  DEV["dev<br/>1.5.0-dev"] -->|"WithSuffix('-beta1')"| BETA["beta<br/>1.5.0-beta1"]
+  BETA -->|"WithSuffix('-rc1')"| RC["rc<br/>1.5.0-rc1"]
+  RC -->|"BumpMinor() / WithSuffix('')"| RELEASE["✅ 正式版<br/>1.5.0<br/>（或 1.6.0）"]
+
+  style DEV fill:#fef2f2,stroke:#dc2626
+  style BETA fill:#fff7ed,stroke:#ea580c
+  style RC fill:#fef9c3,stroke:#ca8a04
+  style RELEASE fill:#f0fdf4,stroke:#16a34a,stroke-width:3px
+:::
+
+每一步都返回**新对象**，原版本不变（见 [不可变性](/concepts/immutability)）。
+
 ## 🚀 下一步
 
 - [文件批处理](/tutorials/file-batch)

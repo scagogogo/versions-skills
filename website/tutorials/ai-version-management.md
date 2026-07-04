@@ -2,6 +2,23 @@
 
 通过 MCP 让 AI Agent 自动完成版本号解析、比较、排序等操作。
 
+:::mermaid
+flowchart LR
+  USER["💬 你下达任务<br/>「检查这些版本<br/>哪个最新稳定」"]
+  USER --> AGENT["🤖 AI Agent<br/>Claude/Codex/Cursor"]
+  AGENT -->|"调用"| MCP["MCP Server<br/>versions-mcp<br/>21 个工具"]
+  MCP --> CORE["核心库 versions"]
+  CORE --> RESULT["结构化结果<br/>返回给 Agent"]
+  RESULT --> AGENT
+  AGENT -->|"自然语言回复"| USER
+
+  style USER fill:#eff6ff,stroke:#2563eb
+  style AGENT fill:#fff7ed,stroke:#ea580c
+  style MCP fill:#eff6ff,stroke:#2563eb,stroke-width:3px
+  style CORE fill:#f0fdf4,stroke:#16a34a
+  style RESULT fill:#f0fdf4,stroke:#16a34a
+:::
+
 ## 🔧 接入 MCP
 
 1. 构建并启动 server：

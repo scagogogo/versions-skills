@@ -23,6 +23,36 @@ v1.2.3-rc1
 若你的输入文件含 `#` 注释，须**在调用前自行剥离**。versions-skills 不会把 `#` 当注释。
 :::
 
+:::mermaid
+flowchart TB
+  FILE["releases.txt<br/>1.0.0<br/>1.1.0<br/>（空行）<br/># 我的注释<br/>v1.2.3-rc1"]
+
+  FILE --> READ["ReadVersionsFromFile"]
+  READ --> LOOP{"逐行处理"}
+
+  LOOP -->|"空行"| SKIP1["忽略"]
+  LOOP -->|"TrimSpace<br/>去前后空白"| TRIM["1.0.0 / 1.1.0 / # 我的注释 / v1.2.3-rc1"]
+  TRIM --> PARSE["NewVersion 每行"]
+  PARSE --> P1["✅ 1.0.0"]
+  PARSE --> P2["✅ 1.1.0"]
+  PARSE --> P3["⚠️ # 我的注释 → 非法版本"]
+  PARSE --> P4["✅ v1.2.3-rc1"]
+
+  P1 --> OUT["[]*Version"]
+  P2 --> OUT
+  P4 --> OUT
+
+  style FILE fill:#f8fafc,stroke:#475569
+  style READ fill:#eff6ff,stroke:#2563eb
+  style TRIM fill:#eff6ff,stroke:#2563eb
+  style PARSE fill:#eff6ff,stroke:#2563eb
+  style P1 fill:#f0fdf4,stroke:#16a34a
+  style P2 fill:#f0fdf4,stroke:#16a34a
+  style P3 fill:#fef2f2,stroke:#dc2626
+  style P4 fill:#f0fdf4,stroke:#16a34a
+  style OUT fill:#f0fdf4,stroke:#16a34a,stroke-width:3px
+:::
+
 ## 📝 读写 API
 
 | 函数 | 说明 |

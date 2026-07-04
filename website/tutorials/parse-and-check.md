@@ -2,6 +2,28 @@
 
 深入解析版本号字符串，提取各组成部分，并判断版本类型。
 
+:::mermaid
+flowchart TB
+  INPUT["字符串<br/>v1.2.3-beta1+build.7"]
+  INPUT --> PARSE["NewVersion<br/>宽松解析"]
+  PARSE --> PARTS["拆解 5 段<br/>Prefix / Numbers / Suffix / Metadata / Raw"]
+  PARTS --> CHECK{"类型判断"}
+  CHECK --> T1["IsPrerelease? 有后缀"]
+  CHECK --> T2["IsStable? 无后缀"]
+  CHECK --> T3["IsBeta / IsRC / IsAlpha..."]
+  PARTS --> VLD{"校验"}
+  VLD --> V1["Validate 基本校验"]
+  VLD --> V2["IsSemver 严格 SemVer"]
+  INPUT -.->|"Coerce 从任意文本提取"| COERCE["Coerce<br/>download/app-1.2.3.tar.gz → 1.2.3"]
+
+  style INPUT fill:#f8fafc,stroke:#475569
+  style PARSE fill:#eff6ff,stroke:#2563eb
+  style PARTS fill:#eff6ff,stroke:#2563eb
+  style CHECK fill:#fff7ed,stroke:#ea580c
+  style VLD fill:#fff7ed,stroke:#ea580c
+  style COERCE fill:#f0fdf4,stroke:#16a34a,stroke-dasharray:4 3
+:::
+
 ## 🧱 拆解结构
 
 ```go
