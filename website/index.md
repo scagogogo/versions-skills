@@ -47,11 +47,9 @@ features:
 
 **AI-First 接入** —— 你不需要看文档、不需要改配置文件。把下面提示词复制给你的 AI Agent，它会自己安装、自己配置、自己验证，然后告诉你"已就绪"。
 
-<div style="display:flex;gap:8px;flex-wrap:wrap;margin:12px 0 4px;">
-  <span style="background:#eff6ff;color:#1e3a8a;border:1px solid #bfdbfe;padding:3px 10px;border-radius:4px;font-size:13px;">📋 整段复制</span>
-  <span style="background:#f0fdf4;color:#14532d;border:1px solid #bbf7d0;padding:3px 10px;border-radius:4px;font-size:13px;">⚡ AI 自动配置</span>
-  <span style="background:#fff7ed;color:#7c2d12;border:1px solid #fed7aa;padding:3px 10px;border-radius:4px;font-size:13px;">✅ 自动验证</span>
-</div>
+::: tip 三步自动完成
+📋 整段复制 → ⚡ AI 自动配置 → ✅ 冒烟验证
+:::
 
 </div>
 
