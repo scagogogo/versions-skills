@@ -2,6 +2,28 @@
 
 给版本号列表排序，找出最新/最旧、最新稳定/预发布版本。
 
+:::mermaid
+flowchart LR
+  INPUT["无序列表<br/>1.10.0 / 1.2.0 / 1.1.0<br/>1.0.0 / 1.2.0-beta"]
+  INPUT --> SORT["SortVersionSlice<br/>（数字段→后缀→时间→Raw）"]
+  SORT --> ORDERED["有序列表<br/>1.0.0 → 1.1.0 → 1.2.0-beta → 1.2.0 → 1.10.0"]
+
+  ORDERED --> MIN["Min 最旧<br/>1.0.0"]
+  ORDERED --> MAX["Max 最新<br/>1.10.0"]
+  ORDERED --> LS["LatestStable<br/>1.10.0"]
+  ORDERED --> LP["LatestPrerelease<br/>1.2.0-beta"]
+  INPUT -.->|"Filter"| FILTER["过滤<br/>稳定版/预发布/按 major"]
+
+  style INPUT fill:#f8fafc,stroke:#475569
+  style SORT fill:#eff6ff,stroke:#2563eb
+  style ORDERED fill:#eff6ff,stroke:#2563eb,stroke-width:3px
+  style MIN fill:#f0fdf4,stroke:#16a34a
+  style MAX fill:#f0fdf4,stroke:#16a34a
+  style LS fill:#f0fdf4,stroke:#16a34a
+  style LP fill:#f0fdf4,stroke:#16a34a
+  style FILTER fill:#fff7ed,stroke:#ea580c,stroke-dasharray:4 3
+:::
+
 ## 📊 排序
 
 ```go

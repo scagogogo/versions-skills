@@ -2,6 +2,35 @@
 
 把版本号按**数字部分**归组：数字段完全相同的版本归入同一组（后缀不影响分组）。
 
+:::mermaid
+flowchart TB
+  subgraph IN["输入"]
+    direction LR
+    A["1.0.0"]
+    B["1.0.0-rc1"]
+    C["1.0.0-beta1"]
+    D["1.1.0"]
+    E["2.0.0"]
+  end
+
+  IN --> G["Group<br/>按数字段归组"]
+  G --> G1["组 1.0.0<br/>3 个版本"]
+  G --> G2["组 1.1.0<br/>1 个版本"]
+  G --> G3["组 2.0.0<br/>1 个版本"]
+
+  G1 --> AGG["组内聚合"]
+  AGG --> L["GetLatest → 1.0.0<br/>（正式版 > 预发布版）"]
+  AGG --> ST["StableVersions → [1.0.0]"]
+  AGG --> PR["PrereleaseVersions → [1.0.0-rc1, 1.0.0-beta1]"]
+
+  style G fill:#eff6ff,stroke:#2563eb,stroke-width:3px
+  style G1 fill:#f0fdf4,stroke:#16a34a
+  style G2 fill:#f0fdf4,stroke:#16a34a
+  style G3 fill:#f0fdf4,stroke:#16a34a
+  style AGG fill:#fff7ed,stroke:#ea580c
+  style L fill:#f0fdf4,stroke:#16a34a
+:::
+
 ## 🗃 简单分组
 
 ```go

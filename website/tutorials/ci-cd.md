@@ -2,6 +2,30 @@
 
 在 GitHub Actions 等 CI 环境中用 versions CLI 做版本判断与门禁。
 
+:::mermaid
+flowchart TB
+  PR["PR / Push<br/>NEW_VERSION=1.5.0"] --> CI["CI 启动"]
+
+  CI --> G1{"versions check<br/>--newer LAST_TAG"}
+  G1 -- "exit 0 ✅" --> G2{"versions constraint<br/>^1.2.0 DEP_VERSION"}
+  G1 -- "exit 1 ❌ 降级" --> BLOCK["🚫 阻断流水线<br/>拒绝降级"]
+
+  G2 -- "exit 0 ✅ 兼容" --> G3["versions latest-stable<br/>--from-file published.txt"]
+  G2 -- "exit 1 ❌ 不兼容" --> BLOCK
+
+  G3 --> BASELINE["🎯 取得发布基线<br/>继续后续 job"]
+  BASELINE --> DEPLOY["🚀 部署"]
+
+  style PR fill:#f8fafc,stroke:#475569
+  style CI fill:#eff6ff,stroke:#2563eb
+  style G1 fill:#fff7ed,stroke:#ea580c
+  style G2 fill:#fff7ed,stroke:#ea580c
+  style G3 fill:#eff6ff,stroke:#2563eb
+  style BLOCK fill:#fef2f2,stroke:#dc2626,stroke-width:3px
+  style BASELINE fill:#f0fdf4,stroke:#16a34a
+  style DEPLOY fill:#f0fdf4,stroke:#16a34a,stroke-width:3px
+:::
+
 ## 📦 在 CI 中安装
 
 ```yaml

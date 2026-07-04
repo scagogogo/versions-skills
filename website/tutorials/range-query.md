@@ -41,6 +41,23 @@ v.IsBetween(low, high) // true（闭区间）
 
 `SortedVersionGroups.QueryRange` 支持用 `ContainsPolicy` 按字符串过滤端点。典型场景：在范围内排除所有预发布版本（后缀含 `-`）。
 
+:::mermaid
+flowchart LR
+  IN["全部版本<br/>1.0.0 / 1.0.0-rc1 / 1.1.0 / 1.5.0-beta / 2.0.0"]
+  IN --> QR["QueryRange<br/>[1.0.0, 2.0.0]"]
+  QR --> RANGE["区间内<br/>1.0.0 / 1.0.0-rc1 / 1.1.0 / 1.5.0-beta / 2.0.0"]
+  RANGE --> POLICY{"ContainsPolicyNo + '-'"}
+  POLICY -->|"含 - 的排除"| KEEP["保留<br/>1.0.0 / 1.1.0 / 2.0.0"]
+  POLICY -->|"1.0.0-rc1 / 1.5.0-beta 含 -"| EXCL["排除预发布"]
+
+  style IN fill:#f8fafc,stroke:#475569
+  style QR fill:#eff6ff,stroke:#2563eb
+  style RANGE fill:#eff6ff,stroke:#2563eb
+  style POLICY fill:#fff7ed,stroke:#ea580c
+  style KEEP fill:#f0fdf4,stroke:#16a34a,stroke-width:3px
+  style EXCL fill:#fef2f2,stroke:#dc2626
+:::
+
 详见 [范围与包含策略](/concepts/range-and-policy) 与 [`SortedVersionGroups.QueryRange`](/sdk/api/query-range-sortedversiongroups)。
 
 ## 🚀 下一步

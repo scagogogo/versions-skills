@@ -14,6 +14,23 @@ v2 := v.WithMajor(2)         // v2 = "2.2.3"，v 仍是 "1.2.3"
 v3 := v.BumpMinor()          // v3 = "1.3.0"（Patch 清零，后缀清除）
 ```
 
+:::mermaid
+flowchart LR
+  V["v = 1.2.3<br/>（原对象）"]
+
+  V -->|"WithMajor(2)<br/>不改 v"| V2["v2 = 2.2.3<br/>（新对象）"]
+  V -->|"BumpMinor()<br/>不改 v"| V3["v3 = 1.3.0<br/>（新对象，Patch 清零+去后缀）"]
+  V -->|"Clone()"| V4["v4 = 1.2.3<br/>（深拷贝）"]
+
+  V -.->|"原对象永不修改"| SAFE["✅ 并发安全<br/>可共享、可复用"]
+
+  style V fill:#eff6ff,stroke:#2563eb,stroke-width:3px
+  style V2 fill:#f0fdf4,stroke:#16a34a
+  style V3 fill:#f0fdf4,stroke:#16a34a
+  style V4 fill:#f0fdf4,stroke:#16a34a
+  style SAFE fill:#fff7ed,stroke:#ea580c,stroke-dasharray:4 3
+:::
+
 | 方法 | 作用 |
 |:--|:--|
 | `WithPrefix` / `WithSuffix` / `WithMajor` / `WithMinor` / `WithPatch` / `WithNumbers` / `WithPublicTime` / `WithMetadata` | 替换指定字段 |
