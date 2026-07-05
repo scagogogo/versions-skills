@@ -13,6 +13,7 @@ coverage.out
 coverage.html
 *.prof
 cli_coverage_merged.out
+coverage_merged.out
 /testdriver
 
 # Go workspace

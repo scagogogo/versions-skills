@@ -357,9 +357,8 @@ func (x *VersionGroup) QueryRangeVersions(start, end *tuple.Tuple2[*Version, Con
 		// 结束区间是否符合条件
 		switch end.V2 {
 		case ContainsPolicyNone, ContainsPolicyYes:
-			if v.CompareTo(end.V1) > 0 {
-				continue
-			}
+			// 循环开头已对 v > end.V1 break，此处 v <= end.V1 恒成立，
+			// 对 None/Yes 策略均无需排除，直接纳入。
 		case ContainsPolicyNo:
 			if v.CompareTo(end.V1) >= 0 {
 				continue

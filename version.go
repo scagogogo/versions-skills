@@ -276,12 +276,10 @@ func (x *Version) CompareTo(target *Version) int {
 		return 0
 	} else if x.Raw < target.Raw {
 		return -1
-	} else if x.Raw > target.Raw {
+	} else {
+		// x.Raw > target.Raw
 		return 1
 	}
-
-	// unreachable
-	return 0
 }
 
 // String 返回版本的JSON字符串表示

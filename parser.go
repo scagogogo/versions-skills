@@ -259,10 +259,7 @@ func (x *VersionStringParser) readVersionPrefix() string {
 			break
 		}
 	}
-	// 控制左边界
-	if x.i < 0 {
-		x.i = 0
-	}
+	// 注：上方 for 循环以 x.i > 0 为守卫，i 最小停在 0，无需再夹左边界。
 
 	if x.i > 0 {
 		return string(x.versionRunes[0:x.i])
