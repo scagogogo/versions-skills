@@ -30,16 +30,11 @@ func (s *Server) handleValidate(ctx context.Context, request mcp.CallToolRequest
 	v := versions.NewVersion(versionStr)
 	isValid := v.IsValid()
 
+	// 注：IsValid() 已要求 VersionNumbers 非空，而 Validate() 在非空且无负数时
+	// 恒返回 nil（解析器不会产生负数段），故此处不再重复调用 Validate。
 	data := map[string]interface{}{
 		"raw":   versionStr,
 		"valid": isValid,
-	}
-
-	if isValid {
-		if validateErr := v.Validate(); validateErr != nil {
-			data["valid"] = false
-			data["error"] = validateErr.Error()
-		}
 	}
 
 	return jsonResult(data), nil

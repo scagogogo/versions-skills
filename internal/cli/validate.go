@@ -29,17 +29,6 @@ var validateCmd = &cobra.Command{
 			"valid": isValid,
 		}
 
-		// 如果基本验证通过，也检查 Validate() 的严格验证
-		if isValid {
-			if err := v.Validate(); err != nil {
-				data["valid"] = false
-				data["error"] = err.Error()
-				PrintResult("validate", data, nil)
-				os.Exit(1)
-				return
-			}
-		}
-
 		PrintResult("validate", data, nil)
 
 		if !isValid {

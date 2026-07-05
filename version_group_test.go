@@ -63,3 +63,22 @@ func TestVersionGroup_Contains(t *testing.T) {
 	v6 := NewVersion("1.0.0") // 与v1相同版本号但是不同实例
 	assert.True(t, group.Contains(v6))
 }
+
+func TestVersionGroup_PrereleaseVersions(t *testing.T) {
+	versions := []*Version{
+		NewVersion("1.0.0"),
+		NewVersion("1.1.0-alpha"),
+		NewVersion("1.2.0-beta"),
+		NewVersion("2.0.0"),
+	}
+	group := NewVersionGroupFromVersions(versions)
+	pre := group.PrereleaseVersions()
+	assert.Equal(t, 2, len(pre))
+
+	// 全稳定版的组
+	stableGroup := NewVersionGroupFromVersions([]*Version{
+		NewVersion("1.0.0"),
+		NewVersion("2.0.0"),
+	})
+	assert.Equal(t, 0, len(stableGroup.PrereleaseVersions()))
+}

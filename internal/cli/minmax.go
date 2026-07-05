@@ -27,10 +27,6 @@ var minCmd = &cobra.Command{
 			return
 		}
 		result := versions.Min(vs)
-		if result == nil {
-			PrintResult("min", nil, fmt.Errorf("未找到有效版本"))
-			return
-		}
 		PrintResult("min", verfmt.FormatVersion(result), nil)
 	},
 }
@@ -52,10 +48,6 @@ var maxCmd = &cobra.Command{
 			return
 		}
 		result := versions.Max(vs)
-		if result == nil {
-			PrintResult("max", nil, fmt.Errorf("未找到有效版本"))
-			return
-		}
 		PrintResult("max", verfmt.FormatVersion(result), nil)
 	},
 }

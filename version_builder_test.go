@@ -93,3 +93,11 @@ func TestVersionBuilder_PublicTime(t *testing.T) {
 		t.Errorf("PublicTime not set correctly, got %v, want %v", v.PublicTime, tt)
 	}
 }
+
+func TestVersionBuilder_Metadata(t *testing.T) {
+	v := NewVersionBuilder().Major(1).Minor(2).Patch(3).Metadata("build.42").Build()
+	// Metadata 设置后通过 Build 流程不报错即可（元数据进入 raw 字符串）
+	if v == nil {
+		t.Fatal("Build() returned nil")
+	}
+}

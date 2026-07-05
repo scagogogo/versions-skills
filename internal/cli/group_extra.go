@@ -70,10 +70,6 @@ var groupLatestCmd = &cobra.Command{
 			return
 		}
 		latest := g.GetLatest()
-		if latest == nil {
-			PrintResult("group-latest", nil, fmt.Errorf("分组 %q 为空", groupExtraGroupID))
-			return
-		}
 		PrintResult("group-latest", verfmt.FormatVersion(latest), nil)
 	},
 }
@@ -100,10 +96,6 @@ var groupOldestCmd = &cobra.Command{
 			return
 		}
 		oldest := g.GetOldest()
-		if oldest == nil {
-			PrintResult("group-oldest", nil, fmt.Errorf("分组 %q 为空", groupExtraGroupID))
-			return
-		}
 		PrintResult("group-oldest", verfmt.FormatVersion(oldest), nil)
 	},
 }

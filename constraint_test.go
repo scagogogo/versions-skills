@@ -220,3 +220,80 @@ func TestConstraintSet_Len(t *testing.T) {
 		t.Errorf("Len() = %d, want 2", cs.Len())
 	}
 }
+
+func TestConstraintWildcard(t *testing.T) {
+	// 1.x := >=1.0.0, <2.0.0
+	c, err := ParseConstraint("1.x")
+	if err != nil {
+		t.Fatalf("ParseConstraint 1.x: %v", err)
+	}
+	if c.Operator != ConstraintWildcard {
+		t.Errorf("1.x operator = %v, want ConstraintWildcard", c.Operator)
+	}
+	if !c.Match(NewVersion("1.0.0")) {
+		t.Error("1.0.0 should match 1.x")
+	}
+	if !c.Match(NewVersion("1.9.9")) {
+		t.Error("1.9.9 should match 1.x")
+	}
+	if c.Match(NewVersion("2.0.0")) {
+		t.Error("2.0.0 should not match 1.x")
+	}
+	if c.Match(NewVersion("0.9.0")) {
+		t.Error("0.9.0 should not match 1.x")
+	}
+
+	// 1.2.x := >=1.2.0, <1.3.0
+	c2, _ := ParseConstraint("1.2.x")
+	if !c2.Match(NewVersion("1.2.0")) {
+		t.Error("1.2.0 should match 1.2.x")
+	}
+	if !c2.Match(NewVersion("1.2.9")) {
+		t.Error("1.2.9 should match 1.2.x")
+	}
+	if c2.Match(NewVersion("1.3.0")) {
+		t.Error("1.3.0 should not match 1.2.x")
+	}
+
+	// 大写 X 和 * 通配符
+	c3, _ := ParseConstraint("1.2.X")
+	if !c3.Match(NewVersion("1.2.5")) {
+		t.Error("1.2.5 should match 1.2.X")
+	}
+	c4, _ := ParseConstraint("1.*")
+	if !c4.Match(NewVersion("1.5.0")) {
+		t.Error("1.5.0 should match 1.*")
+	}
+}
+
+func TestReplaceWildcardWithZero(t *testing.T) {
+	if got := replaceWildcardWithZero("1.x"); got != "1.0" {
+		t.Errorf("replaceWildcardWithZero(1.x) = %s, want 1.0", got)
+	}
+	if got := replaceWildcardWithZero("1.2.X"); got != "1.2.0" {
+		t.Errorf("replaceWildcardWithZero(1.2.X) = %s, want 1.2.0", got)
+	}
+	if got := replaceWildcardWithZero("1.*"); got != "1.0" {
+		t.Errorf("replaceWildcardWithZero(1.*) = %s, want 1.0", got)
+	}
+	if got := replaceWildcardWithZero("1.2.3"); got != "1.2.3" {
+		t.Errorf("replaceWildcardWithZero(1.2.3) = %s, want 1.2.3", got)
+	}
+}
+
+func TestConstraintUnion_Satisfies(t *testing.T) {
+	cu, err := ParseConstraintUnion(">=1.0.0,<2.0.0 || >=3.0.0,<4.0.0")
+	if err != nil {
+		t.Fatalf("ParseConstraintUnion: %v", err)
+	}
+	// Satisfies 是 Match 的包装
+	if !cu.Satisfies(NewVersion("1.5.0")) {
+		t.Error("1.5.0 should satisfy union")
+	}
+	if !cu.Satisfies(NewVersion("3.5.0")) {
+		t.Error("3.5.0 should satisfy union")
+	}
+	if cu.Satisfies(NewVersion("2.5.0")) {
+		t.Error("2.5.0 should not satisfy union")
+	}
+}

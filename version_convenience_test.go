@@ -349,3 +349,30 @@ func TestMustParse_Panic(t *testing.T) {
 	}()
 	MustParse("")
 }
+
+func TestVersion_IsDev(t *testing.T) {
+	if !NewVersion("1.0.0-dev1").IsDev() {
+		t.Error("1.0.0-dev1 should be dev")
+	}
+	if NewVersion("1.0.0-alpha").IsDev() {
+		t.Error("1.0.0-alpha should not be dev")
+	}
+}
+
+func TestVersion_IsAlpha(t *testing.T) {
+	if !NewVersion("1.0.0-alpha1").IsAlpha() {
+		t.Error("1.0.0-alpha1 should be alpha")
+	}
+	if NewVersion("1.0.0-beta").IsAlpha() {
+		t.Error("1.0.0-beta should not be alpha")
+	}
+}
+
+func TestVersion_IsSnapshot(t *testing.T) {
+	if !NewVersion("1.0.0-snapshot").IsSnapshot() {
+		t.Error("1.0.0-snapshot should be snapshot")
+	}
+	if NewVersion("1.0.0-alpha").IsSnapshot() {
+		t.Error("1.0.0-alpha should not be snapshot")
+	}
+}
