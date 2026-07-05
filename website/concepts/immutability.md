@@ -14,7 +14,7 @@ v2 := v.WithMajor(2)         // v2 = "2.2.3"，v 仍是 "1.2.3"
 v3 := v.BumpMinor()          // v3 = "1.3.0"（Patch 清零，后缀清除）
 ```
 
-:::mermaid
+```mermaid
 flowchart LR
   V["v = 1.2.3<br/>（原对象）"]
 
@@ -29,7 +29,7 @@ flowchart LR
   style V3 fill:#f0fdf4,stroke:#16a34a
   style V4 fill:#f0fdf4,stroke:#16a34a
   style SAFE fill:#fff7ed,stroke:#ea580c,stroke-dasharray:4 3
-:::
+```
 
 | 方法 | 作用 |
 |:--|:--|

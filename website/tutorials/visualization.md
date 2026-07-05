@@ -2,7 +2,7 @@
 
 把版本号列表渲染成文本树状图，便于理解层级关系。
 
-:::mermaid
+```mermaid
 flowchart LR
   IN["扁平版本列表<br/>1.0.0 / 1.0.1 / 1.1.0<br/>2.0.0-rc1 / 2.0.0"]
   IN --> VIS["Visualize<br/>按数字段分层"]
@@ -15,7 +15,7 @@ flowchart LR
   style TREE fill:#f0fdf4,stroke:#16a34a,stroke-width:3px
   style GROUP fill:#fff7ed,stroke:#ea580c,stroke-dasharray:4 3
   style LIMIT fill:#fff7ed,stroke:#ea580c,stroke-dasharray:4 3
-:::
+```
 
 ## 🌳 版本列表可视化
 

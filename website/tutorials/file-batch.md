@@ -2,7 +2,7 @@
 
 读取版本号文件，去重、排序、写回——批量维护版本清单的常见流程。
 
-:::mermaid
+```mermaid
 flowchart LR
   FILE["releases.txt<br/>含重复/乱序"] --> READ["ReadVersionsFromFile"]
   READ --> VS["[]*Version<br/>含重复"]
@@ -17,7 +17,7 @@ flowchart LR
   style SORT fill:#eff6ff,stroke:#2563eb
   style WRITE fill:#eff6ff,stroke:#2563eb
   style OUT fill:#f0fdf4,stroke:#16a34a,stroke-width:3px
-:::
+```
 
 ## 📖 读取
 

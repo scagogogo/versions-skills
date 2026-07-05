@@ -2,7 +2,7 @@
 
 常见任务的「复制即用」片段。每篇聚焦一个具体问题。
 
-:::mermaid
+```mermaid
 flowchart LR
   PARSE["🔍 解析与检查"] --> COMP["⚖️ 比较"]
   COMP --> SORT["📊 排序与集合"]
@@ -18,7 +18,7 @@ flowchart LR
   style CONSTR fill:#fff7ed,stroke:#ea580c
   style MUT fill:#fff7ed,stroke:#ea580c
   style FILE fill:#fef2f2,stroke:#dc2626
-:::
+```
 
 ## 🔍 解析与检查
 

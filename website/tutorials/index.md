@@ -2,7 +2,7 @@
 
 通过动手实践学习 versions-skills。每篇教程都是可运行的完整示例。
 
-:::mermaid
+```mermaid
 flowchart LR
   subgraph BEGINNER["🎓 入门系列"]
     direction TB
@@ -29,7 +29,7 @@ flowchart LR
   style BEGINNER fill:#eff6ff,stroke:#2563eb
   style ADVANCED fill:#f0fdf4,stroke:#16a34a
   style AI fill:#fff7ed,stroke:#ea580c
-:::
+```
 
 ## 🎓 入门系列
 

@@ -62,7 +62,7 @@ cs, _ := versions.ParseConstraintSet("^1.0.0")
 compatible := versions.FilterByConstraintSet(vs, cs) // [1.0.0 1.5.0]
 ```
 
-:::mermaid
+```mermaid
 flowchart LR
   IN["全部版本<br/>0.9.0 / 1.0.0 / 1.5.0 / 2.0.0 / 2.1.0"]
   IN --> F["FilterByConstraintSet<br/>约束: ^1.0.0<br/>= ≥1.0.0,&lt;2.0.0"]
@@ -80,7 +80,7 @@ flowchart LR
   style OUT1 fill:#fef2f2,stroke:#dc2626
   style OUT2 fill:#fef2f2,stroke:#dc2626
   style RESULT fill:#f0fdf4,stroke:#16a34a,stroke-width:3px
-:::
+```
 
 ## ❌ 取反
 

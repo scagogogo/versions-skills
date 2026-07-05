@@ -23,7 +23,7 @@ v1.2.3-rc1
 若你的输入文件含 `#` 注释，须**在调用前自行剥离**。versions-skills 不会把 `#` 当注释。
 :::
 
-:::mermaid
+```mermaid
 flowchart TB
   FILE["releases.txt<br/>1.0.0<br/>1.1.0<br/>（空行）<br/># 我的注释<br/>v1.2.3-rc1"]
 
@@ -51,7 +51,7 @@ flowchart TB
   style P3 fill:#fef2f2,stroke:#dc2626
   style P4 fill:#f0fdf4,stroke:#16a34a
   style OUT fill:#f0fdf4,stroke:#16a34a,stroke-width:3px
-:::
+```
 
 ## 📝 读写 API
 

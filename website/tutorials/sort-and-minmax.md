@@ -2,7 +2,7 @@
 
 给版本号列表排序，找出最新/最旧、最新稳定/预发布版本。
 
-:::mermaid
+```mermaid
 flowchart LR
   INPUT["无序列表<br/>1.10.0 / 1.2.0 / 1.1.0<br/>1.0.0 / 1.2.0-beta"]
   INPUT --> SORT["SortVersionSlice<br/>（数字段→后缀→时间→Raw）"]
@@ -22,7 +22,7 @@ flowchart LR
   style LS fill:#f0fdf4,stroke:#16a34a
   style LP fill:#f0fdf4,stroke:#16a34a
   style FILTER fill:#fff7ed,stroke:#ea580c,stroke-dasharray:4 3
-:::
+```
 
 ## 📊 排序
 

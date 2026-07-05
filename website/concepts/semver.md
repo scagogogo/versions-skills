@@ -32,7 +32,7 @@ versions.NewVersion("01.2.3").IsSemver()              // false（前导零）
 
 versions-skills 的 `Version` 比 SemVer 宽松——`1.2`、`v1.2.3.4`、`1.0.0-beta1` 都能解析。只有需要 SemVer 合规性时才用 `IsSemver` / `ValidateSemver`。
 
-:::mermaid
+```mermaid
 flowchart TB
   INPUT["任意字符串<br/>1.2.3 / v1.2 / 1.0.0-beta1 / 01.2.3 / 1.2.3.4"]
 
@@ -52,7 +52,7 @@ flowchart TB
   style STRICT fill:#fff7ed,stroke:#ea580c
   style B1 fill:#f0fdf4,stroke:#16a34a
   style S1 fill:#fef2f2,stroke:#dc2626
-:::
+```
 
 ## 📚 延伸
 

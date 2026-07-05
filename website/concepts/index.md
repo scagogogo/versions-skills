@@ -2,7 +2,7 @@
 
 学习 versions-skills 需要掌握的核心概念。每个概念都有一篇专题文档。
 
-:::mermaid
+```mermaid
 flowchart LR
   USER["开发者 / AI Agent"] --> ANATOMY["版本号结构"]
   ANATOMY --> COMPARE["比较优先级"]
@@ -25,7 +25,7 @@ flowchart LR
   style SEMVER fill:#f8fafc,stroke:#475569
   style FILE fill:#f8fafc,stroke:#475569
   style SERIAL fill:#f8fafc,stroke:#475569
-:::
+```
 
 ## 📚 概念清单
 

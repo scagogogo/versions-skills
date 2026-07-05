@@ -53,7 +53,7 @@ features:
 
 </div>
 
-:::mermaid
+```mermaid
 flowchart LR
   COPY["📋 Copy prompt"] --> PASTE["💬 Paste into<br/>Claude Code / Codex"]
   PASTE --> AI["🤖 AI executes<br/>install + configure"]
@@ -62,7 +62,7 @@ flowchart LR
   style COPY fill:#eff6ff,stroke:#2563eb
   style AI fill:#fff7ed,stroke:#ea580c
   style READY fill:#f0fdf4,stroke:#16a34a,stroke-width:3px
-:::
+```
 
 ::: code-group
 

@@ -2,7 +2,7 @@
 
 在 GitHub Actions 等 CI 环境中用 versions CLI 做版本判断与门禁。
 
-:::mermaid
+```mermaid
 flowchart TB
   PR["PR / Push<br/>NEW_VERSION=1.5.0"] --> CI["CI 启动"]
 
@@ -24,7 +24,7 @@ flowchart TB
   style BLOCK fill:#fef2f2,stroke:#dc2626,stroke-width:3px
   style BASELINE fill:#f0fdf4,stroke:#16a34a
   style DEPLOY fill:#f0fdf4,stroke:#16a34a,stroke-width:3px
-:::
+```
 
 ## 📦 在 CI 中安装
 

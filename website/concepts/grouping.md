@@ -17,7 +17,7 @@
 
 `v1.2.3` 与 `1.2.3-beta1` 数字段相同，归入**同一分组**——分组只看数字段，后缀不影响。
 
-:::mermaid
+```mermaid
 flowchart LR
   subgraph IN["输入版本列表"]
     direction TB
@@ -46,7 +46,7 @@ flowchart LR
   style G123 fill:#f0fdf4,stroke:#16a34a
   style G100 fill:#f0fdf4,stroke:#16a34a
   style G20 fill:#f0fdf4,stroke:#16a34a
-:::
+```
 
 ## 🧱 两种分组 API
 

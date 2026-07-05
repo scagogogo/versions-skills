@@ -39,7 +39,7 @@
 Prefix  Numbers   Suffix   Metadata
 ```
 
-:::mermaid
+```mermaid
 flowchart LR
   IN["'v1.2.3-beta1+build.7'"] --> T["Trim 空白"]
   T --> M{"找 '+'<br/>其后不含 '-'?"}
@@ -54,7 +54,7 @@ flowchart LR
   style IN fill:#eff6ff,stroke:#2563eb
   style PRE fill:#fef2f2,stroke:#dc2626
   style SU fill:#f0fdf4,stroke:#16a34a
-:::
+```
 
 算法步骤（顺序固定）：
 
@@ -81,7 +81,7 @@ flowchart LR
 
 `a.CompareTo(b)` 返回 `-1/0/1`，按顺序尝试以下键，**第一个不同的胜出**：
 
-:::mermaid
+```mermaid
 flowchart TD
   START["a.CompareTo(b)"] --> N1{"1️⃣ 比较 VersionNumbers<br/>逐位 int"}
   N1 -->|"不等"| DONE1["返回 ✅"]
@@ -98,7 +98,7 @@ flowchart TD
   style DONE3 fill:#f0fdf4,stroke:#16a34a
   style DONE4 fill:#f0fdf4,stroke:#16a34a
   style RAW fill:#fefce8,stroke:#ca8a04
-:::
+```
 
 | # | 键 | 规则 | 源文件 |
 |:--:|:--|:--|:--|
@@ -148,7 +148,7 @@ flowchart TD
 
 约束表达式是三层语法，OR 拆逗号 AND，AND 拆单约束：
 
-:::mermaid
+```mermaid
 flowchart TD
   U["Union (OR)<br/>'>=1.0.0,<2.0.0 || >=3.0.0'<br/>以 || 切分"] --> S1["Set₁ (AND)<br/>'>=1.0.0,<2.0.0'<br/>以 , 切分"]
   U --> S2["Set₂ (AND)<br/>'>=3.0.0'"]
@@ -158,7 +158,7 @@ flowchart TD
   style U fill:#eff6ff,stroke:#2563eb
   style S1 fill:#f0fdf4,stroke:#16a34a
   style S2 fill:#f0fdf4,stroke:#16a34a
-:::
+```
 
 - `ConstraintUnion.Match(v)`：**任一** Set 命中即 true。
 - `ConstraintSet.Match(v)`：**所有** Single 命中才 true。
@@ -213,7 +213,7 @@ flowchart TD
 3. **上界检查**：与下界对称，`v > High` 或 `v == High && !HighInclusive` → 不通过。
 4. **通过**：两端都未拦下 → 命中。
 
-:::mermaid
+```mermaid
 flowchart LR
   subgraph CLOSED["NewClosedRange [1.0.0, 2.0.0]"]
     direction LR
@@ -237,7 +237,7 @@ flowchart LR
   style M1 fill:#f0fdf4,stroke:#16a34a
   style M2 fill:#f0fdf4,stroke:#16a34a
   style M3 fill:#fef2f2,stroke:#dc2626
-:::
+```
 
 构造器：
 
@@ -255,7 +255,7 @@ flowchart LR
 
 `SortVersionSlice` **不是**朴素 `sort.Slice`，而是两阶段：
 
-:::mermaid
+```mermaid
 flowchart LR
   IN["无序列表<br/>1.10.0 / 1.2.0 / 1.0.0 / 1.2.0-beta"]
   IN --> P1["阶段 1：分组<br/>BuildGroupID 归组"]
@@ -268,7 +268,7 @@ flowchart LR
   style GROUPS fill:#fff7ed,stroke:#ea580c
   style P2 fill:#eff6ff,stroke:#2563eb
   style OUT fill:#f0fdf4,stroke:#16a34a,stroke-width:3px
-:::
+```
 
 1. **分组**：按 `BuildGroupID()`（完整数字串）归组。
 2. **排序组**：按组数字前缀（`VersionGroup.CompareTo`）排组，**组内再排序**，最后拼接。
@@ -306,7 +306,7 @@ hits  := sg.QueryRange(start, end)                    // 跳索引 + 组遍历
 
 `Version` 设计为**不可变**：所有 `Bump*` / `With*` 都返回新对象，原对象绝不被修改。它们不是简单的字段赋值，而是走 **Builder 重建** 流程：
 
-:::mermaid
+```mermaid
 flowchart LR
   SRC["原版本 1.2.3"] --> DECIDE{"操作类型"}
   DECIDE -->|"Bump*"| BUMP["数字段 +1<br/>低位置零<br/>后缀清除"]
@@ -318,7 +318,7 @@ flowchart LR
   PARSE --> OUT["新 Version 对象"]
   style SRC fill:#eff6ff,stroke:#2563eb
   style OUT fill:#f0fdf4,stroke:#16a34a
-:::
+```
 
 关键细节：
 
@@ -357,7 +357,7 @@ versions-skills 用一个极简的**行式文本格式**承载版本列表，便
 # 这一行会被当作版本号解析，不是注释！
 ```
 
-:::mermaid
+```mermaid
 flowchart LR
   F["文件 versions.txt"] --> READ["os.ReadFile<br/>整文件读入"]
   READ --> SPLIT["按 \\n 切分"]
@@ -368,7 +368,7 @@ flowchart LR
   APPEND --> LOOP
   style SKIP fill:#fef2f2,stroke:#dc2626
   style PARSE fill:#fff7ed,stroke:#ea580c
-:::
+```
 
 **读**（`ReadVersionsFromFile` / `ReadVersionsFromReader`）：
 

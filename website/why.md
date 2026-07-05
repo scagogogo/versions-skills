@@ -10,7 +10,7 @@ sorted(["1.2.0", "1.10.0", "1.2.1"]) == ["1.10.0", "1.2.0", "1.2.1"]   # 字典�
 
 字符串排序把 `"1.10.0"` 排在 `"1.2.0"` **前面**，因为 `'1' < '2'` 是逐字符比较的。在依赖解析、发布流水线、安全补丁筛选里，这种错误会把"最新版本"选错，后果从构建失败到引入漏洞不等。
 
-:::mermaid
+```mermaid
 flowchart LR
   subgraph 字典序["❌ 字符串排序（错误）"]
     direction TB
@@ -21,7 +21,7 @@ flowchart LR
     B1["1.2.0"] --> B2["1.2.1"] --> B3["1.10.0"]
   end
   字典序 -.->|"10 应在 2 之后"| 数值序
-:::
+```
 
 ## 问题不止"排序"
 
@@ -43,7 +43,7 @@ flowchart LR
 
 光"谁先谁后"这一项，真实发布阶梯是这样的——而不是字典序里 `alpha < beta < rc` 凑巧对了的那种"对":
 
-:::mermaid
+```mermaid
 flowchart LR
   dev["dev<br/>(50)"] --> snapshot["snapshot<br/>(60)"] --> nightly["nightly<br/>(70)"]
   nightly --> alpha["alpha<br/>(100)"] --> beta["beta<br/>(200)"] --> milestone["milestone<br/>(300)"]
@@ -55,7 +55,7 @@ flowchart LR
   style rc fill:#fef9c3,stroke:#ca8a04
   style stable fill:#f0fdf4,stroke:#16a34a,stroke-width:3px
   style post fill:#eff6ff,stroke:#2563eb
-:::
+```
 
 ## 现有方案缺什么
 

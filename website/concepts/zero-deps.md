@@ -14,7 +14,7 @@
 
 CLI 额外依赖 `cobra`，MCP 额外依赖 `mcp-go`——但**核心库本身**保持轻量。
 
-:::mermaid
+```mermaid
 flowchart TB
   subgraph CORE["根包 versions（核心库）"]
     direction LR
@@ -47,7 +47,7 @@ flowchart TB
   style SDK fill:#fff7ed,stroke:#ea580c
   style COBRA fill:#f8fafc,stroke:#94a3b8,stroke-dasharray:4 3
   style MCPGO fill:#f8fafc,stroke:#94a3b8,stroke-dasharray:4 3
-:::
+```
 
 ## ✅ 为什么重要
 

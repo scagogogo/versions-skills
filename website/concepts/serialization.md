@@ -4,7 +4,7 @@
 `Version` 实现了 **JSON / Text / SQL** 三类序列化接口，可直接用于配置、API 传输与数据库。
 :::
 
-:::mermaid
+```mermaid
 flowchart LR
   V["Version 对象<br/>v1.2.3-beta1"]
 
@@ -23,7 +23,7 @@ flowchart LR
   style APP1 fill:#f0fdf4,stroke:#16a34a
   style APP2 fill:#f0fdf4,stroke:#16a34a
   style APP3 fill:#f0fdf4,stroke:#16a34a
-:::
+```
 
 ## 📦 JSON
 

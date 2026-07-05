@@ -6,7 +6,7 @@
 
 ## 🏗 三层架构
 
-:::mermaid
+```mermaid
 flowchart TB
   subgraph CORE["根包 versions（核心实现，Go）"]
     direction LR
@@ -33,7 +33,7 @@ flowchart TB
   style USE1 fill:#f0fdf4,stroke:#16a34a
   style USE2 fill:#f0fdf4,stroke:#16a34a
   style USE3 fill:#f0fdf4,stroke:#16a34a
-:::
+```
 
 三层共享**同一份核心代码**，行为完全一致——SDK 怎么比较，CLI 与 MCP 就怎么比较。
 

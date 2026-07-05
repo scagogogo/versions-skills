@@ -6,7 +6,7 @@
 
 ## 📐 判定流程
 
-:::mermaid
+```mermaid
 flowchart TD
   START(["两个 Version 进入 CompareTo"]) --> L1{"1. VersionNumbers<br/>数字段逐段比较"}
   L1 -- "不同（如 1.2 vs 1.3）" --> R1["决出结果<br/>返回 ±1"]
@@ -26,7 +26,7 @@ flowchart TD
   style R2 fill:#f0fdf4,stroke:#16a34a
   style R3 fill:#f0fdf4,stroke:#16a34a
   style R4 fill:#f0fdf4,stroke:#16a34a,stroke-width:3px
-:::
+```
 
 每一级**只在前几级都判定为「相等」时才进入下一级**——任一级决出不同即立即返回，不再往下走。
 

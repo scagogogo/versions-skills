@@ -24,7 +24,7 @@ v  1.2.3  -beta1  +build.7
 | `Suffix` | `VersionSuffix` | `"-beta1"` | 数字后内容 |
 | `Metadata` | `string` | `"build.7"` | semver 构建元数据 |
 
-:::mermaid
+```mermaid
 flowchart LR
   subgraph RAW["v1.2.3-beta1+build.7"]
     direction LR
@@ -44,7 +44,7 @@ flowchart LR
   style CMP fill:#f0fdf4,stroke:#16a34a
   style IGNORE fill:#fef2f2,stroke:#dc2626
   style PT fill:#fff7ed,stroke:#ea580c
-:::
+```
 
 ## 🔍 各段行为
 

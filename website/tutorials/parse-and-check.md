@@ -2,7 +2,7 @@
 
 深入解析版本号字符串，提取各组成部分，并判断版本类型。
 
-:::mermaid
+```mermaid
 flowchart TB
   INPUT["字符串<br/>v1.2.3-beta1+build.7"]
   INPUT --> PARSE["NewVersion<br/>宽松解析"]
@@ -22,7 +22,7 @@ flowchart TB
   style CHECK fill:#fff7ed,stroke:#ea580c
   style VLD fill:#fff7ed,stroke:#ea580c
   style COERCE fill:#f0fdf4,stroke:#16a34a,stroke-dasharray:4 3
-:::
+```
 
 ## 🧱 拆解结构
 

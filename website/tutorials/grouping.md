@@ -2,7 +2,7 @@
 
 把版本号按**数字部分**归组：数字段完全相同的版本归入同一组（后缀不影响分组）。
 
-:::mermaid
+```mermaid
 flowchart TB
   subgraph IN["输入"]
     direction LR
@@ -29,7 +29,7 @@ flowchart TB
   style G3 fill:#f0fdf4,stroke:#16a34a
   style AGG fill:#fff7ed,stroke:#ea580c
   style L fill:#f0fdf4,stroke:#16a34a
-:::
+```
 
 ## 🗃 简单分组
 

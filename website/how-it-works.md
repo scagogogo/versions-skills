@@ -4,7 +4,7 @@ versions-skills 是一个**四层架构**的工具集：核心库在底，能力
 
 ## 四层架构
 
-:::mermaid
+```mermaid
 flowchart TB
   subgraph L1["🤖 AI Agent / IDE 层"]
     direction LR
@@ -37,7 +37,7 @@ flowchart TB
   style L2 fill:#f0fdf4,stroke:#16a34a
   style L3 fill:#f8fafc,stroke:#475569
   style CORE fill:#1e293b,color:#fff,stroke:#0f172a
-:::
+```
 
 **核心库**（仓库根目录的 `*.go`）是所有能力的真正实现——解析、比较、排序、分组、约束、范围查询都在这里。上层三种接口（CLI、Go SDK、MCP）只是对同一核心的薄封装，所以**无论从哪条路径进来，结果语义完全一致**。
 
@@ -64,7 +64,7 @@ MCP Server（`cmd/versions-mcp`）把核心库的 21 个能力暴露成标准 MC
 
 ### 两条路径配合使用
 
-:::mermaid
+```mermaid
 flowchart LR
   Q{"你的 AI Agent 是?"} -->|"Claude Code"| BOTH["装 Skills + MCP<br/>（知识 + 执行）"]
   Q -->|"Codex / Cursor / 其它"| MCPONLY["只装 MCP<br/>（确定性执行足够）"]
@@ -73,7 +73,7 @@ flowchart LR
   style BOTH fill:#eff6ff,stroke:#2563eb
   style BEST fill:#f0fdf4,stroke:#16a34a,stroke-width:3px
   style GOOD fill:#f0fdf4,stroke:#16a34a
-:::
+```
 
 ::: tip 推荐做法
 在 Claude Code 上**同时**装 Skills 插件和 MCP Server：
@@ -87,7 +87,7 @@ Skills 管"怎么想"，MCP 管"怎么做"。其它 Agent（Codex 等）只有 M
 
 一个版本号字符串从输入到输出，经过这条管道：
 
-:::mermaid
+```mermaid
 flowchart LR
   IN["原始字符串<br/>'v1.2.3-beta1'"] --> IF["接口层<br/>CLI / MCP / SDK / Skill"]
   IF --> P["解析 parser.go<br/>Prefix / Numbers / Suffix / Metadata"]
@@ -97,7 +97,7 @@ flowchart LR
   style P fill:#fff7ed,stroke:#ea580c
   style PROC fill:#fff7ed,stroke:#ea580c
   style OUT fill:#f0fdf4,stroke:#16a34a
-:::
+```
 
 1. **输入**：字符串从 CLI 参数、MCP 调用参数、SDK 调用、或 Skill 引导进入。
 2. **解析**（`parser.go`）：拆成 Prefix / VersionNumbers / Suffix / Metadata 四字段。

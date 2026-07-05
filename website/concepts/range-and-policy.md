@@ -20,7 +20,7 @@ r.Filter(vs) // 过滤出区间内的版本
 
 四种开闭组合示意（`●` 为闭端点，含；`○` 为开端点，不含）：
 
-:::mermaid
+```mermaid
 flowchart LR
   subgraph CC["[1.0.0, 2.0.0]  闭-闭"]
     direction LR
@@ -47,7 +47,7 @@ flowchart LR
   style CC3 fill:#eff6ff,stroke:#2563eb
   style OC3 fill:#eff6ff,stroke:#2563eb
   style CO1 fill:#eff6ff,stroke:#2563eb
-:::
+```
 
 ## 🎚 ContainsPolicy
 

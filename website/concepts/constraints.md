@@ -25,7 +25,7 @@
 
 约束表达式是**三层结构**——一个 Union 由多个 Set 组成（OR），每个 Set 又由多个 Single 组成（AND）：
 
-:::mermaid
+```mermaid
 flowchart TB
   U["ConstraintUnion<br/><b>1.x || >=2.0.0,&lt;3.0.0</b>"]
 
@@ -54,7 +54,7 @@ flowchart TB
   style C2 fill:#f8fafc,stroke:#475569
   style C3 fill:#f8fafc,stroke:#475569
   style PASS fill:#f0fdf4,stroke:#16a34a,stroke-width:3px
-:::
+```
 
 ## 🧪 示例
 

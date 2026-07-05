@@ -2,7 +2,7 @@
 
 versions-skills 对 AI Agent 的接入分两条路径，下表帮你选：
 
-:::mermaid
+```mermaid
 flowchart TD
   Q{"用哪个 Agent?"} -->|"Claude Code"| CC["双装：Skills + MCP"]
   Q -->|"Codex"| CX["装 MCP<br/>~/.codex/config.toml"]
@@ -17,7 +17,7 @@ flowchart TD
   style CC fill:#eff6ff,stroke:#2563eb
   style BEST fill:#f0fdf4,stroke:#16a34a,stroke-width:3px
   style GOOD fill:#f0fdf4,stroke:#16a34a
-:::
+```
 
 | AI Agent / IDE | Skills 插件 | MCP (stdio) | MCP (SSE) | 配置位置 |
 |:--|:--:|:--:|:--:|:--|

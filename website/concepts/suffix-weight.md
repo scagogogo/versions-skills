@@ -36,14 +36,14 @@ versions.NewVersion("1.0.0-sp1").IsNewerThan(versions.NewVersion("1.0.0"))   // 
 
 ## 🔍 比较示例
 
-:::mermaid
+```mermaid
 flowchart LR
   DEV["dev<br/>50"] --> SNAP["snapshot<br/>60"] --> NIGHT["nightly<br/>70"] --> AL["alpha<br/>100"] --> BE["beta<br/>200"] --> MS["milestone<br/>300"] --> RC["rc<br/>400"] --> STABLE["正式版<br/>final/release/ga<br/>500"] --> SP["sp<br/>600"] --> PA["patch<br/>700"] --> POST["post<br/>800"]
 
   STABLE:::stable
   classDef stable fill:#f0fdf4,stroke:#16a34a,stroke-width:3px
   linkStyle 7 stroke:#16a34a,stroke-width:3px
-:::
+```
 
 权重从左到右递增——**越靠右越「新」**。注意 `sp`/`patch`/`post` 在正式版**右侧**，即比正式版更新。
 
