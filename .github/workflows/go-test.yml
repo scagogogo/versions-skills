@@ -31,7 +31,7 @@ jobs:
         run: go test -v -race ./...
 
   coverage:
-    name: Coverage Analysis
+    name: Coverage 100%
     needs: unit-test
     runs-on: ubuntu-latest
     steps:
@@ -44,10 +44,22 @@ jobs:
           go-version: '1.25.5'
           check-latest: true
 
-      - name: Generate coverage report
+      - name: Verify 100% coverage (incl. subprocess os.Exit / main paths)
         run: |
-          go test -coverprofile=coverage.out -race ./...
-          go tool cover -func=coverage.out
+          bash scripts/verify_coverage.sh
+          # 兜底二次断言：合并 profile 中无 0 计数块
+          if awk '$1!="mode:" && $NF==0 {found=1; print "  未覆盖:", $0} END{exit found}' coverage_merged.out; then
+            echo "✅ 合并 profile 无 0 计数块"
+          else
+            echo "❌ 仍存在未覆盖块"
+            exit 1
+          fi
+
+      - name: Upload coverage artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-merged
+          path: coverage_merged.out
 
   lint:
     name: Code Quality
