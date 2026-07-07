@@ -312,10 +312,10 @@ func TestServer_handleRangeQuery(t *testing.T) {
 
 	// include_end=true
 	res2, err2 := s.handleRangeQuery(ctx, newReq(map[string]interface{}{
-		"start":        "1.0.0",
-		"end":          "3.0.0",
-		"versions":     versionsArg,
-		"include_end":  true,
+		"start":       "1.0.0",
+		"end":         "3.0.0",
+		"versions":    versionsArg,
+		"include_end": true,
 	}))
 	assert.NoError(t, err2)
 	m2 := parseResult(t, res2)
