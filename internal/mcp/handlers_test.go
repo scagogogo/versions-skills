@@ -1006,7 +1006,7 @@ func TestServer_ServeSSE(t *testing.T) {
 	// 先占用一个端口不释放，让 ServeSSE 的 Start 绑定失败，从而走错误返回路径
 	l, err := net.Listen("tcp", "127.0.0.1:0")
 	assert.NoError(t, err)
-	defer l.Close()
+	defer func() { _ = l.Close() }()
 	port := l.Addr().(*net.TCPAddr).Port
 	err = s.ServeSSE(fmt.Sprintf("127.0.0.1:%d", port))
 	// 预期返回错误（端口被占用）

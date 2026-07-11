@@ -109,7 +109,7 @@ func TestResolveVersions_StdinReadError(t *testing.T) {
 	require.NoError(t, os.WriteFile(p, []byte(""), 0o644))
 	f, err := os.Open(p)
 	require.NoError(t, err)
-	defer f.Close()
+	defer func() { _ = f.Close() }()
 	os.Stdin = f
 	// 空文件 → lines 为空 → 返回 error
 	_, err = ResolveVersions(nil, "")
@@ -131,7 +131,7 @@ func TestResolveVersions_StdinScanError(t *testing.T) {
 	defer func() { os.Stdin = oldStdin }()
 	r, w, err := os.Pipe()
 	require.NoError(t, err)
-	defer r.Close()
+	defer func() { _ = r.Close() }()
 	long := strings.Repeat("a", bufio.MaxScanTokenSize+1)
 	go func() {
 		_, _ = w.WriteString(long)
@@ -153,7 +153,7 @@ func TestResolveVersions_NoInput(t *testing.T) {
 	if err != nil {
 		t.Skip("/dev/null 不可用")
 	}
-	defer devNull.Close()
+	defer func() { _ = devNull.Close() }()
 	oldStdin := os.Stdin
 	defer func() { os.Stdin = oldStdin }()
 	os.Stdin = devNull

@@ -513,7 +513,7 @@ func TestResolveGroupExtra_NoInput(t *testing.T) {
 	// 让 ResolveVersions 报错：args 为空 + stdin 为 char device
 	devNull, err := os.OpenFile("/dev/null", os.O_RDONLY, 0)
 	require.NoError(t, err)
-	defer devNull.Close()
+	defer func() { _ = devNull.Close() }()
 	oldStdin := os.Stdin
 	defer func() { os.Stdin = oldStdin }()
 	os.Stdin = devNull

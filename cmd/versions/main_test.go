@@ -9,6 +9,17 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+// goBin 返回当前可用的 go 可执行文件路径。
+// 用 exec.LookPath("go") 从 PATH 查找，本机与 CI（setup-go 装的 go 在 PATH）
+// 均可用，不依赖 PATH 里的特定版本名（如 go1.25.7）。
+func goBin() string {
+	bin, err := exec.LookPath("go")
+	if err != nil {
+		panic("go binary not found in PATH: " + err.Error())
+	}
+	return bin
+}
+
 // TestRun_Help 测 run() 成功路径：--help 让 cli.Execute 返回 nil，run 返回 0。
 func TestRun_Help(t *testing.T) {
 	oldArgs := os.Args
@@ -27,9 +38,11 @@ func TestRun_Subprocess(t *testing.T) {
 	tmpDir := t.TempDir()
 	binPath := filepath.Join(tmpDir, "versions")
 	gocoverdir := filepath.Join(tmpDir, "cover")
-	os.MkdirAll(gocoverdir, 0o755)
+	if err := os.MkdirAll(gocoverdir, 0o755); err != nil {
+		t.Fatalf("MkdirAll: %v", err)
+	}
 
-	build := exec.Command("go1.25.7", "build", "-cover", "-covermode=atomic",
+	build := exec.Command(goBin(), "build", "-cover", "-covermode=atomic",
 		"-o", binPath, ".")
 	build.Env = append(os.Environ(), "GOTOOLCHAIN=local")
 	build.Dir = repoRoot(t) + "/cmd/versions"

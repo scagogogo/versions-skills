@@ -12,6 +12,17 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+// goBin 返回当前可用的 go 可执行文件路径。
+// 用 exec.LookPath("go") 从 PATH 查找，本机与 CI（setup-go 装的 go 在 PATH）
+// 均可用，不依赖 PATH 里的特定版本名（如 go1.25.7）。
+func goBin() string {
+	bin, err := exec.LookPath("go")
+	if err != nil {
+		panic("go binary not found in PATH: " + err.Error())
+	}
+	return bin
+}
+
 // TestRun_Help 测 run() 的成功路径：--help 进入 cobra help，不触发 Run 闭包，
 // Execute 返回 nil，run 返回 0。覆盖命令组装、flag 绑定、Execute 成功路径。
 func TestRun_Help(t *testing.T) {
@@ -41,7 +52,7 @@ func TestRun_Subprocess(t *testing.T) {
 	}
 
 	// 构建带覆盖率插桩的二进制
-	build := exec.Command("go1.25.7", "build", "-cover", "-covermode=atomic",
+	build := exec.Command(goBin(), "build", "-cover", "-covermode=atomic",
 		"-o", binPath, ".")
 	build.Env = append(os.Environ(), "GOTOOLCHAIN=local")
 	build.Dir = repoRoot(t)
