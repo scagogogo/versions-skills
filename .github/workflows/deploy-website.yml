@@ -43,7 +43,7 @@ jobs:
         working-directory: website
         run: npm run build
 
-      - name: Check dead links
+      - name: Check dead links (dist HTML + en-locale residual detection)
         run: python3 website/scripts/check_dead_links.py --ci
 
       - name: Upload artifact
