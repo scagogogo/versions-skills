@@ -1,6 +1,10 @@
 ---
 # https://vitepress.dev/reference/default-theme-home-page
 layout: home
+head:
+  - - meta
+    - http-equiv: content-language
+      content: en-US
 
 hero:
   name: Versions-Skills
@@ -157,6 +161,8 @@ The full reference is in [简体中文](/), but the structure is language-neutra
 - [CLI Commands](/cli/) — all 44 subcommands
 - [MCP Tools](/mcp/) — all 21 `version_*` tools
 - [Skills](/skills/) — 13 Claude Code slash commands
+
+> ⚠️ These links intentionally point to `/sdk/`, `/cli/` (Chinese site), NOT `/en/sdk/`. This English landing page is a standalone page (no VitePress locale), so body links are not localized — they stay on the Chinese site (HTTP 200). Adding an `/en/` prefix here would create 404s.
 
 ## Links
 

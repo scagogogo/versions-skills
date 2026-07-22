@@ -45,6 +45,7 @@ export default withMermaid(
             ],
           },
           { text: 'AI Agent 接入', link: '/ai-agents' },
+          { text: 'English', link: '/en/' },
           {
             text: '参考',
             items: [
@@ -57,28 +58,7 @@ export default withMermaid(
         ],
       },
     },
-    // 英文（/en/ 前缀）
-    'en': {
-      label: 'English',
-      lang: 'en-US',
-      link: '/en/',
-      themeConfig: {
-        nav: [
-          { text: 'Home', link: '/en/' },
-          {
-            text: 'Reference',
-            items: [
-              { text: 'Go SDK API', link: '/sdk/' },
-              { text: 'CLI Commands', link: '/cli/' },
-              { text: 'MCP Tools', link: '/mcp/' },
-              { text: 'Skills', link: '/skills/' },
-            ],
-          },
-          { text: '中文文档', link: '/' },
-        ],
-      },
     },
-  },
 
   themeConfig: {
     // 站点级导航已移至 locales 中按语言配置
