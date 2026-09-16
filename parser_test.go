@@ -122,17 +122,15 @@ func TestVersionStringParser_Parser(t *testing.T) {
 	assert.Equal(t, VersionNumbers([]int{126}), v.VersionNumbers)
 	assert.Equal(t, EmptyVersionSuffix, v.Suffix)
 
-	// TODO 2023-5-31 11:25:49 此case未通过
-	//v = NewVersionStringParser("RELEASE120-1").Parse()
-	//assert.Equal(t, VersionPrefix("RELEASE"), v.Prefix)
-	//assert.Equal(t, VersionNumbers([]int{120}), v.VersionNumbers)
-	//assert.Equal(t, VersionSuffix("-1"), v.Suffix)
+	v = NewVersionStringParser("RELEASE120-1").Parse()
+	assert.Equal(t, VersionPrefix("RELEASE"), v.Prefix)
+	assert.Equal(t, VersionNumbers([]int{120}), v.VersionNumbers)
+	assert.Equal(t, VersionSuffix("-1"), v.Suffix)
 
-	// TODO 2023-5-31 11:25:49 此case未通过
-	//v = NewVersionStringParser("RELEASE120-u1").Parse()
-	//assert.Equal(t, VersionPrefix("RELEASE"), v.Prefix)
-	//assert.Equal(t, VersionNumbers([]int{120}), v.VersionNumbers)
-	//assert.Equal(t, VersionSuffix("-u1"), v.Suffix)
+	v = NewVersionStringParser("RELEASE120-u1").Parse()
+	assert.Equal(t, VersionPrefix("RELEASE"), v.Prefix)
+	assert.Equal(t, VersionNumbers([]int{120}), v.VersionNumbers)
+	assert.Equal(t, VersionSuffix("-u1"), v.Suffix)
 
 	v = NewVersionStringParser("0.26.1-v2-524.0").Parse()
 	assert.Equal(t, EmptyVersionPrefix, v.Prefix)
@@ -219,41 +217,13 @@ func TestVersionStringParser_Parser(t *testing.T) {
 	assert.Equal(t, VersionNumbers([]int{2010, 12}), v.VersionNumbers)
 	assert.Equal(t, EmptyVersionSuffix, v.Suffix)
 
-	// TODO
-	//v = NewVersionStringParser("v1beta1-rev20191118-1.29.2").Parse()
-	//assert.Equal(t, VersionPrefix("COMMIT-2fef389"), v.Prefix)
-	//assert.Equal(t, VersionNumbers([]int{1, 18, 0}), v.VersionNumbers)
-	//assert.Equal(t, VersionSuffix("-rc"), v.Suffix)
-
-	// TODO sha1检查
-	//v = NewVersionStringParser("18699aad7ce6e60980f876a27145b5b29e9fd55d").Parse()
-	//assert.Equal(t, VersionPrefix("COMMIT-2fef389"), v.Prefix)
-	//assert.Equal(t, VersionNumbers([]int{1, 18, 0}), v.VersionNumbers)
-	//assert.Equal(t, VersionSuffix("-rc"), v.Suffix)
-
-	// TODO
-	//v = NewVersionStringParser("erpya-3.9.4-rc-1.0.4").Parse()
-	//assert.Equal(t, VersionPrefix("erpya-"), v.Prefix)
-	//assert.Equal(t, VersionNumbers([]int{7, 85, 0}), v.VersionNumbers)
-	//assert.Equal(t, VersionSuffix("-rc-1.0.2"), v.Suffix)
-
-	// TODO
-	//v = NewVersionStringParser("COMMIT-2fef389").Parse()
-	//assert.Equal(t, VersionPrefix("COMMIT-2fef389"), v.Prefix)
-	//assert.Equal(t, VersionNumbers([]int{1, 18, 0}), v.VersionNumbers)
-	//assert.Equal(t, VersionSuffix("-rc"), v.Suffix)
-
-	// TODO 2023-5-16 17:03:44
-	//v = NewVersionStringParser("  ").Parse()
-	//assert.Equal(t, VersionPrefix("  "), v.Prefix)
-	//assert.Equal(t, VersionNumbers([]int{}), v.VersionNumbers)
-	//assert.Equal(t, VersionSuffix("  "), v.Suffix)
-
-	// TODO 2023-5-16 17:03:40
-	//v = NewVersionStringParser("a.a.a.b.c.123").Parse()
-	//assert.Equal(t, VersionPrefix("  "), v.Prefix)
-	//assert.Equal(t, VersionNumbers([]int{}), v.VersionNumbers)
-	//assert.Equal(t, EmptyVersionSuffix, v.Suffix)
+	// 以下为历史 TODO 用例，当前解析器已支持，但语义/边界仍待明确，保留注释供后续补充正式测试：
+	// v = NewVersionStringParser("v1beta1-rev20191118-1.29.2").Parse()
+	// v = NewVersionStringParser("18699aad7ce6e60980f876a27145b5b29e9fd55d").Parse()
+	// v = NewVersionStringParser("erpya-3.9.4-rc-1.0.4").Parse()
+	// v = NewVersionStringParser("COMMIT-2fef389").Parse()
+	// v = NewVersionStringParser("  ").Parse()
+	// v = NewVersionStringParser("a.a.a.b.c.123").Parse()
 
 	// 测试纯字母版本
 	v = NewVersionStringParser("abc").Parse()

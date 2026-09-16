@@ -6,11 +6,7 @@ import (
 	"strings"
 )
 
-// TODO 2023-5-31 12:13:27 一次解析多条版本，让它们之间互相印证
-
 // VersionStringParser 把版本从字符串形式解析为struct
-//
-// VersionStringParser 负责将版本号字符串解析为结构化的 Version 对象。
 // 它实现了版本号字符串的词法分析，将字符串划分为前缀、数字部分和后缀三个组成部分。
 //
 // 解析过程：
@@ -183,9 +179,6 @@ func (x *VersionStringParser) Parse() *Version {
 //
 // 该方法解析版本号字符串中的前缀部分。例如对于版本号 "v0.0.1"，前缀为 "v"。
 // 方法通过向前搜索数字部分的起始位置，然后回溯确定前缀边界。
-//
-// 注意:
-//   - TODO 2023-5-31 12:14:00 使用正则来定位版本号数字的位置，如果版本号数字有多个的话则选择最长的一个，如果一样长则选择靠前的那个
 func (x *VersionStringParser) readVersionPrefix() string {
 	// 直接处理特殊情况
 	versionStr := string(x.versionRunes)
